@@ -68,12 +68,20 @@ var UserSchema = new Schema({
 	},
 	providerData: {},
 	additionalProvidersData: {},
-	roles: {
-		type: [{
-			type: String,
-			enum: ['user', 'admin']
-		}],
-		default: ['user']
+	// roles: {
+	// 	type: [{
+	// 		type: String,
+	// 		enum: ['user', 'admin']
+	// 	}],
+	// 	default: ['user']
+	// },
+	userXroles:[{
+		type: Schema.Types.ObjectId,
+		ref: 'UserXrole'
+	}],
+	rank:{
+		type: String,
+		enum: ['PLATA','ORO','RUBY','ESMERALDA','DIAMANTE']
 	},
 	updated: {
 		type: Date
@@ -99,7 +107,7 @@ UserSchema.pre('save', function(next) {
 		this.salt = new Buffer(crypto.randomBytes(16).toString('base64'), 'base64');
 		this.password = this.hashPassword(this.password);
 	}
-
+	this.updated = Date.now();
 	next();
 });
 
