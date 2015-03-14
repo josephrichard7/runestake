@@ -10,10 +10,10 @@ var mongoose = require('mongoose'),
  * Article Schema
  */
 var AccountSchema = new Schema({
-	userXrole:{
+	user:{
 		type: Schema.Types.ObjectId,
-		ref: 'UserXrole',
-		required: 'UserXrole cannot be empty'
+		ref: 'User',
+		required: 'User cannot be empty'
 	},
 	balance:{
 		type: Number,

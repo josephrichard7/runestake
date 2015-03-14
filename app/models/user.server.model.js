@@ -5,7 +5,9 @@
  */
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
-	crypto = require('crypto');
+	crypto = require('crypto'),
+	enumUserRole = require('../../app/util/userrole'),
+	enumTraderRank = require('../../app/util/traderrank');
 
 /**
  * A Validation function for local strategy properties
@@ -68,20 +70,13 @@ var UserSchema = new Schema({
 	},
 	providerData: {},
 	additionalProvidersData: {},
-	// roles: {
-	// 	type: [{
-	// 		type: String,
-	// 		enum: ['user', 'admin']
-	// 	}],
-	// 	default: ['user']
-	// },
-	userXroles:[{
-		type: Schema.Types.ObjectId,
-		ref: 'UserXrole'
-	}],
+	role: {
+		type: String,
+		enum: [enumUserRole.GAMBLER, enumUserRole.TRADER, enumUserRole.BANK, enumUserRole.ADMIN]
+	},
 	rank:{
 		type: String,
-		enum: ['PLATA','ORO','RUBY','ESMERALDA','DIAMANTE']
+		enum: [enumTraderRank.PLATA, enumTraderRank.ORO, enumTraderRank.RUBY, enumTraderRank.ESMERALDA, enumTraderRank.DIAMANTE]
 	},
 	updated: {
 		type: Date

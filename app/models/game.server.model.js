@@ -4,7 +4,8 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-	Schema = mongoose.Schema;
+	Schema = mongoose.Schema,
+	enumGameState = require('../../app/util/gamestate');
 
 /**
  * Article Schema
@@ -36,7 +37,7 @@ var GameSchema = new Schema({
 	},
 	state:{
 		type: String,
-		enum: ['SEARCHING_GAMBLER', 'IN_PROCESS','FINISHED']
+		enum: [enumGameState.SEARCHING_GAMBLER, enumGameState.IN_PROCESS, enumGameState.FINISHED]
 	},
 	startTime:{
 		type: Date

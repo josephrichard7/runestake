@@ -4,7 +4,9 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-	Schema = mongoose.Schema;
+	Schema = mongoose.Schema,
+	enumTransactionType = require('../../app/util/transactiontype'),
+	enumTransactionState = require('../../app/util/transactionstate');
 
 /**
  * Article Schema
@@ -32,7 +34,7 @@ var TransactionSchema = new Schema({
 	},
 	transactionType:{
 		type: String,
-		enum: ['START_GAME','END_GAME','CASH_IN','CASH_OUT'],
+		enum: [enumTransactionType.START_GAME, enumTransactionType.END_GAME, enumTransactionType.CASH_IN, enumTransactionType.CASH_OUT],
 		required: 'TransactionType cannot be empty or is not valid'
 	},
 	amount:{
@@ -41,7 +43,7 @@ var TransactionSchema = new Schema({
 	},
 	state:{
 		type: String,
-		enum: ['PENDING', 'APPLIED'],
+		enum: [enumTransactionState.PENDING, enumTransactionState.APPLIED],
 		required: 'State cannot be empty or is not valid'
 	},
 	createdDate:{

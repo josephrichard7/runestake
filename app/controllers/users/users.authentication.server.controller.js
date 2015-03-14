@@ -7,7 +7,8 @@ var _ = require('lodash'),
 	errorHandler = require('../errors'),
 	mongoose = require('mongoose'),
 	passport = require('passport'),
-	User = mongoose.model('User');
+	User = mongoose.model('User'),
+	enumUserRole = require('../../../app/util/userrole');
 
 /**
  * Signup
@@ -23,6 +24,7 @@ exports.signup = function(req, res) {
 	// Add missing user fields
 	user.provider = 'local';
 	user.displayName = user.firstName + ' ' + user.lastName;
+	user.role = enumUserRole.GAMBLER;
 
 	// Then save the user 
 	user.save(function(err) {

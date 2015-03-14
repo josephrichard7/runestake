@@ -4,7 +4,9 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-	Schema = mongoose.Schema;
+	Schema = mongoose.Schema,
+	enumServiceType = require('../../app/util/servicetype'),
+	enumServiceState = require('../../app/util/servicestate');
 
 /**
  * Article Schema
@@ -20,7 +22,7 @@ var ServiceSchema = new Schema({
 	},
 	serviceType:{
 		type: String,
-		enum: ['CASH_IN','CASH_OUT'],
+		enum: [enumServiceType.CASH_IN, enumServiceType.CASH_OUT],
 		required: 'ServiceType cannot be empty or is not valid'
 	},
 	amount:{
@@ -29,7 +31,7 @@ var ServiceSchema = new Schema({
 	},
 	state:{
 		type: String,
-		enum: ['PENDING', 'APPLIED'],
+		enum: [enumServiceType.PENDING, enumServiceType.APPLIED],
 		required: 'State cannot be empty or is not valid'
 	},	
 	createdDate:{

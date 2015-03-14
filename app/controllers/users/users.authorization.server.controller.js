@@ -37,18 +37,37 @@ exports.requiresLogin = function(req, res, next) {
 /**
  * User authorizations routing middleware
  */
+// exports.hasAuthorization = function(roles) {
+// 	var _this = this;
+
+// 	return function(req, res, next) {
+// 	    var user = _this.userByID(req,res, function(){
+// 			_this.requiresLogin(req, res, function() {
+// 				if (_.intersection(user.role, roles).length) {
+// 					return next();
+// 				} else {
+// 					return res.status(403).send({
+// 						message: 'User is not authorized'
+// 					});
+// 				}
+// 			});
+// 		},req.user._id);
+// 	};
+// };
 exports.hasAuthorization = function(roles) {
 	var _this = this;
 
 	return function(req, res, next) {
-		_this.requiresLogin(req, res, function() {
-			if (_.intersection(req.user.roles, roles).length) {
-				return next();
-			} else {
-				return res.status(403).send({
-					message: 'User is not authorized'
-				});
-			}
-		});
+	    _this.userByID(req,res, function(){
+			_this.requiresLogin(req, res, function() {
+				if (_.intersection([req.profile.role], roles).length) {
+					return next();
+				} else {
+					return res.status(403).send({
+						message: 'User is not authorized'
+					});
+				}
+			});
+		},req.user.id);
 	};
 };
