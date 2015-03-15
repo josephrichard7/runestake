@@ -1,0 +1,21 @@
+<section data-ng-controller="TraderController as controller" data-ng-init="controller.fnList()">
+	<div class="page-header">
+		<h1>Traders</h1>
+	</div>
+	<div class="list-group">
+		<a data-ng-repeat="obj in controller.traders" data-ng-href="#!/trader/{{obj._id}}" class="list-group-item">
+			<small class="list-group-item-text">
+				Posted on
+				<span data-ng-bind="obj.created | date:'mediumDate'"></span>,
+				Updated on
+				<span data-ng-bind="obj.updated | date:'mediumDate'"></span>
+			</small>
+			<h4 class="list-group-item-heading" data-ng-bind="obj.username"></h4>
+			<p class="list-group-item-text" data-ng-bind="obj.email"></p>
+			<span class="label label-info" data-ng-bind="obj.rank"></span>
+		</a>
+	</div>
+	<div class="alert alert-warning text-center" data-ng-if="controller.traders.$resolved && !controller.traders.length">
+		No traders yet, <a href="/#!/trader/create">create one</a>?
+	</div>
+</section>

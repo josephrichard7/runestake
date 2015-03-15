@@ -1,0 +1,36 @@
+<section data-ng-controller="TraderController as controller">
+	<div class="page-header">
+		<h2>New Trader</h2>
+	</div>
+	<div class="row">
+		<div class="col-md-offset-4 col-md-4">
+			<form name="form" class="form-horizontal" data-ng-submit="controller.fnCreate()" novalidate>
+				<fieldset>
+					<div class="form-group">
+						<label for="email">Email</label>
+						<input type="email" id="email" name="email" class="form-control" data-ng-model="controller.trader.email" placeholder="Email">
+					</div>
+					<div class="form-group">
+						<label for="username">Username</label>
+						<input type="text" id="username" name="username" class="form-control" data-ng-model="controller.trader.username" placeholder="Username">
+					</div>
+					<div class="form-group">
+						<label for="password">Password</label>
+						<input type="password" id="password" name="password" class="form-control" data-ng-model="controller.trader.password" placeholder="Password">
+					</div>
+					<div class="form-group">
+						<label for="rank">Rank</label>
+						<select id="rank" name="rank" class="form-control" data-ng-model="controller.trader.rank" ng-options="obj.name for obj in controller.ranks">
+						</select>
+					</div>
+					<div class="form-group">
+						<input type="submit" class="btn btn-default">
+					</div>
+					<div data-ng-show="controller.error" class="text-center text-danger">
+						<strong data-ng-bind="controller.error"></strong>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+</section>

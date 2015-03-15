@@ -39,5 +39,9 @@
 }
 .transparent{
   /*background:transparent;*/
+  background-color: rgba(211,211,211,0);
+}
+.semi-transparent{
+  /*background:transparent;*/
   background-color: rgba(211,211,211,0.7);
 }

@@ -13,40 +13,44 @@ var _ = require('lodash'),
 /**
  * Signup
  */
-exports.signup = function(req, res) {
-	// For security measurement we remove the roles from the req.body object
-	delete req.body.roles;
+exports.signup = function(role) {
+	return function(req,res,next){
 
-	// Init Variables
-	var user = new User(req.body);
-	var message = null;
+		// For security measurement we remove the roles from the req.body object
+		delete req.body.role;
 
-	// Add missing user fields
-	user.provider = 'local';
-	user.displayName = user.firstName + ' ' + user.lastName;
-	user.role = enumUserRole.GAMBLER;
+		// Init Variables
+		var user = new User(req.body);
+		var message = null;
 
-	// Then save the user 
-	user.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			// Remove sensitive data before login
-			user.password = undefined;
-			user.salt = undefined;
+		// Add missing user fields
+		user.provider = 'local';
+		user.displayName = user.firstName + ' ' + user.lastName;
+		user.role = role;
 
-			req.login(user, function(err) {
-				if (err) {
-					res.status(400).send(err);
-				} else {
-					res.jsonp(user);
-				}
-			});
-		}
-	});
+		// Then save the user 
+		user.save(function(err) {
+			if (err) {
+				return res.status(400).send({
+					message: errorHandler.getErrorMessage(err)
+				});
+			} else {
+				// Remove sensitive data before login
+				user.password = undefined;
+				user.salt = undefined;
+
+				req.login(user, function(err) {
+					if (err) {
+						res.status(400).send(err);
+					} else {
+						res.jsonp(user);
+					}
+				});
+			}
+		});
+	};
 };
+
 
 /**
  * Signin after passport authentication
