@@ -2,20 +2,52 @@
 	<div class="page-header">
 		<h1>Traders</h1>
 	</div>
-	<div class="list-group">
-		<a data-ng-repeat="obj in controller.traders" data-ng-href="#!/trader/{{obj._id}}" class="list-group-item">
-			<small class="list-group-item-text">
-				Posted on
-				<span data-ng-bind="obj.created | date:'mediumDate'"></span>,
-				Updated on
-				<span data-ng-bind="obj.updated | date:'mediumDate'"></span>
-			</small>
-			<h4 class="list-group-item-heading" data-ng-bind="obj.username"></h4>
-			<p class="list-group-item-text" data-ng-bind="obj.email"></p>
-			<span class="label label-info" data-ng-bind="obj.rank"></span>
-		</a>
+	<div data-ng-show="!controller.traders.$resolved || controller.traders.length">
+		<div class="col-md-offset-8 col-md-4 input-group">
+			<span class="input-group-addon">Filter</span>
+		    <input id="filter" name="filter" type="text" data-ng-model="controller.filter"  class="form-control" placeholder="Type here...">
+		</div>
+		<div class="panel panel-default">
+			<table class="table table-striped">
+				<thead>
+			        <tr>
+			            <th>Username</th>
+			            <th>Email</th>
+			            <th>Rank</th>
+			            <th>Actions</th>
+			        </tr>
+			    </thead>
+			    <tbody class="searchable">
+			    	<tr dir-paginate="obj in controller.traders | filter:controller.filter | itemsPerPage: controller.pageSize" current-page="controller.currentPage">
+			    		<td>
+			    			{{obj.username}}
+			    		</td>
+			    		<td>
+			    			{{obj.email}}
+			    		</td>
+			    		<td>
+			    			<span class="label label-info" data-ng-bind="obj.rank"></span>
+			    		</td>
+			    		<td>
+			    			<a class="btn btn-primary btn-xs" href="/#!/trader/{{obj._id}}/edit">
+								<i class="glyphicon glyphicon-edit"></i>
+							</a>
+							<a class="btn btn-danger btn-xs" data-ng-click="controller.fnDelete(obj);">
+								<i class="glyphicon glyphicon-trash"></i>
+							</a>		
+			    		</td>
+			    	</tr>
+			    </tbody>
+			</table>
+		</div>
+	</div>
+	<div class="text-center">
+		<dir-pagination-controls boundary-links="true"></dir-pagination-controls>
 	</div>
 	<div class="alert alert-warning text-center" data-ng-if="controller.traders.$resolved && !controller.traders.length">
 		No traders yet, <a href="/#!/trader/create">create one</a>?
+	</div>
+	<div data-ng-show="controller.error" class="text-danger">
+		<strong data-ng-bind="controller.error"></strong>
 	</div>
 </section>

@@ -26,25 +26,25 @@ fnCreate = function(req,res,next){
 	var bodyUser = _.pick(req.body, 'firstName', 'lastName','username', 'email', 'password', 'rank');
 
 	// Init Model
-	var user = new User(bodyUser);
+	var trader = new User(bodyUser);
 
-	// Add missing user fields
-	user.provider = 'local';
-	user.displayName = user.firstName + ' ' + user.lastName;
-	user.role = enumUserRole.TRADER;
+	// Add missing trader fields
+	trader.provider = 'local';
+	trader.displayName = trader.firstName + ' ' + trader.lastName;
+	trader.role = enumUserRole.TRADER;
 
-	// Then save the user 
-	user.save(function(err) {
+	// Then save the trader 
+	trader.save(function(err) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
 			// Remove sensitive data before login
-			user.password = undefined;
-			user.salt = undefined;
+			trader.password = undefined;
+			trader.salt = undefined;
 
-			res.jsonp(user);
+			res.jsonp(trader);
 		}
 	});
 };
@@ -55,63 +55,63 @@ fnRead = function(req, res) {
 
 fnUpdate = function(req,res,next){
 
+	var trader = req.trader;
 	// For security measurement only get some fields from body
-	var bodyUser = _.pick(req.body, 'id', 'firstName', 'lastName', 'email', 'rank');
+	var bodyUser = _.pick(req.body, 'firstName', 'lastName', 'email', 'rank');
 
-	// Init Variables
-	var user = new User(bodyUser);
+	// Map body request fields to model object
+	trader = _.extend(trader, bodyUser);
 
 	// Add missing user fields
-	user.displayName = user.firstName + ' ' + user.lastName;
+	trader.displayName = trader.firstName + ' ' + trader.lastName;
 
-	// Then save the user
-	user.save(function(err) {
+	trader.save(function(err) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
 			// Remove sensitive data before login
-			user.password = undefined;
-			user.salt = undefined;
+			trader.password = undefined;
+			trader.salt = undefined;
 
-			res.jsonp(user);
+			res.jsonp(trader);
 		}
 	});
 };
 
 fnDelete = function(req,res,next){
-	var user = req.trader;
+	var trader = req.trader;
 
-	user.remove(function(err) {
+	trader.remove(function(err) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
-			res.jsonp(user);
+			res.jsonp(trader);
 		}
 	});
 };
 
 fnList = function(req,res,next){
 	User.find({role: enumUserRole.TRADER})
+		// .populate('firstName lastName username email rank')
 		.sort('-created')
-		// .populate('firstName', 'lastName','username', 'email', 'rank')
-		.exec(function(err, users) {
+		.exec(function(err, objList) {
 			if (err) {
 				return res.status(400).send({
 					message: errorHandler.getErrorMessage(err)
 				});
 			} else {
-				res.jsonp(users);
+				res.jsonp(objList);
 			}
 		});
 };
 
 fnObjectByID = function(req, res, next, id) {
 	User.findById(id)
-	// .populate('firstName', 'lastName','username', 'email', 'rank')
+	// .populate('firstName lastName username email rank')
 	.exec(function(err, obj) {
 		if (err) return next(err);
 		if (!obj) return next(new Error('Failed to load trader user ' + id));

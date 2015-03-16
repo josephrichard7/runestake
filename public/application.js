@@ -10,6 +10,11 @@ angular.module(ApplicationConfiguration.applicationModuleName).config(['$locatio
 	}
 ]);
 
+//Template required for pagination template
+angular.module(ApplicationConfiguration.applicationModuleName).config(function(paginationTemplateProvider) {
+    paginationTemplateProvider.setPath('lib/angular-utils-pagination/dirPagination.tpl.html');
+});
+
 //Then define the init function for starting up the application
 angular.element(document).ready(function() {
 	//Fixing facebook bug with redirect

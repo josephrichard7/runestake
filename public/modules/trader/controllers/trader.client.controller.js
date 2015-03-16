@@ -3,7 +3,7 @@
 angular.module('trader').controller('TraderController', ['$scope', '$stateParams', '$location', 'Authentication', 'Trader',
 	function($scope, $stateParams, $location, Authentication, Trader) {
 		var vm = this;
-		var ranks = [{name:"PLATA"},{name:"ORO"},{name:"RUBY"},{name:"ESMERALDA"}];
+		var ranks = ['PLATA','ORO','RUBY','ESMERALDA','DIAMANTE'];
 		var fnCreate,
 			fnRead,
 			fnUpdate,
@@ -13,6 +13,9 @@ angular.module('trader').controller('TraderController', ['$scope', '$stateParams
 
 		vm.authentication = Authentication;
 		vm.ranks = ranks;
+		// vm.tableSearch = Utilities.tableSearch;
+		vm.currentPage = 1;
+  		vm.pageSize = 2;
 
 		fnCreate = function() {
 			var trader = new Trader(vm.trader);
@@ -66,6 +69,5 @@ angular.module('trader').controller('TraderController', ['$scope', '$stateParams
 		vm.fnDelete      = fnDelete;
 		vm.fnList        = fnList;
 		vm.fnObjectByID  = fnObjectByID;
-		
 	}
 ]);

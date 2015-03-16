@@ -6,6 +6,15 @@
 		<div class="col-md-offset-4 col-md-4">
 			<form name="form" class="form-horizontal" data-ng-submit="controller.fnUpdate(form.$valid)" novalidate>
 				<fieldset>
+					<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.username.$invalid}">
+						<label class="control-label" for="username">Username</label>
+						<div class="controls">
+							<input type="text" id="username" name="username" class="form-control" data-ng-model="controller.trader.username" placeholder="Username" required disabled>
+						</div>
+						<div ng-show="controller.submitted && form.username.$invalid" class="help-block">
+							<p ng-show="form.username.$error.required" class="text-danger">Username is required</p>
+						</div>
+					</div>
 					<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.email.$invalid}">
 						<label class="control-label" for="email">Email</label>
 						<div class="controls">
@@ -15,15 +24,17 @@
 							<p ng-show="form.email.$error.required" class="text-danger">Email is required</p>
 						</div>
 					</div>
-					<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.username.$invalid}">
-						<label class="control-label" for="username">Username</label>
+					<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.rank.$invalid}">
+						<label class="control-label" for="rank">Rank</label>
 						<div class="controls">
-							<input type="username" id="username" name="username" class="form-control" data-ng-model="controller.trader.username" placeholder="Username" required disabled>
+							<select id="rank" name="rank" class="form-control" data-ng-model="controller.trader.rank" data-ng-options="obj as obj for obj in controller.ranks">
+								<option value="">Choose an option</option>
+							</select>
 						</div>
-						<div ng-show="controller.submitted && form.username.$invalid" class="help-block">
-							<p ng-show="form.username.$error.required" class="text-danger">Username is required</p>
+						<div ng-show="controller.submitted && form.rank.$invalid" class="help-block">
+							<p ng-show="form.rank.$error.required" class="text-danger">Rank is required</p>
 						</div>
-					</div>
+					</div>					
 					<div class="form-group">
 						<input type="submit" value="Update" class="btn btn-default">
 					</div>

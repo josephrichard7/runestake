@@ -1,18 +1,18 @@
 <section data-ng-controller="TraderController as controller">
 	<div class="page-header">
-		<h2>New Trader</h2>
+		<h1>New Trader</h1>
 	</div>
 	<div class="row">
 		<div class="col-md-offset-4 col-md-4">
 			<form name="form" class="form-horizontal" data-ng-submit="controller.fnCreate()" novalidate>
 				<fieldset>
 					<div class="form-group">
-						<label for="email">Email</label>
-						<input type="email" id="email" name="email" class="form-control" data-ng-model="controller.trader.email" placeholder="Email">
-					</div>
-					<div class="form-group">
 						<label for="username">Username</label>
 						<input type="text" id="username" name="username" class="form-control" data-ng-model="controller.trader.username" placeholder="Username">
+					</div>
+					<div class="form-group">
+						<label for="email">Email</label>
+						<input type="email" id="email" name="email" class="form-control" data-ng-model="controller.trader.email" placeholder="Email">
 					</div>
 					<div class="form-group">
 						<label for="password">Password</label>
@@ -20,7 +20,8 @@
 					</div>
 					<div class="form-group">
 						<label for="rank">Rank</label>
-						<select id="rank" name="rank" class="form-control" data-ng-model="controller.trader.rank" ng-options="obj.name for obj in controller.ranks">
+						<select id="rank" name="rank" class="form-control" data-ng-model="controller.trader.rank" data-ng-options="obj as obj for obj in controller.ranks">
+							<option value="">Choose an option</option>
 						</select>
 					</div>
 					<div class="form-group">
