@@ -1,22 +1,35 @@
 <section data-ng-controller="TraderController as controller" data-ng-init="controller.fnObjectByID()">
-	<div class="page-header">
-		<h1>Trader:&nbsp;<small data-ng-bind="controller.trader.username"></small></h1>
-		<small>
-			<em class="text-muted text-left">
-				Posted on
-				<span data-ng-bind="controller.trader.created | date:'mediumDate'"></span>,
-				Updated on
-				<span data-ng-bind="controller.trader.updated | date:'mediumDate'"></span>
-			</em>
-		</small>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="page-header">
+				<h1>Trader:&nbsp;<small data-ng-bind="controller.trader.username"></small></h1>
+				<small>
+					<em class="text-muted text-left">
+						Posted on
+						<span data-ng-bind="controller.trader.created | date:'mediumDate'"></span>,
+						Updated on
+						<span data-ng-bind="controller.trader.updated | date:'mediumDate'"></span>
+					</em>
+				</small>
+			</div>
+		</div>
 	</div>
-	<div class="text-right">
-		<a class="btn btn-primary" href="/#!/trader/{{controller.trader._id}}/edit">
-			<i class="glyphicon glyphicon-edit"></i>
-		</a>
-		<a class="btn btn-danger" data-ng-click="controller.fnDelete(controller.trader);">
-			<i class="glyphicon glyphicon-trash"></i>
-		</a>
+	<div class="row">
+		<div class="col-md-8">
+			<a class="btn btn-primary" onclick="window.history.back();">
+				<i class="glyphicon glyphicon-arrow-left"></i>
+			</a>
+		</div>
+		<div class="col-md-4">
+			<div class="text-right">
+				<a class="btn btn-primary" href="/#!/trader/{{controller.trader._id}}/edit">
+					<i class="glyphicon glyphicon-edit"></i>
+				</a>
+				<a class="btn btn-danger" data-ng-click="controller.fnDelete(controller.trader);">
+					<i class="glyphicon glyphicon-trash"></i>
+				</a>
+			</div>
+		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-offset-4 col-md-4">
@@ -37,6 +50,12 @@
 					<label class="control-label" for="rank">Rank</label>
 					<div class="controls">
 						<input type="text" id="rank" name="rank" class="form-control" data-ng-model="controller.trader.rank" placeholder="Username" disabled>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label" for="state">State</label>
+					<div class="controls">
+						<input type="text" id="state" name="state" class="form-control" data-ng-model="controller.trader.state" placeholder="State" disabled>
 					</div>
 				</div>
 				<div data-ng-show="controller.error" class="text-danger">

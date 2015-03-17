@@ -1,6 +1,17 @@
 <section data-ng-controller="TraderController as controller" data-ng-init="controller.fnObjectByID()">
-	<div class="page-header">
-		<h1>Edit Trader</h1>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="page-header">
+				<h1>Edit Trader</h1>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<a class="btn btn-primary" onclick="window.history.back();">
+				<i class="glyphicon glyphicon-arrow-left"></i>
+			</a>
+		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-offset-4 col-md-4">
@@ -34,7 +45,18 @@
 						<div ng-show="controller.submitted && form.rank.$invalid" class="help-block">
 							<p ng-show="form.rank.$error.required" class="text-danger">Rank is required</p>
 						</div>
-					</div>					
+					</div>
+					<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.state.$invalid}">
+						<label class="control-label" for="state">State</label>
+						<div class="controls">
+							<select id="state" name="state" class="form-control" data-ng-model="controller.trader.state" data-ng-options="obj as obj for obj in controller.states">
+								<option value="">Choose an option</option>
+							</select>
+						</div>
+						<div ng-show="controller.submitted && form.state.$invalid" class="help-block">
+							<p ng-show="form.state.$error.required" class="text-danger">State is required</p>
+						</div>
+					</div>				
 					<div class="form-group">
 						<input type="submit" value="Update" class="btn btn-default">
 					</div>

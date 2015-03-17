@@ -4,6 +4,7 @@ angular.module('trader').controller('TraderController', ['$scope', '$stateParams
 	function($scope, $stateParams, $location, Authentication, Trader) {
 		var vm = this;
 		var ranks = ['PLATA','ORO','RUBY','ESMERALDA','DIAMANTE'];
+		var states = ['ACTIVE','INACTIVE','BANNED'];
 		var fnCreate,
 			fnRead,
 			fnUpdate,
@@ -13,9 +14,10 @@ angular.module('trader').controller('TraderController', ['$scope', '$stateParams
 
 		vm.authentication = Authentication;
 		vm.ranks = ranks;
+		vm.states = states;
 		// vm.tableSearch = Utilities.tableSearch;
 		vm.currentPage = 1;
-  		vm.pageSize = 2;
+  		vm.pageSize = 10;
 
 		fnCreate = function() {
 			var trader = new Trader(vm.trader);

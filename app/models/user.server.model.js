@@ -7,7 +7,8 @@ var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	crypto = require('crypto'),
 	enumUserRole = require('../../app/util/userrole'),
-	enumTraderRank = require('../../app/util/traderrank');
+	enumTraderRank = require('../../app/util/traderrank'),
+	enumUserState = require('../../app/util/userstate');
 
 /**
  * A Validation function for local strategy properties
@@ -77,6 +78,11 @@ var UserSchema = new Schema({
 	rank:{
 		type: String,
 		enum: [enumTraderRank.PLATA, enumTraderRank.ORO, enumTraderRank.RUBY, enumTraderRank.ESMERALDA, enumTraderRank.DIAMANTE]
+	},
+	state:{
+		type: String,
+		enum: [enumUserState.ACTIVE, enumUserState.INACTIVE, enumUserState.BANNED, enumUserState.DELETED],
+		default: enumUserState.ACTIVE
 	},
 	updated: {
 		type: Date
