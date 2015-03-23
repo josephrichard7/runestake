@@ -3,20 +3,20 @@
 /**
  * Module dependencies.
  */
-var users = require('../../app/controllers/users'),
-	articles = require('../../app/controllers/articles');
+var userController 		= require('../controllers/users'),
+	articlesController 	= require('../controllers/articles');
 
 module.exports = function(app) {
 	// Article Routes
 	app.route('/articles')
-		.get(users.hasAuthorization(['ADMIN','GAMBLER']), articles.list)
-		.post(users.hasAuthorization(['GAMBLER']), articles.create);
+		.get(userController.hasAuthorization(['ADMIN','GAMBLER']), articlesController.list)
+		.post(userController.hasAuthorization(['GAMBLER']), articlesController.create);
 
 	app.route('/articles/:articleId')
-		.get(articles.read)
-		.put(users.requiresLogin, articles.hasAuthorization, articles.update)
-		.delete(users.requiresLogin, articles.hasAuthorization, articles.delete);
+		.get(articlesController.read)
+		.put(userController.requiresLogin, articlesController.hasAuthorization, articlesController.update)
+		.delete(userController.requiresLogin, articlesController.hasAuthorization, articlesController.delete);
 
 	// Finish by binding the article middleware
-	app.param('articleId', articles.articleByID);
+	app.param('articleId', articlesController.articleByID);
 };

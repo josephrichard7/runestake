@@ -1,9 +1,13 @@
 'use strict';
 
+var getUniqueErrorMessage = function(){},
+	getErrorMessage 	  = function(){},
+	fnHandleErrorMW		  = function(){};
+
 /**
  * Get unique error field name
  */
-var getUniqueErrorMessage = function(err) {
+getUniqueErrorMessage = function(err) {
 	var output;
 
 	try {
@@ -20,7 +24,7 @@ var getUniqueErrorMessage = function(err) {
 /**
  * Get the error message from error object
  */
-exports.getErrorMessage = function(err) {
+getErrorMessage = function(err) {
 	var message = '';
 	
 	if (err.code) {
@@ -40,3 +44,15 @@ exports.getErrorMessage = function(err) {
 
 	return message;
 };
+
+/**
+ * Error handler after business service execution.
+ */
+fnHandleErrorMW = function(err, res) {
+ 	return res.status(400).send({
+		message: getErrorMessage(err)
+	});
+};
+
+exports.getErrorMessage 	= getErrorMessage;
+exports.fnHandleErrorMW		= fnHandleErrorMW;

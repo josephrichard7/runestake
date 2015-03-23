@@ -14,11 +14,11 @@ angular.module('trader').config(['$stateProvider',
 			templateUrl: 'modules/trader/views/create-trader.client.view.html'
 		}).
 		state('viewTrader', {
-			url: '/trader/:traderId',
+			url: '/trader/:id',
 			templateUrl: 'modules/trader/views/view-trader.client.view.html'
 		}).
 		state('editTrader', {
-			url: '/trader/:traderId/edit',
+			url: '/trader/:id/edit',
 			templateUrl: 'modules/trader/views/edit-trader.client.view.html'
 		});
 	}

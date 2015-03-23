@@ -3,11 +3,11 @@
 /**
  * Module dependencies.
  */
-var _ = require('lodash'),
-	errorHandler = require('../errors'),
-	mongoose = require('mongoose'),
-	passport = require('passport'),
-	User = mongoose.model('User');
+var _ 			 = require('lodash'),
+	errorUtil 	 = require('../../utilities/error'),
+	mongoose 	 = require('mongoose'),
+	passport 	 = require('passport'),
+	User 		 = mongoose.model('User');
 
 /**
  * Update user details
@@ -30,7 +30,7 @@ exports.update = function(req, res) {
 		user.save(function(err) {
 			if (err) {
 				return res.status(400).send({
-					message: errorHandler.getErrorMessage(err)
+					message: errorUtil.getErrorMessage(err)
 				});
 			} else {
 				req.login(user, function(err) {

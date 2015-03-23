@@ -3,148 +3,70 @@
 /**
  * Module dependencies.
  */
-var _ = require('lodash'),
-	errorHandler = require('./errors'),
-	mongoose = require('mongoose'),
-	User = mongoose.model('User'),
-	enumUserRole = require('../../app/util/userrole'),
-	enumUserState = require('../../app/util/userstate');
+var _ 				  = require('lodash'),
+	util 		 	  = require('../utilities/util'),
+	accountController = require('../controllers/account'),
+	traderService 	  = require('../services/trader');
 
 /**
  * Functions
  */
-var fnCreate,
+var fnReadByID,
+	fnCreate,
 	fnRead,
 	fnUpdate,
 	fnDelete,
-	fnList,
-	fnObjectByID,
-	fnHasAuthorization;
+	fnList;
 
-fnCreate = function(req,res,next){
+fnReadByID = function(req, res) {
+	var id = req.params.id || req.body.id;
 
-	// For security measurement only get some fields from body
-	var bodyUser = _.pick(req.body, 'firstName', 'lastName','username', 'email', 'password', 'rank');
+	traderService.fnReadByID(id, function(err, resultVO){
+		return util.fnProcessResultController(err, res, resultVO);
+	});
+};
 
-	// Init Model
-	var trader = new User(bodyUser);
+fnCreate = function(req,res){
+	var requestVO = req.body;
 
-	// Add missing trader fields
-	trader.provider = 'local';
-	trader.displayName = trader.firstName + ' ' + trader.lastName;
-	trader.role = enumUserRole.TRADER;
-	trader.state = enumUserState.ACTIVE;
-
-	// Then save the trader 
-	trader.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			// Remove sensitive data
-			trader.password = undefined;
-			trader.salt = undefined;
-
-			res.jsonp(trader);
-		}
+	traderService.fnCreate(requestVO, function(err, resultVO){
+		return util.fnProcessResultController(err, res, resultVO);
 	});
 };
 
 fnRead = function(req, res) {
-	res.jsonp(_.pick(req.trader,'_id', 'firstName', 'lastName', 'username', 'email', 'rank', 'state', 'created', 'updated'));
-};
+	var requestVO = req.body;
 
-fnUpdate = function(req,res,next){
-
-	var trader = req.trader;
-	// For security measurement only get some fields from body
-	var bodyUser = _.pick(req.body, 'firstName', 'lastName', 'email', 'rank', 'state');
-
-	// Map body request fields to model object
-	trader = _.extend(trader, bodyUser);
-
-	// Add missing user fields
-	trader.displayName = trader.firstName + ' ' + trader.lastName;
-
-	trader.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			// Remove sensitive data
-			trader.password = undefined;
-			trader.salt = undefined;
-
-			res.jsonp(trader);
-		}
+	traderService.fnRead(requestVO, function(err, resultVO){
+		return util.fnProcessResultController(err, res, resultVO);
 	});
 };
 
-fnDelete = function(req,res,next){
-	var trader = req.trader;
+fnUpdate = function(req,res){
+	var requestVO = req.body;
 
-	trader.state = enumUserState.DELETED;
-
-	trader.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			// Remove sensitive data before login
-			trader.password = undefined;
-			trader.salt = undefined;
-
-			res.jsonp(trader);
-		}
+	traderService.fnUpdate(requestVO, function(err, resultVO){
+		return util.fnProcessResultController(err, res, resultVO);
 	});
-
-	// trader.remove(function(err) {
-	// 	if (err) {
-	// 		return res.status(400).send({
-	// 			message: errorHandler.getErrorMessage(err)
-	// 		});
-	// 	} else {
-	// 		res.jsonp(trader);
-	// 	}
-	// });
 };
 
-fnList = function(req,res,next){
-	User.where('role').equals(enumUserRole.TRADER)
-		.where('state').nin([enumUserState.DELETED])
-		.select('_id firstName lastName username email rank state')
-		.sort('-created')
-		.exec(function(err, objList) {
-			if (err) {
-				return res.status(400).send({
-					message: errorHandler.getErrorMessage(err)
-				});
-			} else {
-				res.jsonp(objList);
-			}
-		});
+fnDelete = function(req,res){
+	var id = req.params.id || req.body.id;
+
+	traderService.fnDelete(id, function(err, resultVO){
+		return util.fnProcessResultController(err, res, resultVO);
+	});
 };
 
-fnObjectByID = function(req, res, next, id) {
-	User.findById(id)
-	 //    .where('role').equals(enumUserRole.TRADER)
-		// .where('state').nin([enumUserState.DELETED])
-		.select('-password -salt')	// Avoid password re-encryptation 
-		.exec(function(err, obj) {
-			if (err) return next(err);
-			if (!obj) return next(new Error('Failed to load trader user ' + id));
-			req.trader = obj;
-			next();
-		});
+fnList = function(req,res){
+	traderService.fnList(function(err, resultVO){
+		return util.fnProcessResultController(err, res, resultVO);
+	});
 };
 
-exports.fnCreate     = fnCreate;
-exports.fnRead       = fnRead;
-exports.fnUpdate     = fnUpdate;
-exports.fnDelete     = fnDelete;
-exports.fnList       = fnList;
-exports.fnObjectByID = fnObjectByID;
-// exports.fnHasAuthorization = fnHasAuthorization;
+exports.fnReadByID 	= fnReadByID;
+exports.fnCreate    = fnCreate;
+exports.fnRead      = fnRead;
+exports.fnUpdate    = fnUpdate;
+exports.fnDelete	= fnDelete;
+exports.fnList      = fnList;

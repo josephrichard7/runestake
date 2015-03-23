@@ -3,10 +3,10 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
-	enumTransactionType = require('../../app/util/transactiontype'),
-	enumTransactionState = require('../../app/util/transactionstate');
+var mongoose 			 = require('mongoose'),
+	Schema 				 = mongoose.Schema,
+	enumTransactionType  = require('../utilities/enums/transactiontype'),
+	enumTransactionState = require('../utilities/enums/transactionstate');
 
 /**
  * Article Schema

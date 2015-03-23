@@ -1,21 +1,24 @@
 'use strict';
 
-angular.module('trader').controller('TraderController', ['$scope', '$stateParams', '$location', 'Authentication', 'Trader',
-	function($scope, $stateParams, $location, Authentication, Trader) {
-		var vm = this;
-		var ranks = ['PLATA','ORO','RUBY','ESMERALDA','DIAMANTE'];
-		var states = ['ACTIVE','INACTIVE','BANNED'];
+angular.module('trader').controller('TraderController', ['$scope', '$stateParams', '$location', 'Authentication', 'Trader', 'Utilities',
+	function($scope, $stateParams, $location, Authentication, Trader, Utilities) {
+		var vm 		= this;
+		var ranks 	= [];
+		var states 	= [];
 		var fnCreate,
 			fnRead,
 			fnUpdate,
 			fnDelete,
 			fnList,
-			fnObjectByID;
+			fnReadByID;
 
 		vm.authentication = Authentication;
-		vm.ranks = ranks;
-		vm.states = states;
-		// vm.tableSearch = Utilities.tableSearch;
+		Utilities.enumResource.get({enumName: 'traderrank'},function(result){
+			vm.ranks = result.data;
+		});
+		Utilities.enumResource.get({enumName: 'userstate'},function(result){
+			vm.states = result.data;
+		});
 		vm.currentPage = 1;
   		vm.pageSize = 10;
 
@@ -31,16 +34,20 @@ angular.module('trader').controller('TraderController', ['$scope', '$stateParams
 
 		fnDelete= function(trader) {
 			if (trader) {
-				trader.$remove();
-
-				for (var i in vm.traders) {
-					if (vm.traders[i] === trader) {
-						vm.traders.splice(i, 1);
+				trader.$remove(function(response) {
+					for (var i in vm.traders) {
+						if (vm.traders[i]._id === response._id) {
+							vm.traders.splice(i, 1);
+						}
 					}
-				}
+				}, function(errorResponse) {
+					vm.error = errorResponse.data.message;
+				});
 			} else {
-				vm.trader.$remove(function() {
+				vm.trader.$remove(function(response) {
 					$location.path('traders');
+				}, function(errorResponse) {
+					vm.error = errorResponse.data.message;
 				});
 			}
 		};
@@ -48,8 +55,8 @@ angular.module('trader').controller('TraderController', ['$scope', '$stateParams
 		fnUpdate = function() {
 			var trader = vm.trader;
 
-			trader.$update(function() {
-				$location.path('trader/' + trader._id);
+			trader.$update(function(response) {
+				$location.path('trader/' + response._id);
 			}, function(errorResponse) {
 				vm.error = errorResponse.data.message;
 			});
@@ -59,17 +66,17 @@ angular.module('trader').controller('TraderController', ['$scope', '$stateParams
 			vm.traders = Trader.query();
 		};
 
-		fnObjectByID = function() {
+		fnReadByID = function() {
 			vm.trader = Trader.get({
-				traderId: $stateParams.traderId
+				id: $stateParams.id
 			});
 		};
 
-		vm.fnCreate      = fnCreate;
-		vm.fnRead        = fnRead;
-		vm.fnUpdate      = fnUpdate;
-		vm.fnDelete      = fnDelete;
-		vm.fnList        = fnList;
-		vm.fnObjectByID  = fnObjectByID;
+		vm.fnCreate    = fnCreate;
+		vm.fnRead      = fnRead;
+		vm.fnUpdate    = fnUpdate;
+		vm.fnDelete    = fnDelete;
+		vm.fnList      = fnList;
+		vm.fnReadByID  = fnReadByID;
 	}
 ]);

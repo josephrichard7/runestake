@@ -3,10 +3,10 @@
 /**
  * Module dependencies.
  */
-var passport = require('passport'),
-	LocalStrategy = require('passport-local').Strategy,
-	User = require('mongoose').model('User'),
-	enumUserState = require('../../app/util/userstate');
+var passport 		= require('passport'),
+	LocalStrategy 	= require('passport-local').Strategy,
+	User 			= require('mongoose').model('User'),
+	enumUserState 	= require('../../app/utilities/enums/userstate');
 
 module.exports = function() {
 	// Use local strategy

@@ -3,9 +3,9 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
-	enumGameState = require('../../app/util/gamestate');
+var mongoose 	  = require('mongoose'),
+	Schema 		  = mongoose.Schema,
+	enumGameState = require('../utilities/enums/gamestate');
 
 /**
  * Article Schema

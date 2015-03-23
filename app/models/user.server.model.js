@@ -3,12 +3,12 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
-	crypto = require('crypto'),
-	enumUserRole = require('../../app/util/userrole'),
-	enumTraderRank = require('../../app/util/traderrank'),
-	enumUserState = require('../../app/util/userstate');
+var mongoose 	  	= require('mongoose'),
+	Schema 			= mongoose.Schema,
+	crypto 			= require('crypto'),
+	enumUserRole 	= require('../utilities/enums/userrole'),
+	enumTraderRank 	= require('../utilities/enums/traderrank'),
+	enumUserState 	= require('../utilities/enums/userstate');
 
 /**
  * A Validation function for local strategy properties
@@ -97,6 +97,10 @@ var UserSchema = new Schema({
 	},
   	resetPasswordExpires: {
   		type: Date
+  	},
+  	account:{
+  		type: Schema.Types.ObjectId,
+  		ref: 'Account'
   	}
 });
 

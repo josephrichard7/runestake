@@ -3,16 +3,16 @@
 /**
  * Module dependencies.
  */
-var _ = require('lodash'),
-	errorHandler = require('../errors'),
-	mongoose = require('mongoose'),
-	passport = require('passport'),
-	User = mongoose.model('User'),
-	config = require('../../../config/config'),
-	nodemailer = require('nodemailer'),
-	crypto = require('crypto'),
-	async = require('async'),
-	crypto = require('crypto');
+var _ 			 = require('lodash'),
+	errorUtil	 = require('../../utilities/error'),
+	mongoose 	 = require('mongoose'),
+	passport 	 = require('passport'),
+	User 		 = mongoose.model('User'),
+	config 		 = require('../../../config/config'),
+	nodemailer   = require('nodemailer'),
+	crypto 		 = require('crypto'),
+	async 		 = require('async'),
+	crypto 		 = require('crypto');
 
 /**
  * Forgot for reset password (forgot POST)
@@ -132,7 +132,7 @@ exports.reset = function(req, res, next) {
 						user.save(function(err) {
 							if (err) {
 								return res.status(400).send({
-									message: errorHandler.getErrorMessage(err)
+									message: errorUtil.getErrorMessage(err)
 								});
 							} else {
 								req.login(user, function(err) {
@@ -205,7 +205,7 @@ exports.changePassword = function(req, res, next) {
 							user.save(function(err) {
 								if (err) {
 									return res.status(400).send({
-										message: errorHandler.getErrorMessage(err)
+										message: errorUtil.getErrorMessage(err)
 									});
 								} else {
 									req.login(user, function(err) {

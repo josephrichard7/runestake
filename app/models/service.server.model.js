@@ -3,10 +3,10 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
-	enumServiceType = require('../../app/util/servicetype'),
-	enumServiceState = require('../../app/util/servicestate');
+var mongoose 		 = require('mongoose'),
+	Schema 			 = mongoose.Schema,
+	enumServiceType  = require('../utilities/enums/servicetype'),
+	enumServiceState = require('../utilities/enums/servicestate');
 
 /**
  * Article Schema

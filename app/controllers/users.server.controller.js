@@ -9,8 +9,8 @@ var _ = require('lodash');
  * Extend user's controller
  */
 module.exports = _.extend(
-	require('./users/users.authentication'),
-	require('./users/users.authorization'),
-	require('./users/users.password'),
-	require('./users/users.profile')
+	require('../controllers/users/users.authentication'),
+	require('../controllers/users/users.authorization'),
+	require('../controllers/users/users.password'),
+	require('../controllers/users/users.profile')
 );

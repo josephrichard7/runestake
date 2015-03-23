@@ -3,10 +3,10 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-	errorHandler = require('./errors'),
-	Article = mongoose.model('Article'),
-	_ = require('lodash');
+var mongoose  = require('mongoose'),
+	errorUtil = require('../utilities/error'),
+	Article   = mongoose.model('Article'),
+	_ 		  = require('lodash');
 
 /**
  * Create a article
@@ -18,7 +18,7 @@ exports.create = function(req, res) {
 	article.save(function(err) {
 		if (err) {
 			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
+				message: errorUtil.getErrorMessage(err)
 			});
 		} else {
 			res.jsonp(article);
@@ -44,7 +44,7 @@ exports.update = function(req, res) {
 	article.save(function(err) {
 		if (err) {
 			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
+				message: errorUtil.getErrorMessage(err)
 			});
 		} else {
 			res.jsonp(article);
@@ -61,7 +61,7 @@ exports.delete = function(req, res) {
 	article.remove(function(err) {
 		if (err) {
 			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
+				message: errorUtil.getErrorMessage(err)
 			});
 		} else {
 			res.jsonp(article);
@@ -76,7 +76,7 @@ exports.list = function(req, res) {
 	Article.find().sort('-created').populate('user', 'displayName').exec(function(err, articles) {
 		if (err) {
 			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
+				message: errorUtil.getErrorMessage(err)
 			});
 		} else {
 			res.jsonp(articles);

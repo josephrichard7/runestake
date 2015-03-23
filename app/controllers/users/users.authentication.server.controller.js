@@ -3,12 +3,12 @@
 /**
  * Module dependencies.
  */
-var _ = require('lodash'),
-	errorHandler = require('../errors'),
-	mongoose = require('mongoose'),
-	passport = require('passport'),
-	User = mongoose.model('User'),
-	enumUserRole = require('../../../app/util/userrole');
+var _ 			 = require('lodash'),
+	errorUtil 	 = require('../../utilities/error'),
+	mongoose 	 = require('mongoose'),
+	passport 	 = require('passport'),
+	User 		 = mongoose.model('User'),
+	enumUserRole = require('../../utilities/enums/userrole');
 
 /**
  * Signup
@@ -32,7 +32,7 @@ exports.signup = function(role) {
 		user.save(function(err) {
 			if (err) {
 				return res.status(400).send({
-					message: errorHandler.getErrorMessage(err)
+					message: errorUtil.getErrorMessage(err)
 				});
 			} else {
 				// Remove sensitive data before login
@@ -196,7 +196,7 @@ exports.removeOAuthProvider = function(req, res, next) {
 		user.save(function(err) {
 			if (err) {
 				return res.status(400).send({
-					message: errorHandler.getErrorMessage(err)
+					message: errorUtil.getErrorMessage(err)
 				});
 			} else {
 				req.login(user, function(err) {
