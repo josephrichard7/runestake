@@ -25,7 +25,11 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
 				$scope.authentication.user = response;
 
 				// And redirect to the index page
-				$location.path('/gamblermain');
+				if($scope.authentication.user.role === 'GAMBLER'){
+					$location.path('/gamblermain/panel');
+				}else{
+					$location.path('/');
+				}
 			}).error(function(response) {
 				$scope.error = response.message;
 			});

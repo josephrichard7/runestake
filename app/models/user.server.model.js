@@ -97,10 +97,6 @@ var UserSchema = new Schema({
 	},
   	resetPasswordExpires: {
   		type: Date
-  	},
-  	account:{
-  		type: Schema.Types.ObjectId,
-  		ref: 'Account'
   	}
 });
 

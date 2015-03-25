@@ -1,0 +1,27 @@
+<div class="text-center" data-ng-controller="GamblermainController as controller" data-ng-init="controller.fnReadByID()">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			Profile
+		</div>	
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-md-12">
+					<img src="modules/gamblermain/img/default-profile.jpg" alt="ProfileImg" class="img-circle">
+				</div>
+				<div class="col-md-12">
+					<div class="form-group">
+						<span data-ng-bind="controller.gambler.username"></span>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="form-group">
+						<div class="input-group input-group-sm">
+							<span class="input-group-addon">Account balance</span>
+							<input type="text" class="form-control" data-ng-model="controller.gambler.account.balance" placeholder="Balance">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>	
+</div>

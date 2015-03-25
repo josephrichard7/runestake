@@ -24,7 +24,7 @@ var fnReadByID	= function(){},
 fnReadByID = function(id, callback) {
 	UserEntity
 	.findById(id)
-	.where('role').equals(enumUserRole.TRADER)
+	.where('role').equals(enumUserRole.GAMBLER)
 	.where('state').nin([enumUserState.DELETED])
 	.select('-password -salt')	// Avoid password re-encryptation and hide critical fields
 	// .lean(true) // return plain objects, not mongoose models.
@@ -33,56 +33,56 @@ fnReadByID = function(id, callback) {
 	});
 };
 
-fnCreate = function(traderVO, callback){
-	var traderEntity  = {};
+fnCreate = function(gamblerVO, callback){
+	var gamblerEntity  = {};
 	var accountVO	  = {};
 	var accountEntity = {};
 
 	//Initialize entity
-	traderEntity = new UserEntity(_.pick(traderVO, 'firstName', 'lastName','username', 'email', 'password', 'rank'));
+	gamblerEntity = new UserEntity(_.pick(gamblerVO, 'firstName', 'lastName','username', 'email', 'password', 'rank'));
 	
 	// Add missing default fields
-	traderEntity.provider 	 = 'local';
-	traderEntity.displayName = traderEntity.firstName + ' ' + traderEntity.lastName;
-	traderEntity.state 		 = enumUserState.ACTIVE;
-	traderEntity.role 		 = enumUserRole.TRADER;
+	gamblerEntity.provider 	 = 'local';
+	gamblerEntity.displayName = gamblerEntity.firstName + ' ' + gamblerEntity.lastName;
+	gamblerEntity.state 		 = enumUserState.ACTIVE;
+	gamblerEntity.role 		 = enumUserRole.GAMBLER;
 
 	// Save the entity 
-	traderEntity.save(function(err, traderEntityResult){
+	gamblerEntity.save(function(err, gamblerEntityResult){
 		if(err){
 			util.fnProcessResultService(err, null, callback);
 		}else{
 			// Remove sensitive user data
-			traderEntityResult.password = undefined;
-			traderEntityResult.salt 	= undefined;
+			gamblerEntityResult.password = undefined;
+			gamblerEntityResult.salt 	= undefined;
 
 			// Create Account
-			accountVO.user 	  = traderEntityResult;
+			accountVO.user 	  = gamblerEntityResult;
 			accountVO.balance = 0;
 			
 			accountService.fnCreate(accountVO,function(err, accountVOResult){
-				util.fnProcessResultService(err, traderEntityResult, callback);
+				util.fnProcessResultService(err, gamblerEntityResult, callback);
 			});
 		}
 	});
 };
 
-fnRead = function(traderVO, callback) {
-	fnReadByID(traderVO._id, callback);
+fnRead = function(gamblerVO, callback) {
+	fnReadByID(gamblerVO._id, callback);
 };
 
-fnUpdate = function(traderVO, callback){
-	var traderVOtoUpd	= {};
+fnUpdate = function(gamblerVO, callback){
+	var gamblerVOtoUpd	= {};
 
 	// Get entity by Id
-	UserEntity.findById(traderVO._id,'-password -salt', function(err, resultReadEntity){
+	UserEntity.findById(gamblerVO._id,'-password -salt', function(err, resultReadEntity){
 		if(err || !resultReadEntity){
 			util.fnProcessResultService(err, null, callback);
 		}else{
 			// For security measurement only get some fields
-			traderVOtoUpd	= _.pick(traderVO, 'firstName', 'lastName', 'email', 'rank', 'state');
+			gamblerVOtoUpd	= _.pick(gamblerVO, 'firstName', 'lastName', 'email', 'state');
 			// Map body request fields to model object
-			resultReadEntity	= _.extend(resultReadEntity, traderVOtoUpd);			
+			resultReadEntity	= _.extend(resultReadEntity, gamblerVOtoUpd);			
 			// Add missing user fields
 			resultReadEntity.displayName = resultReadEntity.firstName + ' ' + resultReadEntity.lastName;
 
@@ -112,7 +112,7 @@ fnDelete = function(id, callback){
 
 fnList = function(callback){
 	UserEntity
-	.where('role').equals(enumUserRole.TRADER)
+	.where('role').equals(enumUserRole.GAMBLER)
 	.where('state').nin([enumUserState.DELETED])
 	.select('-password -salt')	// Avoid password re-encryptation and hide critical fields
 	.sort('-created')
@@ -123,8 +123,8 @@ fnList = function(callback){
 };
 
 exports.fnReadByID 	= fnReadByID;
-exports.fnCreate    = fnCreate;
-exports.fnRead      = fnRead;
-exports.fnUpdate    = fnUpdate;
-exports.fnDelete    = fnDelete;
-exports.fnList      = fnList;
+// exports.fnCreate    = fnCreate;
+// exports.fnRead      = fnRead;
+// exports.fnUpdate    = fnUpdate;
+// exports.fnDelete    = fnDelete;
+// exports.fnList      = fnList;

@@ -1,133 +1,70 @@
-// 'use strict';
+'use strict';
 
-// /**
-//  * Module dependencies.
-//  */
-// var _ = require('lodash'),
-// 	errorUtil	 = require('../utilities/error'),
-// 	mongoose = require('mongoose'),
-// 	User = mongoose.model('User'),
-// 	Account = mongoose.model('Account');
+/**
+ * Module dependencies.
+ */
+var _ 				  = require('lodash'),
+	util 		 	  = require('../utilities/util'),
+	accountService 	  = require('../services/account'),
+	enumUserRole 	  = require('../utilities/enums/userrole');
 
-// /**
-//  * Functions
-//  */
-// var fnCreate,
-// 	fnRead,
-// 	fnUpdate,
-// 	fnObjectByID;
+/**
+ * Functions
+ */
+var fnReadByID,
+	fnCreate,
+	fnUpdate,
+	fnReadByUserId,
+	hasAuthorization;
 
-// fnCreate = function(user){
+fnReadByID = function(req, res) {
+	var id = req.params.id || req.body.id;
 
-// 	var account = new Account();
-// 	account.user = req.user;
-// 	account.balance = 0;
+	accountService.fnReadByID(id, function(err, resultVO){
+		return util.fnProcessResultController(err, res, resultVO);
+	});
+};
 
-// 	// Then save the account
-// 	account.save(function(err) {
-// 		if (err) {
-// 			return res.status(400).send({
-// 				message: errorHandler.getErrorMessage(err)
-// 			});
-// 		} else {
-// 			res.jsonp(account);
-// 		}
-// 	});
-// };
+fnCreate = function(req,res){
+	var requestVO = req.body;
 
-// fnRead = function(req, res) {
-// 	res.jsonp(_.pick(req.trader,'_id', 'firstName', 'lastName', 'username', 'email', 'rank', 'state', 'created', 'updated'));
-// };
+	accountService.fnCreate(requestVO, function(err, resultVO){
+		return util.fnProcessResultController(err, res, resultVO);
+	});
+};
 
-// fnUpdate = function(req,res,next){
+fnUpdate = function(req,res){
+	var requestVO = req.body;
 
-// 	var trader = req.trader;
-// 	// For security measurement only get some fields from body
-// 	var bodyUser = _.pick(req.body, 'firstName', 'lastName', 'email', 'rank', 'state');
+	accountService.fnUpdate(requestVO, function(err, resultVO){
+		return util.fnProcessResultController(err, res, resultVO);
+	});
+};
 
-// 	// Map body request fields to model object
-// 	trader = _.extend(trader, bodyUser);
+fnReadByUserId = function(req, res) {
+	var userId = req.params.userId || req.body.userId;
 
-// 	// Add missing user fields
-// 	trader.displayName = trader.firstName + ' ' + trader.lastName;
+	accountService.fnReadByUserId(userId, function(err, resultVO){
+		return util.fnProcessResultController(err, res, resultVO);
+	});
+};
 
-// 	trader.save(function(err) {
-// 		if (err) {
-// 			return res.status(400).send({
-// 				message: errorHandler.getErrorMessage(err)
-// 			});
-// 		} else {
-// 			// Remove sensitive data
-// 			trader.password = undefined;
-// 			trader.salt = undefined;
+hasAuthorization = function(req,res,next){
+	var userId 			= req.params.userId || req.body.userId || req.params.id || req.body.id;
+	var userIdLogged	= req.user.id;
 
-// 			res.jsonp(trader);
-// 		}
-// 	});
-// };
+	// Admin user can do any request, but it should validate the user account requested.
+	if(req.user.role !== enumUserRole.ADMIN){
+		// If userId account requested is not equal to user logged, refused request.
+		if(userId !== userIdLogged){
+			return res.status(403).send({
+				message: 'User is not authorized'
+			});
+		}
+	}
+	next();
+};
 
-// fnDelete = function(req,res,next){
-// 	var trader = req.trader;
-
-// 	trader.state = enumUserState.DELETED;
-
-// 	trader.save(function(err) {
-// 		if (err) {
-// 			return res.status(400).send({
-// 				message: errorHandler.getErrorMessage(err)
-// 			});
-// 		} else {
-// 			// Remove sensitive data before login
-// 			trader.password = undefined;
-// 			trader.salt = undefined;
-
-// 			res.jsonp(trader);
-// 		}
-// 	});
-
-// 	// trader.remove(function(err) {
-// 	// 	if (err) {
-// 	// 		return res.status(400).send({
-// 	// 			message: errorHandler.getErrorMessage(err)
-// 	// 		});
-// 	// 	} else {
-// 	// 		res.jsonp(trader);
-// 	// 	}
-// 	// });
-// };
-
-// fnList = function(req,res,next){
-// 	User.where('role').equals(enumUserRole.TRADER)
-// 		.where('state').nin([enumUserState.DELETED])
-// 		.select('_id firstName lastName username email rank state')
-// 		.sort('-created')
-// 		.exec(function(err, objList) {
-// 			if (err) {
-// 				return res.status(400).send({
-// 					message: errorHandler.getErrorMessage(err)
-// 				});
-// 			} else {
-// 				res.jsonp(objList);
-// 			}
-// 		});
-// };
-
-// fnObjectByID = function(req, res, next, id) {
-// 	User.findById(id)
-// 	 //    .where('role').equals(enumUserRole.TRADER)
-// 		// .where('state').nin([enumUserState.DELETED])
-// 		.select('-password -salt')	// Avoid password re-encryptation 
-// 		.exec(function(err, obj) {
-// 			if (err) return next(err);
-// 			if (!obj) return next(new Error('Failed to load trader user ' + id));
-// 			req.trader = obj;
-// 			next();
-// 		});
-// };
-
-// exports.fnCreate     = fnCreate;
-// exports.fnRead       = fnRead;
-// exports.fnUpdate     = fnUpdate;
-// exports.fnDelete     = fnDelete;
-// exports.fnList       = fnList;
-// exports.fnObjectByID = fnObjectByID;
+exports.fnReadByID 			= fnReadByID;
+exports.fnReadByUserId 		= fnReadByUserId;
+exports.hasAuthorization	= hasAuthorization;

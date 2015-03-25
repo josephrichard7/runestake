@@ -1,26 +1,27 @@
 'use strict';
 
-angular.module('trader').controller('TraderController', ['$scope', '$stateParams', '$location', 'Authentication', 'Trader', 'Utilities',
-	function($scope, $stateParams, $location, Authentication, Trader, Utilities) {
-		var vm 		= this;
-		var ranks 	= [];
-		var states 	= [];
+angular.module('trader').controller('TraderController', ['$scope', '$stateParams', '$location', 'Authentication', 'Trader', 'Account', 'Utilities',
+	function($scope, $stateParams, $location, Authentication, Trader, Account, Utilities) {
+		var vm = this;
 		var fnCreate,
 			fnRead,
 			fnUpdate,
 			fnDelete,
 			fnList,
-			fnReadByID;
+			fnReadByID,
+			fnInitCreate,
+			fnInitEdit,
+			fnLoadEnums;
 
-		vm.authentication = Authentication;
-		Utilities.enumResource.get({enumName: 'traderrank'},function(result){
-			vm.ranks = result.data;
-		});
-		Utilities.enumResource.get({enumName: 'userstate'},function(result){
-			vm.states = result.data;
-		});
-		vm.currentPage = 1;
-  		vm.pageSize = 10;
+		// Initialize
+		vm.authentication 	= Authentication;
+		vm.trader 			= {};
+		vm.trader.account 	= {};
+		vm.traders			= [];
+		vm.ranks 			= [];
+		vm.states 			= [];
+		vm.currentPage 		= 1;
+  		vm.pageSize 		= 10;
 
 		fnCreate = function() {
 			var trader = new Trader(vm.trader);
@@ -67,16 +68,42 @@ angular.module('trader').controller('TraderController', ['$scope', '$stateParams
 		};
 
 		fnReadByID = function() {
-			vm.trader = Trader.get({
+			Trader.get({
 				id: $stateParams.id
+			},function(result){
+				vm.trader 			= result;
+				vm.trader.account 	= Account.get({userId: vm.trader._id});
 			});
 		};
 
+		fnInitCreate = function(){
+  			fnLoadEnums();
+  		};
+
+  		fnInitEdit = function(){
+  			fnLoadEnums();
+			// Load object for editing
+			fnReadByID();
+  		};
+
+  		fnLoadEnums = function(){
+	  		// Load enums in edit view
+			Utilities.enumResource.get({enumName: 'traderrank'},function(result){
+				vm.ranks = result.data;
+			});
+			Utilities.enumResource.get({enumName: 'userstate'},function(result){
+				vm.states = result.data;
+			});
+  		};
+
+  		// Populate functions to controller object
 		vm.fnCreate    = fnCreate;
 		vm.fnRead      = fnRead;
 		vm.fnUpdate    = fnUpdate;
 		vm.fnDelete    = fnDelete;
 		vm.fnList      = fnList;
 		vm.fnReadByID  = fnReadByID;
+		vm.fnInitCreate= fnInitCreate;
+		vm.fnInitEdit  = fnInitEdit;
 	}
 ]);

@@ -8,7 +8,8 @@ var _ 			 = require('lodash'),
 	mongoose 	 = require('mongoose'),
 	passport 	 = require('passport'),
 	User 		 = mongoose.model('User'),
-	enumUserRole = require('../../utilities/enums/userrole');
+	enumUserRole = require('../../utilities/enums/userrole'),
+	accountService = require('../../services/account');
 
 /**
  * Signup
@@ -22,6 +23,7 @@ exports.signup = function(role) {
 		// Init Variables
 		var user = new User(req.body);
 		var message = null;
+		var accountVO = {};
 
 		// Add missing user fields
 		user.provider = 'local';
@@ -29,23 +31,36 @@ exports.signup = function(role) {
 		user.role = role;
 
 		// Then save the user 
-		user.save(function(err) {
+		user.save(function(err, userResult) {
 			if (err) {
 				return res.status(400).send({
 					message: errorUtil.getErrorMessage(err)
 				});
 			} else {
 				// Remove sensitive data before login
-				user.password = undefined;
-				user.salt = undefined;
+				userResult.password = undefined;
+				userResult.salt = undefined;
 
-				req.login(user, function(err) {
+				// Create Account
+				accountVO.user 	  = userResult;
+				accountVO.balance = 0;
+				
+				accountService.fnCreate(accountVO,function(err, accountVOResult){
 					if (err) {
-						res.status(400).send(err);
-					} else {
-						res.jsonp(user);
+						return res.status(400).send({
+							message: errorUtil.getErrorMessage(err)
+						});
+					}else{
+						req.login(userResult, function(err) {
+							if (err) {
+								res.status(400).send(err);
+							} else {
+								res.jsonp(userResult);
+							}
+						});
 					}
 				});
+
 			}
 		});
 	};

@@ -14,8 +14,6 @@ fnProcessResultService = function(err, result, callback) {
 
 	if (err){
 		callback(err);
-	}else if (!result){
-		callback(new Error('Failed to load document(s)'));
 	}else{
 		if(result instanceof mongoose.Model){
 			returnObject = result.toObject();
@@ -25,6 +23,8 @@ fnProcessResultService = function(err, result, callback) {
 					return obj.toObject();
 				}
 			});
+		}else{
+			returnObject = result;
 		}
 		
 		callback(null, returnObject || {});
