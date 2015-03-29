@@ -3,22 +3,24 @@
 /**
  * Module dependencies.
  */
-var express = require('express'),
-	morgan = require('morgan'),
-	bodyParser = require('body-parser'),
-	session = require('express-session'),
-	compress = require('compression'),
-	methodOverride = require('method-override'),
-	cookieParser = require('cookie-parser'),
-	helmet = require('helmet'),
-	passport = require('passport'),
-	mongoStore = require('connect-mongo')({
-		session: session
-	}),
-	flash = require('connect-flash'),
-	config = require('./config'),
-	consolidate = require('consolidate'),
-	path = require('path');
+var express 		= require('express'),
+	morgan 			= require('morgan'),
+	bodyParser 		= require('body-parser'),
+	session 		= require('express-session'),
+	compress 		= require('compression'),
+	methodOverride 	= require('method-override'),
+	cookieParser 	= require('cookie-parser'),
+	helmet 			= require('helmet'),
+	passport 		= require('passport'),
+	mongoStore 		= require('connect-mongo')({session: session}),
+	flash 			= require('connect-flash'),
+	config 			= require('./config'),
+	consolidate		= require('consolidate'),
+	path 			= require('path'),
+	io 				= require('socket.io'),
+	server 			= {},
+	socketConfig 	= {},
+	expressSession 	= {};
 
 module.exports = function(db) {
 	// Initialize express app
@@ -85,21 +87,30 @@ module.exports = function(db) {
 	// CookieParser should be above session
 	app.use(cookieParser());
 
-	// Express MongoDB session storage
-	app.use(session({
+	expressSession = session({
 		saveUninitialized: true,
 		resave: true,
 		secret: config.sessionSecret,
 		store: new mongoStore({
 			db: db.connection.db,
 			collection: config.sessionCollection
-		}),
-		cookie: { maxAge: 60000 }
-	}));
+		})
+	});
+
+	// Express MongoDB session storage
+	app.use(expressSession);
 
 	// use passport session
 	app.use(passport.initialize());
 	app.use(passport.session());
+	
+	// Start the app by listening on <port>
+	server 	= app.listen(config.port);
+	io 		= io.listen(server);
+
+	// Init sockets config and share express session with 
+	socketConfig = require('./config-socketio');
+	socketConfig(io, expressSession);
 
 	// connect flash for flash messages
 	app.use(flash());

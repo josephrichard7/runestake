@@ -3,22 +3,16 @@
 //Gamblermain service used for communicating with the Gamblermain REST endpoints
 angular.module('gamblermain').factory('Gamblermain', ['$resource',
 	function($resource) {
-		// var service = {};
+		var service = {};
 
-		// service.gamblerResource = $resource('gamblermain/:gamblerId', {
-		// 	gamblerId: '@_id'
-		// }, {
-		// 	update: {
-		// 		method: 'PUT'
-		// 	}
-		// });
-
-		return $resource('gamblermain/:gamblerId', {
+		service.gamblerResource = $resource('gamblermain/:gamblerId', {
 			gamblerId: '@_id'
 		}, {
 			update: {
 				method: 'PUT'
 			}
 		});
+
+		return service;
 	}
 ]);

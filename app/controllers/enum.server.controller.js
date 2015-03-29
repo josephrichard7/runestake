@@ -5,7 +5,8 @@
  */
 var _ 				  = require('lodash'),
 	enumUserstate 	  = require('../utilities/enums/userstate'),
-	enumTraderrank 	  = require('../utilities/enums/traderrank');
+	enumTraderrank 	  = require('../utilities/enums/traderrank'),
+	enumChatevent 	  = require('../utilities/enums/chatevent');
 
 /**
  * Functions
@@ -23,6 +24,9 @@ fnGetEnum = function(req,res){
 		case 'traderrank':
 			result = _.values(enumTraderrank);
 			break;
+		case 'chatevent':
+			result = _.values(enumChatevent);
+			break;		
 		default:
 			result = [];
 	}

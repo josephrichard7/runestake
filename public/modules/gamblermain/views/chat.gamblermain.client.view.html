@@ -1,12 +1,38 @@
-<div class="text-center">
+<div data-ng-controller="ChatController as chatController" data-ng-init="chatController.initChat()">
 	<div class="panel panel-primary">
 		<div class="panel-heading">
-			Chat
+			<span>Chat <small data-ng-bind="chatController.numUsersMessage"></small></span>
 		</div>	
 		<div class="panel-body">
 			<div class="row">
-				<div class="col-md-12">
-					
+				<div class="col-md-8">
+					<div class="panel panel-default">
+						<div class="panel-body" style="height: 200px;max-height: 200px;overflow-y:scroll;">
+							<div class="row" data-ng-repeat="message in chatController.listMessages">
+								<div class="col-md-12">
+									<small>
+										<mark data-ng-bind="message.username"></mark>
+										<span data-ng-bind="message.message"></span>
+									</small>
+								</div>
+							</div>
+						</div>
+						<div class="panel-footer">
+							<div class="input-group">
+								<input type="text" data-ng-model="chatController.message" class="form-control" placeholder="Send your message...">
+								<span class="input-group-btn">
+									<button class="btn btn-default" type="button" data-ng-onenter="chatController.sendMessage()" data-ng-click="chatController.sendMessage()">Send</button>
+								</span>
+						    </div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="row" data-ng-repeat="message in chatController.listParticipantMessages">
+						<div class="col-md-12">
+							<small><span data-ng-bind="message"></span></small>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -14,10 +14,14 @@ angular.module('gamblermain').config(['$stateProvider',
 			url: '/panel',
 			templateUrl: 'modules/gamblermain/views/panel.gamblermain.client.view.html'
 		})
-		// .state('gamblermainState.cashier', {
-		// 	url: '/cashier',
-		// 	templateUrl: 'modules/gamblermain/views/cashier.gamblermain.client.view.html'
-		// })
+		.state('gamblermainState.cashier', {
+			url: '/cashier',
+			templateUrl: 'modules/gamblermain/views/cashier.gamblermain.client.view.html'
+		})
+		.state('gamblermainState.stake', {
+			url: '/stake',
+			templateUrl: 'modules/gamblermain/views/stake.gamblermain.client.view.html'
+		})
 		// .state('gamblermainState.game', {
 		// 	url: '/game',
 		// 	templateUrl: 'modules/gamblermain/views/game.gamblermain.client.view.html'
