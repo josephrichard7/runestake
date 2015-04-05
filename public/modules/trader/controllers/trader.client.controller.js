@@ -3,15 +3,6 @@
 angular.module('trader').controller('TraderController', ['$scope', '$stateParams', '$location', 'Authentication', 'Trader', 'Account', 'Utilities',
 	function($scope, $stateParams, $location, Authentication, Trader, Account, Utilities) {
 		var vm = this;
-		var fnCreate,
-			fnRead,
-			fnUpdate,
-			fnDelete,
-			fnList,
-			fnReadByID,
-			fnInitCreate,
-			fnInitEdit,
-			fnLoadEnums;
 
 		// Initialize
 		vm.authentication 	= Authentication;
@@ -23,7 +14,17 @@ angular.module('trader').controller('TraderController', ['$scope', '$stateParams
 		vm.currentPage 		= 1;
   		vm.pageSize 		= 10;
 
-		fnCreate = function() {
+  		// Populate functions to controller object
+		vm.fnCreate    = fnCreate;
+		vm.fnUpdate    = fnUpdate;
+		vm.fnDelete    = fnDelete;
+		vm.fnList      = fnList;
+		vm.fnReadByID  = fnReadByID;
+		vm.fnInitCreate= fnInitCreate;
+		vm.fnInitEdit  = fnInitEdit;
+
+		/*jshint latedef: false */
+		function fnCreate() {
 			var trader = new Trader(vm.trader);
 			trader.$save(function(response) {
 				vm.trader  = {};
@@ -31,9 +32,9 @@ angular.module('trader').controller('TraderController', ['$scope', '$stateParams
 			}, function(errorResponse) {
 				vm.error = errorResponse.data.message;
 			});
-		};
+		}
 
-		fnDelete= function(trader) {
+		function fnDelete(trader) {
 			if (trader) {
 				trader.$remove(function(response) {
 					for (var i in vm.traders) {
@@ -45,15 +46,15 @@ angular.module('trader').controller('TraderController', ['$scope', '$stateParams
 					vm.error = errorResponse.data.message;
 				});
 			} else {
-				vm.trader.$remove(function(response) {
+				vm.trader.$remove(function() {
 					$location.path('traders');
 				}, function(errorResponse) {
 					vm.error = errorResponse.data.message;
 				});
 			}
-		};
+		}
 
-		fnUpdate = function() {
+		function fnUpdate() {
 			var trader = vm.trader;
 
 			trader.$update(function(response) {
@@ -61,49 +62,39 @@ angular.module('trader').controller('TraderController', ['$scope', '$stateParams
 			}, function(errorResponse) {
 				vm.error = errorResponse.data.message;
 			});
-		};
+		}
 
-		fnList = function() {
+		function fnList() {
 			vm.traders = Trader.query();
-		};
+		}
 
-		fnReadByID = function() {
+		function fnReadByID() {
 			Trader.get({
 				id: $stateParams.id
 			},function(result){
 				vm.trader 			= result;
 				vm.trader.account 	= Account.get({userId: vm.trader._id});
 			});
-		};
+		}
 
-		fnInitCreate = function(){
+		function fnInitCreate(){
   			fnLoadEnums();
-  		};
+  		}
 
-  		fnInitEdit = function(){
+  		function fnInitEdit(){
   			fnLoadEnums();
 			// Load object for editing
 			fnReadByID();
-  		};
+  		}
 
-  		fnLoadEnums = function(){
+  		function fnLoadEnums(){
 	  		// Load enums in edit view
-			Utilities.enumResource.get({enumName: 'traderrank'},function(result){
+			Utilities.enumResource.get({name: Utilities.enumName.TRADERRANK, type: Utilities.enumType.ARRAY},function(result){
 				vm.ranks = result.data;
 			});
-			Utilities.enumResource.get({enumName: 'userstate'},function(result){
+			Utilities.enumResource.get({name: Utilities.enumName.USERSTATE, type: Utilities.enumType.ARRAY},function(result){
 				vm.states = result.data;
 			});
-  		};
-
-  		// Populate functions to controller object
-		vm.fnCreate    = fnCreate;
-		vm.fnRead      = fnRead;
-		vm.fnUpdate    = fnUpdate;
-		vm.fnDelete    = fnDelete;
-		vm.fnList      = fnList;
-		vm.fnReadByID  = fnReadByID;
-		vm.fnInitCreate= fnInitCreate;
-		vm.fnInitEdit  = fnInitEdit;
+  		}
 	}
 ]);

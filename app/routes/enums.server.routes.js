@@ -9,5 +9,6 @@ var userController 	= require('../controllers/users'),
 
 module.exports = function(app) {
 	// Enum Routes
-	app.route('/enum/:enumName').get(userController.hasAuthorization([enumUserrole.ADMIN,enumUserrole.GAMBLER]), enumController.fnGetEnum);
+	app.route('/enum/:name/:type')
+	.get(userController.hasAuthorization([enumUserrole.ADMIN,enumUserrole.GAMBLER]), enumController.fnGetEnum);
 };

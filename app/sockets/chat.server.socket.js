@@ -2,23 +2,36 @@
 
 var enumChatEvent 	= require('../utilities/enums/chatevent'),
 	enumUserrole	= require('../utilities/enums/userrole'),
-	// chatService		= require('../services/chat'),
+	chatService		= require('../services/chat'),
 	userController  = require('../controllers/users'),
-	passport		= require('passport');
+	passport		= require('passport'),
+	chatSocketNsp	= {};
 
-module.exports = fnChatSocket;
+module.exports = ChatNamespace;
 
 /*jshint latedef: false */
-function fnChatSocket(io, sharedSession, expressSession){
-	// Set a new namespace for chat socket
-	var chatSocketNsp = io.of('/chat');
-	// usernames which are currently connected to the chat
-	chatSocketNsp.usernames	= {};
-	chatSocketNsp.numUsers 	= 0;
+function ChatNamespace(io, expressSession){
+	// Create 'chat' namespace 
+	chatSocketNsp 	= io.of('/chat');
 	
-	// Share express session with socket
-	// chatSocketNsp.use(sharedSession);
+	// usernames which are currently connected to the chat
+	chatSocketNsp.listConnectedUsers = {};
+	chatSocketNsp.numConnectedUsers  = 0;
+	
+	// mirar como hacer para que los mensajes para por el middleware para que validar autenticacion, recargar la pagina cuando se 
+	// desloguee.
 
+	fnLoadMiddlewareFunctions(expressSession);
+	fnLoadEventHandlers();
+}
+
+/**
+ * Bind middleware functions to namespace
+ *
+ */
+
+function fnLoadMiddlewareFunctions(expressSession){
+	// Extends express session to socket requests
 	chatSocketNsp.use(function(socket, next){
         expressSession(socket.request, {}, next);
     });
@@ -31,123 +44,40 @@ function fnChatSocket(io, sharedSession, expressSession){
     	passport.session()(socket.request, socket.res, next);
     });
 
-	// Middleware validations
-	chatSocketNsp.use(fnAuthorization);
-
-	// Event handler for init connection
-	chatSocketNsp.on('connection', fnConnection);
-
-	// Middleware functions
-	/*jshint latedef: false */
-	function fnAuthorization(socket, next){
-		var req = socket.request;
-		var res = socket.res;
-
+	// User Authentication for client connections.
+	chatSocketNsp.use(function(socket, next){
 		userController.hasAuthorization(
 			[enumUserrole.TRADER, enumUserrole.GAMBLER]
-		)(req,res,next);
-	}
+		)(socket.request, socket.res, next);
+	});
+}
 
-	// Functions for attending events
-	/*jshint latedef: false */
-	function fnConnection(socket){
-		var req 		= socket.request;
+/**
+ * Bind event handlers to namespace
+ *
+ */
 
-		// console.log('conecto ' + req.user.username); 
+function fnLoadEventHandlers(){
+	// Bind Event handler when client connects
+	chatSocketNsp.on(enumChatEvent.CONNECTION, fnOnConnection);
+}
 
-		// Event handlers
-		socket.on(enumChatEvent.NEW_MESSAGE, 	fnNewMessage);
-		socket.on(enumChatEvent.ADD_USER,	 	fnAddUser);	
-		socket.on(enumChatEvent.DISCONNECTION, 	fnDisconnection);
 
-		// when the client emits 'new message', this listens and executes
-		function fnNewMessage(data){
-			// chatService.fnNewMessage(socket, message);
+/**
+ * Called upon client connects.
+ *
+ * @param {Object} socket object
+ */
 
-			// we tell the client to execute 'new message'
-			socket.broadcast.emit(enumChatEvent.NEW_MESSAGE, {
-				username: socket.username,
-				message: data
-			});
-		}
+function fnOnConnection(socket){
+	// we store the username in the socket session for this client
+	socket.username = socket.request.user.username;
+	socket.role 	= socket.request.user.role;
 
-		// when the client emits 'add user', this listens and executes
-		function fnAddUser(){
-			// chatService.fnAddUser(socket);
+	// Connect new user
+	chatService.fnNewUser(socket, chatSocketNsp);
 
-			var username = req.user.username;
-
-			// we store the username in the socket session for this client
-			socket.username 	= username;
-
-			if(!chatSocketNsp.usernames[username]){
-				// add the client's username to the global list
-				chatSocketNsp.usernames[username] = username;
-
-				++chatSocketNsp.numUsers;
-
-				// echo globally (all clients) that a person has connected
-				socket.broadcast.emit(enumChatEvent.USER_JOINED, {
-					username: username,
-					numUsers: chatSocketNsp.numUsers
-				});
-			}
-			socket.emit(enumChatEvent.LOGIN, {
-				numUsers: chatSocketNsp.numUsers
-			});
-		}
-
-	  // when the client emits 'typing', we broadcast it to others
-	  // socket.on('typing', function () {
-	  //   socket.broadcast.emit('typing', {
-	  //     username: socket.username
-	  //   });
-	  // });
-
-	  // when the client emits 'stop typing', we broadcast it to others
-	  // socket.on('stop typing', function () {
-	  //   socket.broadcast.emit('stop typing', {
-	  //     username: socket.username
-	  //   });
-	  // });
-
-		// when the user disconnects.. perform this
-		function fnDisconnection(){
-			// chatService.fnDisconnection(socket, message);
-
-			// remove the username from global usernames list
-			if (chatSocketNsp.usernames[socket.username]) {
-				delete chatSocketNsp.usernames[socket.username];
-				--chatSocketNsp.numUsers;
-
-				socket.emit('disconnect_client', {
-					username: socket.username
-				});
-
-				// echo globally that this client has left
-				socket.broadcast.emit(enumChatEvent.USER_LEFT, {
-					username: socket.username,
-					numUsers: chatSocketNsp.numUsers
-				});
-
-				chatSocketNsp.sockets = removeByAttr(chatSocketNsp.sockets, 'username', socket.username);
-			}
-		}
-
-		function removeByAttr(arr, attr, value){
-		    var i = arr.length;
-		    while(i--){
-		       if( arr[i] 
-		           && arr[i].hasOwnProperty(attr) 
-		           && (arguments.length > 2 && arr[i][attr] === value ) ){ 
-
-		           arr.splice(i,1);
-
-		       }
-		    }
-		    return arr;
-		}
-
-	}
-
+	// Event handlers
+	socket.on(enumChatEvent.NEW_MESSAGE, chatService.fnNewMessage(socket, chatSocketNsp));
+	socket.on(enumChatEvent.DISCONNECT,  chatService.fnDisconnection(socket, chatSocketNsp));
 }

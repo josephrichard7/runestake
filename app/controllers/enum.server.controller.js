@@ -8,29 +8,55 @@ var _ 				  = require('lodash'),
 	enumTraderrank 	  = require('../utilities/enums/traderrank'),
 	enumChatevent 	  = require('../utilities/enums/chatevent');
 
-/**
- * Functions
- */
-var fnGetEnum;
+module.exports.fnGetEnum = fnGetEnum;
 
-fnGetEnum = function(req,res){
-	var enumName = req.params.enumName;
-	var result   = [];
+/*jshint latedef: false */
+function fnGetEnum(req,res){
+	var enumName = req.params.name;
+	var enumType = req.params.type;
+	var result;
+
+	switch(enumType){
+		case 'ARRAY':
+			result = fnGetEnumByType(enumName, _.values);
+			break;
+		case 'OBJECT':
+			result = fnGetEnumByType(enumName);
+			break;
+		default:
+			result = fnGetEnumByType(enumName, _.values);
+	}
+
+	res.jsonp(result);
+}
+
+function fnGetEnumByType(enumName, castFunction){
+	var result  	= {};
+	var enumObj 	= {};
 
 	switch(enumName){
 		case 'userstate': 
-			result = _.values(enumUserstate);
+			enumObj = enumUserstate;
 			break;
 		case 'traderrank':
-			result = _.values(enumTraderrank);
+			enumObj = enumTraderrank;
 			break;
 		case 'chatevent':
-			result = _.values(enumChatevent);
+			enumObj = enumChatevent;
 			break;		
 		default:
-			result = [];
+			enumObj = {};
 	}
-	res.jsonp({data: result});
-};
+	result = {
+		data: cast(enumObj, castFunction)
+	};
+	return result;
+}
 
-exports.fnGetEnum	 = fnGetEnum;
+function cast(obj, fn){
+	if(fn){
+		return fn(obj);
+	}else{
+		return obj;
+	}
+}

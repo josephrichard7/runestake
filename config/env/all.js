@@ -2,14 +2,27 @@
 
 module.exports = {
 	app: {
-		title: 'runestake',
-		description: 'Full-Stack JavaScript with MongoDB, Express, AngularJS, and Node.js',
-		keywords: 'MongoDB, Express, AngularJS, Node.js'
+		title: 			'Runestake',
+		description: 	'Gambling site for gamers',
+		keywords: 		'rs, gambler'
 	},
-	port: process.env.PORT || 3000,
-	templateEngine: 'swig',
-	sessionSecret: 'MEAN_runestake',
-	sessionCollection: 'sessions',
+	port: 				process.env.PORT || 3000,
+	templateEngine: 	'swig',
+	viewsSuffix: 		'server.view.html',
+	sessionSecret: 		'MEAN_runestake',
+	sessionCollection: 	'sessions',
+	enviroments: {
+		production: 	'production',
+		development: 	'development'
+	},
+	appPaths: {
+		models: 			'./app/models/**/*.js',
+		routes: 			'./app/routes/**/*.js',
+		serverViews: 		'./app/views',
+		// passportStrategies: './config/strategies/**/*.js',
+		passportStrategies: './config/strategies/local.js',
+		public: 			'./public'
+	},
 	assets: {
 		lib: {
 			css: [
@@ -27,10 +40,15 @@ module.exports = {
 				'public/lib/angular-ui-utils/ui-utils.js',
 				'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
 				'public/lib/jquery/dist/jquery.js',
+				'public/lib/bootstrap/dist/js/bootstrap.js',
 				'public/lib/angular-utils-pagination/dirPagination.js',
-				'public/lib/socket.io-client/socket.io.js'
+				'public/lib/socket.io-client/socket.io.js',
+				'public/lib/bundle/bundle.js'
 			]
 		},
+		serverFiles:[
+			'./utilities/enums/chatevent.server.enum.js'
+		],
 		css: [
 			'public/modules/**/css/*.css'
 		],

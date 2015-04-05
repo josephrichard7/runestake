@@ -1,11 +1,12 @@
 'use strict';
 
-var passport = require('passport'),
-	User = require('mongoose').model('User'),
-	path = require('path'),
-	config = require('./config');
+var passport 	= require('passport'),
+	mongoose 	= require('mongoose'),
+	path 		= require('path');
 
-module.exports = function() {
+module.exports = function(config) {
+	var User = mongoose.model('User');
+
 	// Serialize sessions
 	passport.serializeUser(function(user, done) {
 		done(null, user.id);
@@ -21,7 +22,7 @@ module.exports = function() {
 	});
 
 	// Initialize strategies
-	config.getGlobbedFiles('./config/strategies/**/*.js').forEach(function(strategy) {
-		require(path.resolve(strategy))();
+	config.getGlobbedFiles(config.appPaths.passportStrategies).forEach(function(strategy) {
+		require(path.resolve(strategy))(config);
 	});
 };

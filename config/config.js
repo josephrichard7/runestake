@@ -6,71 +6,89 @@
 var _ = require('lodash'),
 	glob = require('glob');
 
+
+module.exports = getEnvironmentConfig;
+
 /**
  * Load app configurations
  */
-module.exports = _.extend(
-	require('./env/all'),
-	require('./env/' + process.env.NODE_ENV) || {}
-);
+/*jshint latedef: false */
+function getEnvironmentConfig(){
+	var _this;
 
-/**
- * Get files by glob patterns
- */
-module.exports.getGlobbedFiles = function(globPatterns, removeRoot) {
-	// For context switching
-	var _this = this;
+	_this = _.extend(
+		require('./env/all'),
+		require('./env/' + process.env.NODE_ENV) || {}
+	);
 
-	// URL paths regex
-	var urlRegex = new RegExp('^(?:[a-z]+:)?\/\/', 'i');
 
-	// The output array
-	var output = [];
+	_this.getGlobbedFiles 		= getGlobbedFiles;
+	_this.getJavaScriptAssets 	= getJavaScriptAssets;
+	_this.getCSSAssets 			= getCSSAssets;
 
-	// If glob pattern is array so we use each pattern in a recursive way, otherwise we use glob 
-	if (_.isArray(globPatterns)) {
-		globPatterns.forEach(function(globPattern) {
-			output = _.union(output, _this.getGlobbedFiles(globPattern, removeRoot));
-		});
-	} else if (_.isString(globPatterns)) {
-		if (urlRegex.test(globPatterns)) {
-			output.push(globPatterns);
-		} else {
-			glob(globPatterns, {
-				sync: true
-			}, function(err, files) {
-				if (removeRoot) {
-					files = files.map(function(file) {
-						return file.replace(removeRoot, '');
-					});
-				}
+	/**
+	 * Get files by glob patterns
+	 */
+	/*jshint latedef: false */
+	function getGlobbedFiles(globPatterns, removeRoot) {
+		// URL paths regex
+		var urlRegex = new RegExp('^(?:[a-z]+:)?\/\/', 'i');
 
-				output = _.union(output, files);
+		// The output array
+		var output = [];
+
+		// If glob pattern is array so we use each pattern in a recursive way, otherwise we use glob 
+		if (_.isArray(globPatterns)) {
+			globPatterns.forEach(function(globPattern) {
+				output = _.union(output, _this.getGlobbedFiles(globPattern, removeRoot));
 			});
+		} else if (_.isString(globPatterns)) {
+			if (urlRegex.test(globPatterns)) {
+				output.push(globPatterns);
+			} else {
+				glob(globPatterns, {
+					sync: true
+				}, function(err, files) {
+					if (removeRoot) {
+						files = files.map(function(file) {
+							return file.replace(removeRoot, '');
+						});
+					}
+
+					output = _.union(output, files);
+				});
+			}
 		}
+
+		return output;
 	}
 
-	return output;
-};
+	/**
+	 * Get the modules JavaScript files
+	 */
+	/*jshint latedef: false */
+	function getJavaScriptAssets(includeTests) {
+		var output = _this.getGlobbedFiles(_this.assets.lib.js.concat(_this.assets.js), 'public/');
 
-/**
- * Get the modules JavaScript files
- */
-module.exports.getJavaScriptAssets = function(includeTests) {
-	var output = this.getGlobbedFiles(this.assets.lib.js.concat(this.assets.js), 'public/');
+		// output = _.union(output, _this.getGlobbedFiles(_this.assets.enums, 'app/utilities/'));
+		
+		// To include tests
+		if (includeTests) {
+			output = _.union(output, _this.getGlobbedFiles(_this.assets.tests));
+		}
 
-	// To include tests
-	if (includeTests) {
-		output = _.union(output, this.getGlobbedFiles(this.assets.tests));
+		return output;
 	}
 
-	return output;
-};
+	/**
+	 * Get the modules CSS files
+	 */
+	/*jshint latedef: false */
+	function getCSSAssets() {
+		var output = _this.getGlobbedFiles(_this.assets.lib.css.concat(_this.assets.css), 'public/');
+		return output;
+	}
 
-/**
- * Get the modules CSS files
- */
-module.exports.getCSSAssets = function() {
-	var output = this.getGlobbedFiles(this.assets.lib.css.concat(this.assets.css), 'public/');
-	return output;
-};
+	return _this; 
+}
+

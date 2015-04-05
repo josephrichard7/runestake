@@ -6,10 +6,9 @@
 var passport = require('passport'),
 	url = require('url'),
 	FacebookStrategy = require('passport-facebook').Strategy,
-	config = require('../config'),
 	users = require('../../app/controllers/users');
 
-module.exports = function() {
+module.exports = function(config) {
 	// Use facebook strategy
 	passport.use(new FacebookStrategy({
 			clientID: config.facebook.clientID,

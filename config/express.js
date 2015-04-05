@@ -14,30 +14,42 @@ var express 		= require('express'),
 	passport 		= require('passport'),
 	mongoStore 		= require('connect-mongo')({session: session}),
 	flash 			= require('connect-flash'),
-	config 			= require('./config'),
 	consolidate		= require('consolidate'),
 	path 			= require('path'),
-	io 				= require('socket.io'),
+	socketio		= require('socket.io'),
+	browserify      = require('browserify'),
+	fs 				= require('fs'),
+	io 				= {},
 	server 			= {},
 	socketConfig 	= {},
-	expressSession 	= {};
+	expressSession 	= {},
+	optsBrowserify 	= {};
 
-module.exports = function(db) {
+module.exports = function(config, db) {
 	// Initialize express app
 	var app = express();
 
 	// Globbing model files
-	config.getGlobbedFiles('./app/models/**/*.js').forEach(function(modelPath) {
+	config.getGlobbedFiles(config.appPaths.models).forEach(function(modelPath) {
 		require(path.resolve(modelPath));
 	});
 
+	// Config browserify to share files into client side
+	// fs.mkdirSync('public/lib/bundle');
+	optsBrowserify = {
+		basedir: 'app'
+	};
+	browserify = browserify(optsBrowserify);
+	browserify = browserify.add(config.assets.serverFiles);
+	browserify.bundle().pipe(fs.createWriteStream('public/lib/bundle/bundle.js'));
+
 	// Setting application local variables
-	app.locals.title = config.app.title;
-	app.locals.description = config.app.description;
-	app.locals.keywords = config.app.keywords;
-	app.locals.facebookAppId = config.facebook.clientID;
-	app.locals.jsFiles = config.getJavaScriptAssets();
-	app.locals.cssFiles = config.getCSSAssets();
+	app.locals.title 			= config.app.title;
+	app.locals.description 		= config.app.description;
+	app.locals.keywords 		= config.app.keywords;
+	app.locals.facebookAppId 	= config.facebook.clientID;
+	app.locals.jsFiles 			= config.getJavaScriptAssets();
+	app.locals.cssFiles 		= config.getCSSAssets();
 
 	// Passing the request url to environment locals
 	app.use(function(req, res, next) {
@@ -57,20 +69,20 @@ module.exports = function(db) {
 	app.set('showStackError', true);
 
 	// Set swig as the template engine
-	app.engine('server.view.html', consolidate[config.templateEngine]);
+	app.engine(config.viewsSuffix, consolidate[config.templateEngine]);
 
 	// Set views path and view engine
-	app.set('view engine', 'server.view.html');
-	app.set('views', './app/views');
+	app.set('view engine', config.viewsSuffix);
+	app.set('views', config.appPaths.serverViews);
 
 	// Environment dependent middleware
-	if (process.env.NODE_ENV === 'development') {
+	if (process.env.NODE_ENV === config.enviroments.development) {
 		// Enable logger (morgan)
 		app.use(morgan('dev'));
 
 		// Disable views cache
 		app.set('view cache', false);
-	} else if (process.env.NODE_ENV === 'production') {
+	} else if (process.env.NODE_ENV === config.enviroments.production) {
 		app.locals.cache = 'memory';
 	}
 
@@ -106,10 +118,10 @@ module.exports = function(db) {
 	
 	// Start the app by listening on <port>
 	server 	= app.listen(config.port);
-	io 		= io.listen(server);
+	io 		= socketio.listen(server);
 
 	// Init sockets config and share express session with 
-	socketConfig = require('./config-socketio');
+	socketConfig 	= require('./socketio-config');
 	socketConfig(io, expressSession);
 
 	// connect flash for flash messages
@@ -123,10 +135,10 @@ module.exports = function(db) {
 	app.disable('x-powered-by');
 
 	// Setting the app router and static folder
-	app.use(express.static(path.resolve('./public')));
+	app.use(express.static(path.resolve(config.appPaths.public)));
 
 	// Globbing routing files
-	config.getGlobbedFiles('./app/routes/**/*.js').forEach(function(routePath) {
+	config.getGlobbedFiles(config.appPaths.routes).forEach(function(routePath) {
 		require(path.resolve(routePath))(app);
 	});
 
