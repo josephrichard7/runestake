@@ -1,7 +1,7 @@
 'use strict';
 
 //Gamblermain service used for communicating with the Gamblermain REST endpoints
-angular.module('gamblermain').factory('Gamblermain', ['$resource',
+angular.module(ApplicationConfiguration.modules.gamblermain).factory('Gamblermain', ['$resource',
 	function($resource) {
 		var service = {};
 

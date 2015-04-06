@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module(ApplicationConfiguration.applicationModuleName).directive('ngOnenter', function () {
+angular.module(ApplicationConfiguration.modules.global).directive('ngEnter', function () {
     return function (scope, element, attrs) {
         element.bind('keydown keypress', function (event) {
             if(event.which === 13) {

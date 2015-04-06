@@ -3,7 +3,20 @@
 // Init the application configuration module for AngularJS application
 var ApplicationConfiguration = (function() {
 	// Init module configuration options
-	var applicationModuleName = 'runestake';
+	var applicationModuleName 	= 'runestake';
+	var modules 				= {
+		accounts: 		'accounts',
+		articles: 		'articles',
+		chat: 			'chat',
+		core: 			'core',
+		gamblermain: 	'gamblermain',
+		global: 		'global',
+		trader: 		'trader',
+		user: 			'user'
+	};
+	var chats = {
+		gamblermain: '/chat'
+	};
 	var applicationModuleVendorDependencies = ['ngResource', 'ngCookies',  'ngAnimate',  'ngTouch',  'ngSanitize',  'ui.router', 'ui.bootstrap', 'ui.utils', 'angularUtils.directives.dirPagination'];
 
 	// Add a new vertical module
@@ -16,8 +29,10 @@ var ApplicationConfiguration = (function() {
 	};
 
 	return {
-		applicationModuleName: applicationModuleName,
-		applicationModuleVendorDependencies: applicationModuleVendorDependencies,
-		registerModule: registerModule
+		applicationModuleName: 					applicationModuleName,
+		applicationModuleVendorDependencies: 	applicationModuleVendorDependencies,
+		chats: 									chats,
+		modules: 								modules,
+		registerModule: 						registerModule
 	};
 })();

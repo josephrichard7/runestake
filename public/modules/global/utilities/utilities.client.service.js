@@ -1,7 +1,6 @@
 'use strict';
 
-//Menu service used for managing  menus
-angular.module(ApplicationConfiguration.applicationModuleName).service('Utilities', ['$resource',
+angular.module(ApplicationConfiguration.modules.global).service('Utilities', ['$resource',
 	function($resource){
 		this.enumName = {
 			TRADERRANK: 'traderrank',

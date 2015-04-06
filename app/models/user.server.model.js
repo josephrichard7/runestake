@@ -6,6 +6,7 @@
 var mongoose 	  	= require('mongoose'),
 	Schema 			= mongoose.Schema,
 	crypto 			= require('crypto'),
+	_ 				= require('lodash'),
 	enumUserRole 	= require('../utilities/enums/userrole'),
 	enumTraderRank 	= require('../utilities/enums/traderrank'),
 	enumUserState 	= require('../utilities/enums/userstate');
@@ -73,16 +74,16 @@ var UserSchema = new Schema({
 	additionalProvidersData: {},
 	role: {
 		type: String,
-		enum: [enumUserRole.GAMBLER, enumUserRole.TRADER, enumUserRole.BANK, enumUserRole.ADMIN]
+		enum: _.values(enumUserRole)
 	},
 	rank:{
 		type: String,
-		enum: [enumTraderRank.PLATA, enumTraderRank.ORO, enumTraderRank.RUBY, enumTraderRank.ESMERALDA, enumTraderRank.DIAMANTE]
+		enum: _.values(enumTraderRank)
 	},
 	state:{
-		type: String,
-		enum: [enumUserState.ACTIVE, enumUserState.INACTIVE, enumUserState.BANNED, enumUserState.DELETED],
-		default: enumUserState.ACTIVE
+		type: 		String,
+		enum: 		_.values(enumUserState),
+		default: 	enumUserState.ACTIVE
 	},
 	updated: {
 		type: Date

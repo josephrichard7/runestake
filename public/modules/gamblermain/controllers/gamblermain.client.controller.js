@@ -1,6 +1,7 @@
 'use strict';
 
-angular.module('gamblermain').controller('GamblermainController', ['$scope', '$stateParams', '$location', 'Authentication', 'Gamblermain', 'Account',
+angular.module(ApplicationConfiguration.modules.gamblermain)
+.controller('GamblermainController', ['$scope', '$stateParams', '$location', 'Authentication', 'Gamblermain', 'Account',
 	function($scope, $stateParams, $location, Authentication, GamblermainSrv, Account) {
 		var vm = this;
 

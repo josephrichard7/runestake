@@ -59,7 +59,7 @@ function fnLoadMiddlewareFunctions(expressSession){
 
 function fnLoadEventHandlers(){
 	// Bind Event handler when client connects
-	chatSocketNsp.on(enumChatEvent.CONNECTION, fnOnConnection);
+	chatSocketNsp.on(enumChatEvent.natives.CONNECTION, fnOnConnection);
 }
 
 
@@ -78,6 +78,6 @@ function fnOnConnection(socket){
 	chatService.fnNewUser(socket, chatSocketNsp);
 
 	// Event handlers
-	socket.on(enumChatEvent.NEW_MESSAGE, chatService.fnNewMessage(socket, chatSocketNsp));
-	socket.on(enumChatEvent.DISCONNECT,  chatService.fnDisconnection(socket, chatSocketNsp));
+	socket.on(enumChatEvent.app.NEW_MESSAGE, 	chatService.fnNewMessage(socket, chatSocketNsp));
+	socket.on(enumChatEvent.natives.DISCONNECT, chatService.fnDisconnection(socket, chatSocketNsp));
 }

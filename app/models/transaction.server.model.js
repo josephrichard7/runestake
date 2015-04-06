@@ -3,13 +3,14 @@
 /**
  * Module dependencies.
  */
-var mongoose 			 = require('mongoose'),
-	Schema 				 = mongoose.Schema,
-	enumTransactionType  = require('../utilities/enums/transactiontype'),
-	enumTransactionState = require('../utilities/enums/transactionstate');
+var mongoose 			 	= require('mongoose'),
+	Schema 				 	= mongoose.Schema,
+	_ 						= require('lodash'),
+	enumTransactionType  	= require('../utilities/enums/transactiontype'),
+	enumTransactionState 	= require('../utilities/enums/transactionstate');
 
 /**
- * Article Schema
+ * Transaction Schema
  */
 var TransactionSchema = new Schema({
 	originAccount:{
@@ -33,18 +34,18 @@ var TransactionSchema = new Schema({
 		required: 'Service cannot be empty'
 	},
 	transactionType:{
-		type: String,
-		enum: [enumTransactionType.START_GAME, enumTransactionType.END_GAME, enumTransactionType.CASH_IN, enumTransactionType.CASH_OUT],
-		required: 'TransactionType cannot be empty or is not valid'
+		type: 		String,
+		enum: 		_.values(enumTransactionType),
+		required: 	'TransactionType cannot be empty or is not valid'
 	},
 	amount:{
 		type: Number,
 		required: 'Amount cannot be empty'
 	},
 	state:{
-		type: String,
-		enum: [enumTransactionState.PENDING, enumTransactionState.APPLIED],
-		required: 'State cannot be empty or is not valid'
+		type: 		String,
+		enum: 		_.values(enumTransactionState),
+		required: 	'State cannot be empty or is not valid'
 	},
 	createdDate:{
 		type: Date,

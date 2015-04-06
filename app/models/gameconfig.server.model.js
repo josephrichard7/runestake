@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
 	Schema 	 = mongoose.Schema;
 
 /**
- * Article Schema
+ * GameConfig Schema
  */
 var GameConfigSchema = new Schema({
 	profitPercent:{

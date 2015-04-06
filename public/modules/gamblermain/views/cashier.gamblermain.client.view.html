@@ -1,10 +1,46 @@
-<div class="panel panel-primary">
+<div class="panel panel-primary" data-ng-controller="CashierController as controller">
 	<div class="panel-heading">
 		Cashier
 	</div>	
 	<div class="panel-body">
 		<div class="row">
-			
+			<div class="col-md-12 text-center">
+				<h3>Request a Service</h3>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12 text-center">
+				<form name="form" class="form-horizontal" data-ng-submit="controller.fnCreateService(form.$valid)" novalidate>
+					<fieldset>
+						<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.serviceType.$invalid}">
+							<div class="btn-group">
+						        <label class="btn btn-default" name="serviceType" ng-model="controller.serviceType" btn-radio="'CASHIN'">
+						        	CASH IN
+						        </label>
+						        <label class="btn btn-default" name="serviceType" ng-model="controller.serviceType" btn-radio="'CASHOUT'">
+						        	CASH OUT
+						        </label>
+						    </div>
+							<div ng-show="controller.submitted && form.serviceType.$invalid" class="help-block">
+								<p ng-show="form.serviceType.$error.required" class="text-danger">Servicetype is required</p>
+							</div>
+						</div>
+						<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.currency.$invalid}">
+							<div class="btn-group">
+						        <label class="btn btn-default" name="currency" ng-model="controller.currency" btn-radio="'RS07'">
+						        	Runescape OldSchool
+						        </label>
+						        <label class="btn btn-default" name="currency" ng-model="controller.currency" btn-radio="'RSGP'">
+						        	Runescape 3
+						        </label>
+						    </div>
+							<div ng-show="controller.submitted && form.currency.$invalid" class="help-block">
+								<p ng-show="form.currency.$error.required" class="text-danger">Currency is required</p>
+							</div>
+						</div>
+					</fieldset>				
+				</form>
+			</div>
 		</div>
 	</div>
 </div>

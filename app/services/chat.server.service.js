@@ -16,7 +16,7 @@ function ChatService(){
  */
 ChatService.prototype.fnNewMessage = function(socket, chatSocketNsp){
 	return function (message){
-		chatSocketNsp.emit(enumChatEvent.NEW_MESSAGE, {
+		chatSocketNsp.emit(enumChatEvent.app.NEW_MESSAGE, {
 			username: socket.username,
 			message:  message
 		});	
@@ -38,13 +38,13 @@ ChatService.prototype.fnNewUser = function(socket, chatSocketNsp){
 		++chatSocketNsp.numConnectedUsers;
 
 		// echo globally (all clients) that a person has connected
-		socket.broadcast.emit(enumChatEvent.USER_JOINED, {
+		socket.broadcast.emit(enumChatEvent.app.USER_JOINED, {
 			username: 			socket.username,
 			numConnectedUsers: 	chatSocketNsp.numConnectedUsers,
 			listConnectedUsers: _.values(chatSocketNsp.listConnectedUsers)
 		});
 	}
-	socket.emit(enumChatEvent.LOGIN, {
+	socket.emit(enumChatEvent.app.LOGIN, {
 		username: 			socket.username,
 		numConnectedUsers: 	chatSocketNsp.numConnectedUsers,
 		listConnectedUsers: _.values(chatSocketNsp.listConnectedUsers)
@@ -62,7 +62,7 @@ ChatService.prototype.fnDisconnection = function(socket, chatSocketNsp){
 			--chatSocketNsp.numConnectedUsers;
 
 			// echo globally that this client has left, including me
-			socket.broadcast.emit(enumChatEvent.USER_LEFT, {
+			socket.broadcast.emit(enumChatEvent.app.USER_LEFT, {
 				username: 			socket.username,
 				numConnectedUsers: 	chatSocketNsp.numConnectedUsers,
 				listConnectedUsers: _.values(chatSocketNsp.listConnectedUsers)

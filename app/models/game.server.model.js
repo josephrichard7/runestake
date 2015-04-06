@@ -3,12 +3,13 @@
 /**
  * Module dependencies.
  */
-var mongoose 	  = require('mongoose'),
-	Schema 		  = mongoose.Schema,
-	enumGameState = require('../utilities/enums/gamestate');
+var mongoose 	  	= require('mongoose'),
+	Schema 		  	= mongoose.Schema,
+	_ 				= require('lodash'),
+	enumGameState 	= require('../utilities/enums/gamestate');
 
 /**
- * Article Schema
+ * Game Schema
  */
 var GameSchema = new Schema({
 	leftGambler:{
@@ -37,7 +38,7 @@ var GameSchema = new Schema({
 	},
 	state:{
 		type: String,
-		enum: [enumGameState.SEARCHING_GAMBLER, enumGameState.IN_PROCESS, enumGameState.FINISHED]
+		enum: _.values(enumGameState)
 	},
 	startTime:{
 		type: Date

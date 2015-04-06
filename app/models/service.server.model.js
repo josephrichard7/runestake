@@ -3,13 +3,15 @@
 /**
  * Module dependencies.
  */
-var mongoose 		 = require('mongoose'),
-	Schema 			 = mongoose.Schema,
-	enumServiceType  = require('../utilities/enums/servicetype'),
-	enumServiceState = require('../utilities/enums/servicestate');
+var mongoose 		 	= require('mongoose'),
+	Schema 			 	= mongoose.Schema,
+	_ 					= require('lodash'),
+	enumServiceType  	= require('../utilities/enums/servicetype'),
+	enumServiceState 	= require('../utilities/enums/servicestate'),
+	enumCurrency  		= require('../utilities/enums/currency');
 
 /**
- * Article Schema
+ * Service Schema
  */
 var ServiceSchema = new Schema({
 	trader:{
@@ -21,18 +23,32 @@ var ServiceSchema = new Schema({
 		ref: 'User'
 	},
 	serviceType:{
-		type: String,
-		enum: [enumServiceType.CASH_IN, enumServiceType.CASH_OUT],
-		required: 'ServiceType cannot be empty or is not valid'
+		type: 		String,
+		enum: 		_.values(enumServiceType),
+		required: 	'ServiceType cannot be empty or is not valid'
+	},
+	sourceCurrency: {
+		type: 		String,
+		enum: 		_.values(enumCurrency),
+		required: 	'Source currency is required.'
+	},
+	destinationCurrency: {
+		type: 		String,
+		enum: 		_.values(enumCurrency),
+		required: 	'Destination currency is required.'
+	},
+	rate:{
+		type: 		Number,
+		required: 	'Rate cannot be empty'
 	},
 	amount:{
-		type: Number,
-		required: 'Amount cannot be empty'
+		type: 		Number,
+		required: 	'Amount cannot be empty'
 	},
 	state:{
-		type: String,
-		enum: [enumServiceType.PENDING, enumServiceType.APPLIED],
-		required: 'State cannot be empty or is not valid'
+		type: 		String,
+		enum: 		_.values(enumServiceState),
+		required: 	'State cannot be empty or is not valid'
 	},	
 	createdDate:{
 		type: Date,
