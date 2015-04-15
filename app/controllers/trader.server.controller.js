@@ -3,9 +3,7 @@
 /**
  * Module dependencies.
  */
-var _ 				  = require('lodash'),
-	util 		 	  = require('../utilities/util'),
-	accountController = require('../controllers/account'),
+var util 		 	  = require('../utilities/util'),
 	traderService 	  = require('../services/trader');
 
 /**

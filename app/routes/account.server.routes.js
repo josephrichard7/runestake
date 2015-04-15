@@ -10,6 +10,7 @@ var userController   	= require('../controllers/users'),
 module.exports = function(app) {
 	// Account Routes
 
+	// Get account by id
 	app.route('/account/:id')
 	.get(
 		userController.hasAuthorization([enumUserrole.ADMIN,enumUserrole.GAMBLER]),
@@ -17,6 +18,7 @@ module.exports = function(app) {
 		accountController.fnReadByID
 	);
 
+	// Get account by userid
 	app.route('/account/user/:userId')
 	.get(
 		userController.hasAuthorization([enumUserrole.ADMIN,enumUserrole.GAMBLER]),

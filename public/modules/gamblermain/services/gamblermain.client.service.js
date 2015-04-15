@@ -1,11 +1,18 @@
 'use strict';
 
-//Gamblermain service used for communicating with the Gamblermain REST endpoints
-angular.module(ApplicationConfiguration.modules.gamblermain).factory('Gamblermain', ['$resource',
-	function($resource) {
-		var service = {};
+angular.module(ApplicationConfiguration.modules.gamblermain)
+.service(ApplicationConfiguration.services.gamblermain, 
+	['$resource', 	 
+	 ApplicationConfiguration.services.authentication, 
+	 ApplicationConfiguration.services.account,
+	function($resource, Authentication, accountSrv) {
+		var _this = this;
 
-		service.gamblerResource = $resource('gamblermain/:gamblerId', {
+		_this.authentication 	= Authentication;
+		_this.gambler 			= {};
+		_this.gambler.account 	= {};
+
+		_this.gamblerResource = $resource('gamblermain/:gamblerId', {
 			gamblerId: '@_id'
 		}, {
 			update: {
@@ -13,6 +20,19 @@ angular.module(ApplicationConfiguration.modules.gamblermain).factory('Gamblermai
 			}
 		});
 
-		return service;
+		_this.fnLoadUser = function (){
+			_this.gamblerResource.get({
+				gamblerId: _this.authentication.user._id
+			},function(gambler){
+				_this.gambler = gambler;
+
+				accountSrv.get({
+					userId: _this.gambler._id
+				},function(account){
+					_this.gambler.account = account;
+				});
+			});
+		};
+		
 	}
 ]);

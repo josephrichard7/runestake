@@ -5,14 +5,21 @@ var ApplicationConfiguration = (function() {
 	// Init module configuration options
 	var applicationModuleName 	= 'runestake';
 	var modules 				= {
-		accounts: 		'accounts',
+		account: 		'account',
 		articles: 		'articles',
 		chat: 			'chat',
 		core: 			'core',
 		gamblermain: 	'gamblermain',
 		global: 		'global',
+		service: 		'service',
 		trader: 		'trader',
 		user: 			'user'
+	};
+	var services				= {
+		account: 		'AccountService',
+		authentication: 'Authentication',
+		gamblermain: 	'GamblermainService',
+		service: 		'service',
 	};
 	var chats = {
 		gamblermain: '/chat'
@@ -33,6 +40,7 @@ var ApplicationConfiguration = (function() {
 		applicationModuleVendorDependencies: 	applicationModuleVendorDependencies,
 		chats: 									chats,
 		modules: 								modules,
+		services: 								services,
 		registerModule: 						registerModule
 	};
 })();

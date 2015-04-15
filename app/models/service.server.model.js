@@ -22,10 +22,10 @@ var ServiceSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'User'
 	},
-	serviceType:{
+	type:{
 		type: 		String,
 		enum: 		_.values(enumServiceType),
-		required: 	'ServiceType cannot be empty or is not valid'
+		required: 	'Type cannot be empty or is not valid'
 	},
 	sourceCurrency: {
 		type: 		String,

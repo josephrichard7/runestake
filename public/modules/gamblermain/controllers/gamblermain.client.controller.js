@@ -1,31 +1,14 @@
 'use strict';
 
 angular.module(ApplicationConfiguration.modules.gamblermain)
-.controller('GamblermainController', ['$scope', '$stateParams', '$location', 'Authentication', 'Gamblermain', 'Account',
-	function($scope, $stateParams, $location, Authentication, GamblermainSrv, Account) {
+.controller('GamblermainController', 
+	['$scope',
+	ApplicationConfiguration.services.gamblermain,
+	function($scope, gamblermainSrv) {
 		var vm = this;
 
 		// Initialize
-		vm.authentication 	= Authentication;
-		vm.gambler 			= {};
-		vm.gambler.account 	= {};
+		vm.gamblermainSrv 	= gamblermainSrv;
 
-  		// Populate functions to controller object
-		vm.fnReadByID = fnReadByID;
-		vm.fnInitEdit = fnInitEdit;
-
-		function fnReadByID(){
-			GamblermainSrv.gamblerResource.get({
-				gamblerId: vm.authentication.user._id
-			},function(result){
-				vm.gambler 			= result;
-				vm.gambler.account 	= Account.get({userId: vm.gambler._id});
-			});
-		}
-
-		function fnInitEdit(){
-			// Load object for editing
-			fnReadByID();
-  		}
 	}
 ]);
