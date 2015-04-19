@@ -1,8 +1,11 @@
 'use strict';
 
 angular.module(ApplicationConfiguration.modules.gamblermain)
-.controller('CashierController', ['$scope',
-  function($scope) {
+.controller('CashierController', 
+  ['$scope',
+  '$location',
+  ApplicationConfiguration.services.gamblermain,
+  function($scope, $location, gamblermainSrv) {
     // Private variables
     var vm = this;    
     
@@ -16,26 +19,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
       RSCHIP:   'RSCHIP'
     };
 
-    // Initialize
-    vm.service                  = {};
-    vm.serviceType              = vm.enumServiceType.CASHIN;
-    vm.serviceCurrency          = vm.enumCurrency.RS07;
-    vm.sourceCurrency           = vm.enumCurrency.RS07;
-    vm.destinationCurrency      = vm.enumCurrency.RSCHIP;
-    vm.amount                   = 0;
-    vm.amountConverted          = 0;
-    vm.exchangeRate             = {};
-    vm.exchangeRateList         = {};
-    vm.fnCreateService          = fnCreateService;
-    vm.fnConvertAmountByRate    = fnConvertAmountByRate;
-
-    vm.exchangeRateList[vm.enumCurrency.RS07]                         = {};
-    vm.exchangeRateList[vm.enumCurrency.RS07][vm.enumCurrency.RSCHIP] = 8.5;
-    vm.exchangeRateList[vm.enumCurrency.RSGP]                         = {};
-    vm.exchangeRateList[vm.enumCurrency.RSGP][vm.enumCurrency.RSCHIP] = 1;
-    vm.exchangeRateList[vm.enumCurrency.RSCHIP]                       = {};
-    vm.exchangeRateList[vm.enumCurrency.RSCHIP][vm.enumCurrency.RS07] = 0.12;
-    vm.exchangeRateList[vm.enumCurrency.RSCHIP][vm.enumCurrency.RSGP] = 1;
+    vm.fnInit = fnInit;
 
     // fnUpdateLabels();
 
@@ -52,6 +36,79 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
     //   }
     // }
 
+    function fnInit(){
+      vm.gamblermainSrv           = gamblermainSrv;
+      vm.serviceType              = vm.enumServiceType.CASHIN;
+      vm.serviceCurrency          = vm.enumCurrency.RS07;
+      vm.sourceCurrency           = vm.enumCurrency.RS07;
+      vm.destinationCurrency      = vm.enumCurrency.RSCHIP;
+      vm.amount                   = 0;
+      vm.amountConverted          = 0;
+      vm.exchangeRate             = {};
+      vm.exchangeRateList         = {};
+      vm.fnCreateService          = fnCreateService;
+      vm.fnConvertAmountByRate    = fnConvertAmountByRate;
+      vm.currentPage              = 1;
+      vm.pageSize                 = 10;
+
+      vm.exchangeRateList[vm.enumCurrency.RS07]                         = {};
+      vm.exchangeRateList[vm.enumCurrency.RS07][vm.enumCurrency.RSCHIP] = 8.5;
+      vm.exchangeRateList[vm.enumCurrency.RSGP]                         = {};
+      vm.exchangeRateList[vm.enumCurrency.RSGP][vm.enumCurrency.RSCHIP] = 1;
+      vm.exchangeRateList[vm.enumCurrency.RSCHIP]                       = {};
+      vm.exchangeRateList[vm.enumCurrency.RSCHIP][vm.enumCurrency.RS07] = 0.12;
+      vm.exchangeRateList[vm.enumCurrency.RSCHIP][vm.enumCurrency.RSGP] = 1;
+
+      gamblermainSrv.fnResetService();
+      fnLoadListServices();
+    }
+
+    function fnConvertAmountByRate(callback){
+      fnUpdateLabels();
+      fnReadExchangeRate(function(rate){
+        vm.amountConverted = vm.amount * rate;
+        if(callback){
+          callback(vm.amountConverted);
+        }
+      });
+    }
+
+    function fnCreateService(){
+      var amountConvertedOld  = vm.amountConverted;
+
+      fnConvertAmountByRate(function(amountConverted){
+        if(amountConvertedOld !== amountConverted){
+          vm.error = 'Amount converted has changed because rate has changed as well. Please review your request.';
+        }
+        else{
+          gamblermainSrv.fnResetService();
+
+          gamblermainSrv.service.type                = vm.serviceType;
+          gamblermainSrv.service.sourceCurrency      = vm.sourceCurrency;
+          gamblermainSrv.service.destinationCurrency = vm.destinationCurrency;
+          gamblermainSrv.service.amount              = vm.amount;
+          gamblermainSrv.service.rate                = vm.serviceRate;
+
+          gamblermainSrv.fnCreateService(function(err, service) {
+            if(err){
+              vm.error = err;
+            }else{
+              fnLoadListServices();
+              $location.path('/gamblermain/panel/cashier/assigningsrv/' + service._id);
+            }
+          });    
+        }
+      });
+    }
+
+    function fnLoadListServices(){
+      gamblermainSrv.fnLoadListServices(function(err, listServices) {
+        if(err){
+          vm.error = err;
+        }
+      });
+    }
+    
     function fnReadExchangeRate(callback){
       // vm.exchangeRate = ExchangeRateService.get({
       //   sourceCurrency:       vm.sourceCurrency,
@@ -59,9 +116,9 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
       // },function(exchangeRate){
       //   vm.service.rate = exchangeRate.rate;
       // });
-      vm.service.rate = vm.exchangeRateList[vm.sourceCurrency][vm.destinationCurrency];
+      vm.serviceRate = vm.exchangeRateList[vm.sourceCurrency][vm.destinationCurrency];
       if(callback){
-        callback(vm.service.rate);
+        callback(vm.serviceRate);
       }
     }
 
@@ -96,38 +153,6 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
         vm.sourceCurrency           = vm.enumCurrency.RS07;
         vm.destinationCurrency      = vm.enumCurrency.RSCHIP;
       }
-    }
-
-    function fnConvertAmountByRate(callback){
-      fnUpdateLabels();
-      fnReadExchangeRate(function(rate){
-        vm.amountConverted = vm.amount * rate;
-        if(callback){
-          callback(vm.amountConverted);
-        }
-      });
-    }
-
-    function fnCreateService(){
-      // var service             = new Service();
-      var amountConvertedOld  = vm.amountConverted;
-      
-      fnConvertAmountByRate(function(amountConverted){
-        if(amountConvertedOld !== amountConverted){
-          vm.error = 'Amount converted has changed because rate has changed as well. Please review your request.';
-        }
-        else{
-          service.type                = vm.serviceType;
-          service.sourceCurrency      = vm.sourceCurrency;
-          service.destinationCurrency = vm.destinationCurrency;
-          service.amount              = vm.amount;
-          service.$save(function(response) {
-
-          }, function(errorResponse) {
-            vm.error = errorResponse.data.message;
-          });
-        }
-      });
     }
 
   }

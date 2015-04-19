@@ -1,69 +1,156 @@
-<div class="panel panel-primary" data-ng-controller="CashierController as controller">	
+<div class="panel panel-primary" data-ng-controller="CashierController as controller" data-ng-init="controller.fnInit()">	
 	<ol class="breadcrumb">
 		<li><a href="/#!/gamblermain/panel">Control panel</a></li>
 		<li class="active">Cashier</li>
 	</ol>
 	<div class="panel-body">
 		<div class="row">
-			<div class="col-md-12 text-center">
-				<h3>Request a Service</h3>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-8 col-md-offset-2 text-center">
-				<form name="form" class="form-horizontal" data-ng-submit="controller.fnCreateService(form.$valid)" novalidate>
-					<fieldset>
-						<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.serviceType.$invalid}">
-							<div class="btn-group">
-						        <label class="btn btn-default" name="serviceType" data-ng-model="controller.serviceType" data-btn-radio="controller.enumServiceType.CASHIN" data-ng-change="controller.fnConvertAmountByRate()">
-						        	CASH IN
-						        </label>
-						        <label class="btn btn-default" name="serviceType" data-ng-model="controller.serviceType" data-btn-radio="controller.enumServiceType.CASHOUT" data-ng-change="controller.fnConvertAmountByRate()">
-						        	CASH OUT
-						        </label>
-						    </div>
-							<div ng-show="controller.submitted && form.serviceType.$invalid" class="help-block">
-								<p ng-show="form.serviceType.$error.required" class="text-danger">Service type is required</p>
+			<div class="col-md-12">
+				<tabset>
+					<tab heading="Trade">
+						<div data-ui-view>
+							<div class="row">
+								<div class="col-md-12 text-center">
+									<h3>Request a Service</h3>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-8 col-md-offset-2 text-center">
+									<form name="form" class="form-horizontal" data-ng-submit="controller.fnCreateService(form.$valid)" novalidate>
+										<fieldset>
+											<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.serviceType.$invalid}">
+												<div class="btn-group">
+											        <label class="btn btn-default" name="serviceType" data-ng-model="controller.serviceType" data-btn-radio="controller.enumServiceType.CASHIN" data-ng-change="controller.fnConvertAmountByRate()">
+											        	CASH IN
+											        </label>
+											        <label class="btn btn-default" name="serviceType" data-ng-model="controller.serviceType" data-btn-radio="controller.enumServiceType.CASHOUT" data-ng-change="controller.fnConvertAmountByRate()">
+											        	CASH OUT
+											        </label>
+											    </div>
+												<div ng-show="controller.submitted && form.serviceType.$invalid" class="help-block">
+													<p ng-show="form.serviceType.$error.required" class="text-danger">Service type is required</p>
+												</div>
+											</div>
+											<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.serviceCurrency.$invalid}">
+												<div class="btn-group">
+											        <label class="btn btn-default" name="serviceCurrency" ng-model="controller.serviceCurrency" btn-radio="controller.enumCurrency.RS07" data-ng-change="controller.fnConvertAmountByRate()">
+											        	Runescape OldSchool
+											        </label>
+											        <label class="btn btn-default" name="serviceCurrency" ng-model="controller.serviceCurrency" btn-radio="controller.enumCurrency.RSGP" data-ng-change="controller.fnConvertAmountByRate()">
+											        	Runescape 3
+											        </label>
+											    </div>
+												<div ng-show="controller.submitted && form.serviceCurrency.$invalid" class="help-block">
+													<p ng-show="form.serviceCurrency.$error.required" class="text-danger">Service Currency is required</p>
+												</div>
+											</div>
+											<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.serviceAmount.$invalid}">
+												<div class="input-group">
+													<input type="text" class="form-control" name="serviceAmount" data-ng-model="controller.amount" data-ng-keyup="controller.fnConvertAmountByRate()" placeholder="Amount" required>
+													<span class="input-group-addon">
+														<span data-ng-bind="controller.sourceCurrency">
+														</span>
+													</span>
+													<input type="text" class="form-control" name="amountConverted" data-ng-model="controller.amountConverted" readonly>
+													<span class="input-group-addon">
+														<span data-ng-bind="controller.destinationCurrency">
+														</span>
+													</span>
+												</div>
+												<div ng-show="controller.submitted && form.serviceAmount.$invalid" class="help-block">
+													<p ng-show="form.serviceAmount.$error.required" class="text-danger">Amount is required</p>
+												</div>
+											</div>			
+											<div class="form-group">
+												<input type="submit" value="Request" class="btn btn-success">
+											</div>
+											<div data-ng-show="controller.error" class="text-danger">
+												<strong data-ng-bind="controller.error"></strong>
+											</div>
+										</fieldset>				
+									</form>
+								</div>
 							</div>
 						</div>
-						<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.serviceCurrency.$invalid}">
-							<div class="btn-group">
-						        <label class="btn btn-default" name="serviceCurrency" ng-model="controller.serviceCurrency" btn-radio="controller.enumCurrency.RS07" data-ng-change="controller.fnConvertAmountByRate()">
-						        	Runescape OldSchool
-						        </label>
-						        <label class="btn btn-default" name="serviceCurrency" ng-model="controller.serviceCurrency" btn-radio="controller.enumCurrency.RSGP" data-ng-change="controller.fnConvertAmountByRate()">
-						        	Runescape 3
-						        </label>
-						    </div>
-							<div ng-show="controller.submitted && form.serviceCurrency.$invalid" class="help-block">
-								<p ng-show="form.serviceCurrency.$error.required" class="text-danger">Service Currency is required</p>
+					</tab>
+					<tab heading="Services History">
+						<div data-ng-show="!controller.gamblermainSrv.listServices.$resolved || controller.gamblermainSrv.listServices.length">
+							<div class="row">
+								<div class="col-md-8">
+									<!-- <a class="btn btn-primary" href="/#!/gamblermain/panel/cashier">
+										<i class="glyphicon glyphicon-plus"></i>
+									</a> -->
+								</div>
+								<div class="col-md-4">
+								    <input id="filter" name="filter" type="text" data-ng-model="controller.filter"  class="form-control" placeholder="Filter here...">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="panel panel-default">
+										<table class="table table-striped table-condensed">
+											<thead>
+										        <tr>
+										            <th>Trader</th>
+										            <th>Type</th>
+										            <th>Description</th>
+										            <th>State</th>
+										            <th>Created Date</th>
+										            <th>Updated Date</th>
+										        </tr>
+										    </thead>
+										    <tbody class="searchable">
+										    	<tr dir-paginate="service in controller.gamblermainSrv.listServices | filter:controller.filter | itemsPerPage: controller.pageSize" current-page="controller.currentPage">
+										    		<td>
+										    			<span data-ng-bind="service.trader.username"></span>
+										    		</td>
+										    		<td>
+										    			<span data-ng-bind="service.type"></span>
+										    		</td>
+										    		<td>
+										    			<span data-ng-bind="service.amount"></span>
+										    			&nbsp;
+										    			<span data-ng-bind="service.sourceCurrency"></span>
+										    			&nbsp;to&nbsp;
+										    			<span data-ng-bind="service.destinationCurrency"></span>
+										    		</td>
+										    		<td>
+										    			<div ng-switch="service.state">
+										    				<span ng-switch-when="CREATED" data-ng-bind="service.state" data-toggle="tooltip" title="Waiting for a Trader"></span>
+										    				<span ng-switch-when="ASSIGNED" data-ng-bind="service.state" data-toggle="tooltip" title="Trader has been assigned"></span>
+										    				<span ng-switch-when="COMPLETED" data-ng-bind="service.state" data-toggle="tooltip" title="Service has been completed"></span>
+										    				<span ng-switch-when="CANCELED" data-ng-bind="service.state" data-toggle="tooltip" title="User has canceled the service"></span>
+										    				<span ng-switch-when="DESISTED" data-ng-bind="service.state" data-toggle="tooltip" title="User desisted the service"></span>
+														</div>
+										    		</td>
+										    		<td>
+										    			<span data-ng-bind="service.createdDate | date:'medium'"></span>
+										    		</td>
+										    		<td>
+										    			<span data-ng-bind="service.updatedDate | date:'medium'"></span>
+										    		</td>
+										    	</tr>
+										    </tbody>
+										</table>
+									</div>
+								</div>
 							</div>
 						</div>
-						<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.serviceAmount.$invalid}">
-							<div class="input-group">
-								<input type="text" class="form-control" name="serviceAmount" data-ng-model="controller.amount" data-ng-keyup="controller.fnConvertAmountByRate()" placeholder="Amount" required>
-								<span class="input-group-addon">
-									<span data-ng-bind="controller.sourceCurrency">
-									</span>
-								</span>
-								<input type="text" class="form-control" name="amountConverted" data-ng-model="controller.amountConverted" readonly>
-								<span class="input-group-addon">
-									<span data-ng-bind="controller.destinationCurrency">
-									</span>
-								</span>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="text-center">
+									<dir-pagination-controls boundary-links="true"></dir-pagination-controls>
+								</div>
+								<div class="alert alert-warning text-center" data-ng-if="controller.gamblermainSrv.listServices.$resolved && !controller.gamblermainSrv.listServices.length">
+									No services yet. <!-- <a href="/#!/gamblermain/panel/cashier">create one</a>? -->
+								</div>
 							</div>
-							<div ng-show="controller.submitted && form.serviceAmount.$invalid" class="help-block">
-								<p ng-show="form.serviceAmount.$error.required" class="text-danger">Amount is required</p>
-							</div>
-						</div>			
-						<div class="form-group">
-							<input type="submit" value="Request" class="btn btn-success">
 						</div>
-						<div data-ng-show="controller.error" class="text-danger">
-							<strong data-ng-bind="controller.error"></strong>
-						</div>
-					</fieldset>				
-				</form>
+					</tab>
+				</tabset>
+				<div data-ng-show="controller.error" class="text-danger">
+					<strong data-ng-bind="controller.error"></strong>
+				</div>
 			</div>
 		</div>
 	</div>

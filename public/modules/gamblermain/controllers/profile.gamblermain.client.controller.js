@@ -15,7 +15,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 
 		/*jshint latedef: false*/
 		function fnInit(){
-			gamblermainSrv.fnLoadUser();
+			vm.gamblermainSrv.fnLoadUser();
   		}
 
 	}

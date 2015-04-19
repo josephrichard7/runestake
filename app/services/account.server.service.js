@@ -1,23 +1,17 @@
 'use strict';
 
+var AccountService = {};
+
 /**
  * Module dependencies.
  */
 var _ 				= require('lodash'),
+	Promise			= require('bluebird'),
 	util 			= require('../utilities/util'),
-	enumUserState 	= require('../utilities/enums/userstate'),
 	mongoose 		= require('mongoose'),
 	AccountEntity 	= mongoose.model('Account');
 
-/**
- * Functions
- */
-var fnReadByID		= function(){},
-	fnCreate 		= function(){},
-	fnUpdate		= function(){},
-	fnReadByUserId 	= function(){};
-
-fnReadByID = function(id, callback) {
+AccountService.fnReadByID = function(id, callback) {
 	AccountEntity
 	.findById(id)
 	// .lean(true) // return plain objects, not mongoose models.
@@ -26,7 +20,7 @@ fnReadByID = function(id, callback) {
 	});
 };
 
-fnCreate = function(accountVO, callback){
+AccountService.fnCreate = function(accountVO, callback){
 	var accountEntity = {};
 
 	//Initialize entity
@@ -38,7 +32,7 @@ fnCreate = function(accountVO, callback){
 	});
 };
 
-fnUpdate = function(accountVO, callback){
+AccountService.fnUpdate = function(accountVO, callback){
 	var accountVOtoUpd	= accountVO;
 
 	// Get entity by Id
@@ -56,7 +50,7 @@ fnUpdate = function(accountVO, callback){
 	});
 };
 
-fnReadByUserId = function(userId, callback) {
+AccountService.fnReadByUserId = function(userId, callback) {
 	AccountEntity
 	.findOne()
 	.where({user: userId})
@@ -66,7 +60,14 @@ fnReadByUserId = function(userId, callback) {
 	});
 };
 
-exports.fnReadByID 		= fnReadByID;
-exports.fnCreate    	= fnCreate;
-exports.fnUpdate    	= fnUpdate;
-exports.fnReadByUserId 	= fnReadByUserId;
+AccountService.fnGetBalanceByUserId = function(userId, callback){
+	AccountService.fnReadByUserId(userId, function(err, account){
+		if(err){
+			callback(err);
+		}else{
+			callback(null, account.balance);
+		}
+	});
+};
+
+module.exports = AccountService;

@@ -42,10 +42,10 @@ fnCreate = function(gamblerVO, callback){
 	gamblerEntity = new UserEntity(_.pick(gamblerVO, 'firstName', 'lastName','username', 'email', 'password', 'rank'));
 	
 	// Add missing default fields
-	gamblerEntity.provider 	 = 'local';
-	gamblerEntity.displayName = gamblerEntity.firstName + ' ' + gamblerEntity.lastName;
-	gamblerEntity.state 		 = enumUserState.ACTIVE;
-	gamblerEntity.role 		 = enumUserRole.GAMBLER;
+	gamblerEntity.provider 		= 'local';
+	gamblerEntity.displayName 	= gamblerEntity.firstName + ' ' + gamblerEntity.lastName;
+	gamblerEntity.state 		= enumUserState.ACTIVE;
+	gamblerEntity.role 		 	= enumUserRole.GAMBLER;
 
 	// Save the entity 
 	gamblerEntity.save(function(err, gamblerEntityResult){

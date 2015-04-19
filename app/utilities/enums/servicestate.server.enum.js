@@ -1,8 +1,11 @@
 'use strict';
 
 var EnumServiceState = {
-	PENDING: 	'PENDING',
-	APPLIED: 	'APPLIED'
+	CREATED: 	'CREATED',
+	ASSIGNED: 	'ASSIGNED',
+	COMPLETED: 	'COMPLETED',
+	DESISTED: 	'DESISTED',
+	CANCELED: 	'CANCELED'
 };
 
 module.exports = EnumServiceState;

@@ -19,7 +19,7 @@ var ApplicationConfiguration = (function() {
 		account: 		'AccountService',
 		authentication: 'Authentication',
 		gamblermain: 	'GamblermainService',
-		service: 		'service',
+		service: 		'ServiceService',
 	};
 	var chats = {
 		gamblermain: '/chat'

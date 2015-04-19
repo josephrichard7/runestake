@@ -45,6 +45,10 @@ var ServiceSchema = new Schema({
 		type: 		Number,
 		required: 	'Amount cannot be empty'
 	},
+	amountConverted:{
+		type: 		Number,
+		required: 	'amountConverted cannot be empty'
+	},
 	state:{
 		type: 		String,
 		enum: 		_.values(enumServiceState),
@@ -52,7 +56,7 @@ var ServiceSchema = new Schema({
 	},	
 	createdDate:{
 		type: Date,
-		default: Date.now()
+		default: Date.now
 	},
 	updatedDate:{
 		type: Date

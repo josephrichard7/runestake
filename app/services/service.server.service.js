@@ -6,68 +6,93 @@ var ServiceService = {};
  * Module dependencies.
  */
 var _ 					= require('lodash'),
+	Promise				= require('bluebird'),
 	util 				= require('../utilities/util'),
 	mongoose 			= require('mongoose'),
 	ServiceEntity 		= mongoose.model('Service'),
 	enumServiceState	= require('../utilities/enums/servicestate'),
-	enumServiceType		= require('../utilities/enums/servicetype');
+	enumServiceType		= require('../utilities/enums/servicetype'),
+	accountService 		= require('../services/account');
+
+var stateMachine = {};
+stateMachine[enumServiceState.CREATED] = {};
+stateMachine[enumServiceState.CREATED][enumServiceState.ASSIGNED] 	= true;
+stateMachine[enumServiceState.CREATED][enumServiceState.CANCELED] 	= true;
+stateMachine[enumServiceState.ASSIGNED] = {};
+stateMachine[enumServiceState.ASSIGNED][enumServiceState.COMPLETED] = true;
+stateMachine[enumServiceState.ASSIGNED][enumServiceState.DESISTED] 	= true;
 
 ServiceService.fnReadByID = function(id, callback) {
 	ServiceEntity
 	.findById(id)
-	// .where('role').equals(enumUserRole.TRADER)
-	// .where('state').nin([enumUserState.DELETED])
-	// .select('-password -salt')	// Avoid password re-encryptation and hide critical fields
-	// .lean(true) // return plain objects, not mongoose models.
 	.exec(function(err, result){
 		util.fnProcessResultService(err, result, callback);
 	});
 };
 
-ServiceService.fnCreate = function(serviceVO, callback){
-	var serviceEntity = {};
-	var accountVO	  = {};
-	var accountEntity = {};
-
-	//Initialize entity
-	serviceEntity = new ServiceEntity(_.pick(serviceVO, 'firstName', 'lastName','username', 'email', 'password', 'rank'));
-	
-	// Add missing default fields
-	serviceEntity.state 		 = enumServiceState.ACTIVE;
-
-	// Save the entity 
-	serviceEntity.save(function(err, serviceEntityResult){
+ServiceService.fnVerifyBalanceForCashOut = function(userId, chipAmount, callback){
+	accountService.fnGetBalanceByUserId(serviceEntity.gambler,function(err, accountBalance){
 		if(err){
-			util.fnProcessResultService(err, null, callback);
+			callback(err);
 		}else{
-			// Create Account
-			// accountVO.user 	  = serviceEntityResult;
-			// accountVO.balance = 0;
-			
-			// accountService.fnCreate(accountVO,function(err, accountVOResult){
-			// 	util.fnProcessResultService(err, serviceEntityResult, callback);
-			// });
-			util.fnProcessResultService(err, serviceEntityResult, callback);
+			if(chipAmount > accountBalance){
+				callback(new Error('Your account balance is not enough for cash out requested.'));
+			}else{
+				callback();
+			}
 		}
 	});
 };
 
-ServiceService.fnRead = function(traderVO, callback) {
-	ServiceService.fnReadByID(traderVO._id, callback);
+ServiceService.fnCreate = function(serviceVO, callback){
+	var serviceEntity 	= {};
+	var account 		= {};
+
+	//Initialize entity
+	serviceEntity = new ServiceEntity(serviceVO);
+
+	async.waterfall([
+	], function(){
+
+	});
+
+	ServiceService.fnVerifyBalanceForCashOut(serviceEntity, function(err){
+		if(err){
+			util.fnProcessResultService(err, null, callback);
+		}else{
+			// Add missing default fields
+			serviceEntity.amountConverted 	= serviceEntity.amount * serviceEntity.rate;
+			serviceEntity.state 			= enumServiceState.CREATED;
+
+			// Save the entity 
+			serviceEntity.save(function(err, serviceEntityResult){
+				if(err){
+					util.fnProcessResultService(err, null, callback);
+				}else{
+					util.fnProcessResultService(err, serviceEntityResult, callback);
+				}
+			});
+
+			util.fnProcessResultService(err, serviceEntityResult, callback);
+		}
+	});
+
 };
 
-ServiceService.fnUpdate = function(traderVO, callback){
-	var traderVOtoUpd	= {};
+ServiceService.fnRead = function(serviceVO, callback) {
+	ServiceService.fnReadByID(serviceVO._id, callback);
+};
+
+ServiceService.fnUpdate = function(serviceVO, callback){
+	var serviceVOtoUpd	= {};
 
 	// Get entity by Id
-	ServiceEntity.findById(traderVO._id,'-password -salt', function(err, resultReadEntity){
+	ServiceEntity.findById(serviceVO._id, function(err, resultReadEntity){
 		if(err || !resultReadEntity){
 			util.fnProcessResultService(err, null, callback);
 		}else{
-			// For security measurement only get some fields
-			traderVOtoUpd	= _.pick(traderVO, 'firstName', 'lastName', 'email', 'rank', 'state');
 			// Map body request fields to model object
-			resultReadEntity	= _.extend(resultReadEntity, traderVOtoUpd);			
+			resultReadEntity	= _.extend(resultReadEntity, serviceVOtoUpd);			
 			// Add missing user fields
 			resultReadEntity.displayName = resultReadEntity.firstName + ' ' + resultReadEntity.lastName;
 
@@ -78,14 +103,23 @@ ServiceService.fnUpdate = function(traderVO, callback){
 	});
 };
 
-ServiceService.fnDelete = function(id, callback){
+ServiceEntity.validateStateMachine = function(startState, endState){
+	if(stateMachine[startState][endState]){
+		return true;
+	}
+	return false;
+};
+
+ServiceService.fnUpdateState = function(id, state, callback){
 	// Get entity by Id
-	ServiceEntity.findById(id,'-password -salt', function(err, resultReadEntity){
+	ServiceEntity.findById(id, function(err, resultReadEntity){
 		if(err || !resultReadEntity){
 			util.fnProcessResultService(err, null, callback);
 		}else{
-			// Set state to DELETED
-			resultReadEntity.state = enumServiceState.DELETED;
+			if(!ServiceEntity.validateStateMachine(resultReadEntity.state, state)){
+				throw new Error('State change invalid.');	
+			}
+			resultReadEntity.state = state;
 
 			//Update entity
 			resultReadEntity.save(function(err, resultSaveEntity){
@@ -95,13 +129,33 @@ ServiceService.fnDelete = function(id, callback){
 	});
 };
 
-ServiceService.fnList = function(callback){
+ServiceService.fnCancelar = function(id, callback){
+	ServiceService.fnUpdateState(id, enumServiceState.CANCELED, callback);
+};
+
+ServiceService.fnListByGambler = function(id, callback){
 	ServiceEntity
-	// .where('role').equals(enumUserRole.TRADER)
-	// .where('state').nin([enumUserState.DELETED])
-	// .select('-password -salt')	// Avoid password re-encryptation and hide critical fields
-	// .sort('-created')
-	// .lean(true) // return plain objects, not mongoose models.
+	.find()
+	.sort('-createdDate')
+	.populate({
+	    path: 'trader'
+	  , select: 'username'
+	})
+	.where('gambler').equals(id)
+	.exec(function(err, result){
+		util.fnProcessResultService(err, result, callback);
+	});
+};
+
+ServiceService.fnListByTrader = function(id, callback){
+	ServiceEntity
+	.find()
+	.sort('-createdDate')
+	.populate({
+	    path: 'gambler'
+	  , select: 'username'
+	})
+	.where('trader').equals(id)
 	.exec(function(err, result){
 		util.fnProcessResultService(err, result, callback);
 	});

@@ -5,8 +5,9 @@ var ServiceController = {};
 /**
  * Module dependencies.
  */
-var util 		 	  = require('../utilities/util'),
-	serviceService 	  = require('../services/service');
+var util 		 	  	= require('../utilities/util'),
+	enumUserRole		= require('../utilities/enums/userrole'),
+	serviceService 		= require('../services/service');
 
 module.exports	= ServiceController;
 
@@ -18,8 +19,18 @@ ServiceController.fnReadByID = function(req, res) {
 	});
 };
 
+ServiceController.fnCancelar = function(req, res) {
+	var id = req.params.id || req.body.id;
+
+	serviceService.fnCancelar(id, function(err, resultVO){
+		return util.fnProcessResultController(err, res, resultVO);
+	});
+};
+
 ServiceController.fnCreate = function(req,res){
 	var requestVO = req.body;
+
+	requestVO.gambler = req.user.id;
 
 	serviceService.fnCreate(requestVO, function(err, resultVO){
 		return util.fnProcessResultController(err, res, resultVO);
@@ -51,7 +62,15 @@ ServiceController.fnDelete = function(req,res){
 };
 
 ServiceController.fnList = function(req,res){
-	serviceService.fnList(function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
+	var id = req.user.id || req.params.id || req.body.id;
+
+	if(req.user.role === enumUserRole.GAMBLER){
+		serviceService.fnListByGambler(id, function(err, resultVO){
+			return util.fnProcessResultController(err, res, resultVO);
+		});	
+	}else if(req.user.role === enumUserRole.TRADER){
+		serviceService.fnListByTrader(id, function(err, resultVO){
+			return util.fnProcessResultController(err, res, resultVO);
+		});		
+	}
 };
