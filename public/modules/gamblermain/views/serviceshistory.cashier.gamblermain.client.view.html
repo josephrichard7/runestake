@@ -1,0 +1,74 @@
+<div>
+	<div data-ng-show="!controller.gamblermainSrv.listServices.$resolved || controller.gamblermainSrv.listServices.length">
+		<div class="row">
+			<div class="col-md-8">
+				<!-- <a class="btn btn-primary" href="/#!/gamblermain/panel/cashier">
+					<i class="glyphicon glyphicon-plus"></i>
+				</a> -->
+			</div>
+			<div class="col-md-4">
+			    <input id="filter" name="filter" type="text" data-ng-model="controller.filter"  class="form-control" placeholder="Filter here...">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+					<table class="table table-striped table-condensed">
+						<thead>
+					        <tr>
+					            <th>Trader</th>
+					            <th>Type</th>
+					            <th>Description</th>
+					            <th>State</th>
+					            <th>Created Date</th>
+					            <th>Updated Date</th>
+					        </tr>
+					    </thead>
+					    <tbody class="searchable">
+					    	<tr dir-paginate="service in controller.gamblermainSrv.listServices | filter:controller.filter | itemsPerPage: controller.pageSize" current-page="controller.currentPage">
+					    		<td>
+					    			<span data-ng-bind="service.trader.username"></span>
+					    		</td>
+					    		<td>
+					    			<span data-ng-bind="service.type"></span>
+					    		</td>
+					    		<td>
+					    			<span data-ng-bind="service.amount"></span>
+					    			&nbsp;
+					    			<span data-ng-bind="service.sourceCurrency"></span>
+					    			&nbsp;to&nbsp;
+					    			<span data-ng-bind="service.destinationCurrency"></span>
+					    		</td>
+					    		<td>
+					    			<div ng-switch="service.state">
+					    				<span ng-switch-when="CREATED" data-ng-bind="service.state" data-toggle="tooltip" title="Waiting for a Trader" class="label label-primary"></span>
+					    				<span ng-switch-when="ASSIGNED" data-ng-bind="service.state" data-toggle="tooltip" title="Trader has been assigned"></span>
+					    				<span ng-switch-when="COMPLETED" data-ng-bind="service.state" data-toggle="tooltip" title="Service has been completed"></span>
+					    				<span ng-switch-when="CANCELED" data-ng-bind="service.state" data-toggle="tooltip" title="User has canceled the service" class="label label-danger"></span>
+					    				<span ng-switch-when="DESISTED" data-ng-bind="service.state" data-toggle="tooltip" title="User desisted the service"></span>
+									</div>
+					    		</td>
+					    		<td>
+					    			<span data-ng-bind="service.createdDate | date:'medium'"></span>
+					    		</td>
+					    		<td>
+					    			<span data-ng-bind="service.updatedDate | date:'medium'"></span>
+					    		</td>
+					    	</tr>
+					    </tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="text-center">
+				<dir-pagination-controls boundary-links="true"></dir-pagination-controls>
+			</div>
+			<div class="alert alert-warning text-center" data-ng-if="controller.gamblermainSrv.listServices.$resolved && !controller.gamblermainSrv.listServices.length">
+				No services yet. <!-- <a href="/#!/gamblermain/panel/cashier">create one</a>? -->
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,15 +1,36 @@
 'use strict';
 
+var Util = {};
+
 var mongoose 		= require('mongoose'),
 	errorUtil = require('../utilities/error');
 
-var fnProcessResultService	  = function(){},
-	fnProcessResultController = function(){};
+module.exports = Util;
+
+/**
+ * Return a javascript object
+ */
+Util.fnResultToObject = function(result) {
+	var returnObject;
+
+	if(result instanceof mongoose.Model){
+		returnObject = result.toObject();
+	}else if(result instanceof Array){
+		returnObject = result.map(function(obj){
+			if(obj instanceof mongoose.Model){
+				return obj.toObject();
+			}
+		});
+	}else{
+		returnObject = result;
+	}
+	return returnObject;
+};
 
 /**
  * Error handler after action execution in database. Return a javascript object
  */
-fnProcessResultService = function(err, result, callback) {
+Util.fnProcessResultService = function(err, result, callback) {
 	var returnObject;
 
 	if (err){
@@ -31,16 +52,26 @@ fnProcessResultService = function(err, result, callback) {
 	}
 };
 
+
 /**
  * Common Processing of the result returned by business service
  */
-fnProcessResultController = function(err, res, result){
+Util.fnProcessServicePromiseInController = function(promise,res){
+	
+	return promise.then(function(result){
+		return res.jsonp(Util.fnResultToObject(result));
+	}).then(null, function (err) {
+		errorUtil.fnHandleErrorMW(err,res);
+	});
+};
+
+/**
+ * Common Processing of the result returned by business service
+ */
+Util.fnProcessResultController = function(err, res, result){
 	if(err){
 		return errorUtil.fnHandleErrorMW(err,res);
 	}else{
 		res.jsonp(result);			
 	}
 };
-
-exports.fnProcessResultService		= fnProcessResultService;
-exports.fnProcessResultController	= fnProcessResultController;

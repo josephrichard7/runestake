@@ -14,6 +14,8 @@ var _ 					= require('lodash'),
 	enumServiceType		= require('../utilities/enums/servicetype'),
 	accountService 		= require('../services/account');
 
+Promise.promisifyAll(require("mongoose"));	
+
 var stateMachine = {};
 stateMachine[enumServiceState.CREATED] = {};
 stateMachine[enumServiceState.CREATED][enumServiceState.ASSIGNED] 	= true;
@@ -22,61 +24,44 @@ stateMachine[enumServiceState.ASSIGNED] = {};
 stateMachine[enumServiceState.ASSIGNED][enumServiceState.COMPLETED] = true;
 stateMachine[enumServiceState.ASSIGNED][enumServiceState.DESISTED] 	= true;
 
-ServiceService.fnReadByID = function(id, callback) {
-	ServiceEntity
-	.findById(id)
-	.exec(function(err, result){
-		util.fnProcessResultService(err, result, callback);
-	});
+ServiceService.fnReadByID = function(id) {
+	return ServiceEntity.findById(id).exec();
 };
 
-ServiceService.fnVerifyBalanceForCashOut = function(userId, chipAmount, callback){
-	accountService.fnGetBalanceByUserId(serviceEntity.gambler,function(err, accountBalance){
-		if(err){
-			callback(err);
-		}else{
-			if(chipAmount > accountBalance){
-				callback(new Error('Your account balance is not enough for cash out requested.'));
-			}else{
-				callback();
-			}
+ServiceService.fnVerifyBalanceForCashOut = function(userId, chipAmount){
+	return accountService.fnGetBalanceByUserId(userId).then(function(accountBalance){
+		if(chipAmount > accountBalance){
+			throw new Error('Your account balance is not enough for cash out requested.');
 		}
 	});
 };
 
-ServiceService.fnCreate = function(serviceVO, callback){
+ServiceService.fnCreate = function(serviceVO){
 	var serviceEntity 	= {};
-	var account 		= {};
 
-	//Initialize entity
-	serviceEntity = new ServiceEntity(serviceVO);
-
-	async.waterfall([
-	], function(){
-
-	});
-
-	ServiceService.fnVerifyBalanceForCashOut(serviceEntity, function(err){
-		if(err){
-			util.fnProcessResultService(err, null, callback);
-		}else{
-			// Add missing default fields
-			serviceEntity.amountConverted 	= serviceEntity.amount * serviceEntity.rate;
-			serviceEntity.state 			= enumServiceState.CREATED;
-
-			// Save the entity 
-			serviceEntity.save(function(err, serviceEntityResult){
-				if(err){
-					util.fnProcessResultService(err, null, callback);
-				}else{
-					util.fnProcessResultService(err, serviceEntityResult, callback);
-				}
-			});
-
-			util.fnProcessResultService(err, serviceEntityResult, callback);
+	return Promise.resolve(0)
+	.then(function(){
+		//Initialize entity
+		serviceEntity = new ServiceEntity(serviceVO);
+	})
+	.then(function(){
+		if(serviceEntity.amount === 0){
+			throw new Error('Amount must be greater than 0.');
 		}
-	});
+		if(serviceEntity.type === enumServiceType.CASHOUT){
+			return ServiceService.fnVerifyBalanceForCashOut(serviceEntity.gambler, serviceEntity.amount);	
+		}
+	})
+	.then(function(){
 
+		// Add missing default fields
+		serviceEntity.amountConverted 	= serviceEntity.amount * serviceEntity.rate;
+		serviceEntity.state 			= enumServiceState.CREATED;
+
+		// Save the entity 
+		serviceEntity.save();
+		return serviceEntity;
+	});
 };
 
 ServiceService.fnRead = function(serviceVO, callback) {
@@ -138,8 +123,8 @@ ServiceService.fnListByGambler = function(id, callback){
 	.find()
 	.sort('-createdDate')
 	.populate({
-	    path: 'trader'
-	  , select: 'username'
+	    path: 'trader',
+	  	select: 'username'
 	})
 	.where('gambler').equals(id)
 	.exec(function(err, result){
@@ -152,8 +137,8 @@ ServiceService.fnListByTrader = function(id, callback){
 	.find()
 	.sort('-createdDate')
 	.populate({
-	    path: 'gambler'
-	  , select: 'username'
+	    path: 'gambler',
+	   	select: 'username'
 	})
 	.where('trader').equals(id)
 	.exec(function(err, result){

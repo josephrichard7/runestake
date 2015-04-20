@@ -12,11 +12,10 @@ var util 		 	  	= require('../utilities/util'),
 module.exports	= ServiceController;
 
 ServiceController.fnReadByID = function(req, res) {
-	var id = req.params.id || req.body.id;
+	var id 		= req.params.id || req.body.id;
+	var promise = serviceService.fnReadByID(id);
 
-	serviceService.fnReadByID(id, function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
+	util.fnProcessServicePromiseInController(promise, res);
 };
 
 ServiceController.fnCancelar = function(req, res) {
@@ -28,13 +27,14 @@ ServiceController.fnCancelar = function(req, res) {
 };
 
 ServiceController.fnCreate = function(req,res){
-	var requestVO = req.body;
+	var requestVO 	= req.body;
+	var promise 	= {};
 
 	requestVO.gambler = req.user.id;
 
-	serviceService.fnCreate(requestVO, function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
+	promise = serviceService.fnCreate(requestVO); 
+
+	util.fnProcessServicePromiseInController(promise, res);
 };
 
 ServiceController.fnRead = function(req, res) {

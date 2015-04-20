@@ -17,14 +17,30 @@ angular.module('gamblermain').config(['$stateProvider',
 		.state('gamblermainState.cashier', {
 			abstract: true,
 			url: '/panel/cashier',
-			templateUrl: 'modules/gamblermain/views/cashier.gamblermain.client.view.html'
+			views: {
+				'':{
+					templateUrl: 'modules/gamblermain/views/cashier.gamblermain.client.view.html'
+				},
+				'ServicesHistoryCashierGamblermainView@gamblermainState.cashier': {
+					templateUrl: 'modules/gamblermain/views/serviceshistory.cashier.gamblermain.client.view.html'
+				}
+		    }
 		})
 		.state('gamblermainState.cashier.createsrv', {
-			url: ''
+			url: '/createsrv',
+			views: {
+				'@gamblermainState.cashier': {
+					templateUrl: 'modules/gamblermain/views/createsrv.cashier.gamblermain.client.view.html'
+				}
+		    }
 		})
 		.state('gamblermainState.cashier.assigningsrv', {
 			url: '/assigningsrv/:id',
-			templateUrl: 'modules/gamblermain/views/assigningsrv.cashier.gamblermain.client.view.html'
+			views: {
+				'@gamblermainState.cashier': {
+					templateUrl: 'modules/gamblermain/views/assigningsrv.cashier.gamblermain.client.view.html'
+				}
+		    }
 		})
 		// .state('gamblermainState.srvcanceled', {
 		// 	url: '/panel/cashier/srvcanceled/:id',

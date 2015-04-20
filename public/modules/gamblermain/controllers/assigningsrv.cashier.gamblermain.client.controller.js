@@ -14,20 +14,21 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
     vm.fnCancelService  = fnCancelService;
 
     /*jshint latedef: false*/
-    function fnCancelService(){
-      vm.gamblermainSrv.fnCancelService(function(err, service){
-        if(err){
-          vm.error = err;
-        }else{
-          $location.path('/gamblermain/panel/cashier/srvcanceled/' + service._id);
-        }
-      });
+    function fnInit(){
+      vm.gamblermainSrv = gamblermainSrv;
+      
+      gamblermainSrv.error     = undefined;
+      gamblermainSrv.fnReadServiceById($stateParams.id);
     }
 
-    function fnInit(){
-      vm.gamblermainSrv           = gamblermainSrv;
-
-      vm.gamblermainSrv.fnReadServiceById($stateParams.id);
+    function fnCancelService(){
+      gamblermainSrv.fnCancelService(gamblermainSrv.service._id)
+      .then(function(service){
+        return gamblermainSrv.fnLoadListServices();
+      })
+      .then(function(listServices){
+        $location.path('/gamblermain/panel/cashier/createsrv');
+      });
     }
 
   }

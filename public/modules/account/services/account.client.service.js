@@ -1,10 +1,12 @@
 'use strict';
 
 angular.module(ApplicationConfiguration.modules.account)
-.factory(ApplicationConfiguration.services.account, 
+.service(ApplicationConfiguration.services.account, 
 	['$resource',
 	function($resource) {
-		return $resource('account/:id/user/:userId', {
+		var _this = this;
+
+		_this.accountResource = $resource('account/:id/user/:userId', {
 			id: '@_id',
 			userId: '@userId'
 		}, {
@@ -12,5 +14,11 @@ angular.module(ApplicationConfiguration.modules.account)
 				method: 'PUT'
 			}
 		});
+
+		_this.fnReadAccountByUserId = function(userId){
+			return _this.accountResource.get({
+				userId: userId
+			}).$promise;
+		};
 	}
 ]);

@@ -60,13 +60,13 @@ AccountService.fnReadByUserId = function(userId, callback) {
 	});
 };
 
-AccountService.fnGetBalanceByUserId = function(userId, callback){
-	AccountService.fnReadByUserId(userId, function(err, account){
-		if(err){
-			callback(err);
-		}else{
-			callback(null, account.balance);
-		}
+AccountService.fnGetBalanceByUserId = function(userId){
+	return AccountEntity
+	.findOne()
+	.where({user: userId})
+	// .lean(true) // return plain objects, not mongoose models.
+	.exec().then(function(account){
+		return account.balance;
 	});
 };
 

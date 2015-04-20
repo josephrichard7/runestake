@@ -18,62 +18,30 @@ angular.module(ApplicationConfiguration.modules.service)
 			}
 		});
 
-		_this.fnCancelService = function (id, callback){
+		_this.fnCancelService = function (id){
 			var serviceCancel = new _this.serviceCancelResource();
 			
 			serviceCancel.id = id;
 
-			serviceCancel.$cancel({
+			return serviceCancel.$cancel({
 				serviceId: id
-			}, function(response) {
-				if(callback){
-					callback(null, response);
-				}
-			}, function(errorResponse) {
-				if(callback){
-					callback(errorResponse.data.message);
-				}
 			});
 		};
 
-		_this.fnCreateService = function (serviceVO, callback){
+		_this.fnCreateService = function (serviceVO){
 			var service = new _this.serviceResource(serviceVO);
 			
-			service.$save(function(response) {
-				if(callback){
-					callback(null, response);
-				}
-			}, function(errorResponse) {
-				if(callback){
-					callback(errorResponse.data.message);
-				}
-			});
+			return service.$save();
 		};
 
-		_this.fnLoadListServices = function (callback){
-			_this.serviceResource.query(function(response) {
-				if(callback){
-					callback(null, response);
-				}
-			}, function(errorResponse) {
-				if(callback){
-					callback(errorResponse.data.message);
-				}
-			});
+		_this.fnLoadListServices = function (){
+			return _this.serviceResource.query().$promise;
 		};
 
-		_this.fnReadServiceById = function (id, callback){
-			_this.serviceResource.get({
+		_this.fnReadServiceById = function (id){
+			return _this.serviceResource.get({
 				serviceId: id
-			},function(response) {
-				if(callback){
-					callback(null, response);
-				}
-			}, function(errorResponse) {
-				if(callback){
-					callback(errorResponse.data.message);
-				}
-			});
+			}).$promise;
 		};
 		
 	}
