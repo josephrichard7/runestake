@@ -12,23 +12,21 @@ var _ 				= require('lodash'),
 	AccountEntity 	= mongoose.model('Account');
 
 AccountService.fnReadByID = function(id, callback) {
-	AccountEntity
-	.findById(id)
-	// .lean(true) // return plain objects, not mongoose models.
-	.exec(function(err, result){
-		util.fnProcessResultService(err, result, callback);
-	});
+	return AccountEntity.findById(id).exec();
 };
 
 AccountService.fnCreate = function(accountVO, callback){
 	var accountEntity = {};
 
-	//Initialize entity
-	accountEntity = new AccountEntity(accountVO);
-
-	// Save the entity 
-	accountEntity.save(function(err, accountEntityResult){
-		util.fnProcessResultService(err, accountEntityResult, callback);
+	Promise.resolve(0)
+	.then(function(){
+		//Initialize entity
+		accountEntity = new AccountEntity(accountVO);	
+	})
+	.then(function(){
+		// Save the entity 
+		accountEntity.save();
+		return accountEntity;
 	});
 };
 

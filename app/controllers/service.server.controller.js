@@ -11,19 +11,18 @@ var util 		 	  	= require('../utilities/util'),
 
 module.exports	= ServiceController;
 
-ServiceController.fnReadByID = function(req, res) {
-	var id 		= req.params.id || req.body.id;
-	var promise = serviceService.fnReadByID(id);
+ServiceController.fnAssignTrader = function(req,res){
+	var requestVO 	= req.body;
+	var promise 	= serviceService.fnUpdate(requestVO);
 
 	util.fnProcessServicePromiseInController(promise, res);
 };
 
 ServiceController.fnCancelar = function(req, res) {
-	var id = req.params.id || req.body.id;
+	var id 		= req.params.id || req.body.id;
+	var promise = serviceService.fnCancelar(id);
 
-	serviceService.fnCancelar(id, function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
+	util.fnProcessServicePromiseInController(promise, res);
 };
 
 ServiceController.fnCreate = function(req,res){
@@ -37,40 +36,22 @@ ServiceController.fnCreate = function(req,res){
 	util.fnProcessServicePromiseInController(promise, res);
 };
 
-ServiceController.fnRead = function(req, res) {
-	var requestVO = req.body;
-
-	serviceService.fnRead(requestVO, function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
-};
-
-ServiceController.fnUpdate = function(req,res){
-	var requestVO = req.body;
-
-	serviceService.fnUpdate(requestVO, function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
-};
-
-ServiceController.fnDelete = function(req,res){
-	var id = req.params.id || req.body.id;
-
-	serviceService.fnDelete(id, function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
-};
-
 ServiceController.fnList = function(req,res){
-	var id = req.user.id || req.params.id || req.body.id;
+	var id 		= req.user.id || req.params.id || req.body.id;
+	var promise = {};
 
 	if(req.user.role === enumUserRole.GAMBLER){
-		serviceService.fnListByGambler(id, function(err, resultVO){
-			return util.fnProcessResultController(err, res, resultVO);
-		});	
+		promise = serviceService.fnListByGambler(id);
 	}else if(req.user.role === enumUserRole.TRADER){
-		serviceService.fnListByTrader(id, function(err, resultVO){
-			return util.fnProcessResultController(err, res, resultVO);
-		});		
+		promise = serviceService.fnListByTrader(id);
 	}
+
+	util.fnProcessServicePromiseInController(promise, res);
+};
+
+ServiceController.fnReadByID = function(req, res) {
+	var id 		= req.params.id || req.body.id;
+	var promise = serviceService.fnReadByID(id);
+
+	util.fnProcessServicePromiseInController(promise, res);
 };

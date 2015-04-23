@@ -37,7 +37,7 @@ ChatService.prototype.fnNewUser = function(socket, chatSocketNsp){
 
 		++chatSocketNsp.numConnectedUsers;
 
-		// echo globally (all clients) that a person has connected
+		// Send user joined to others connected
 		socket.broadcast.emit(enumChatEvent.app.USER_JOINED, {
 			username: 			socket.username,
 			numConnectedUsers: 	chatSocketNsp.numConnectedUsers,
@@ -62,7 +62,7 @@ ChatService.prototype.fnDisconnection = function(socket, chatSocketNsp){
 			--chatSocketNsp.numConnectedUsers;
 
 			// echo globally that this client has left, including me
-			socket.broadcast.emit(enumChatEvent.app.USER_LEFT, {
+			chatSocketNsp.emit(enumChatEvent.app.USER_LEFT, {
 				username: 			socket.username,
 				numConnectedUsers: 	chatSocketNsp.numConnectedUsers,
 				listConnectedUsers: _.values(chatSocketNsp.listConnectedUsers)
