@@ -7,15 +7,16 @@ var AccountService = {};
  */
 var _ 				= require('lodash'),
 	Promise			= require('bluebird'),
-	util 			= require('../utilities/util'),
 	mongoose 		= require('mongoose'),
 	AccountEntity 	= mongoose.model('Account');
 
-AccountService.fnReadByID = function(id, callback) {
+module.exports = AccountService;
+
+AccountService.fnReadByID = function(id) {
 	return AccountEntity.findById(id).exec();
 };
 
-AccountService.fnCreate = function(accountVO, callback){
+AccountService.fnCreate = function(accountVO){
 	var accountEntity = {};
 
 	Promise.resolve(0)
@@ -30,32 +31,26 @@ AccountService.fnCreate = function(accountVO, callback){
 	});
 };
 
-AccountService.fnUpdate = function(accountVO, callback){
+AccountService.fnUpdate = function(accountVO){
 	var accountVOtoUpd	= accountVO;
 
 	// Get entity by Id
-	AccountEntity.findById(accountVO._id, function(err, resultReadEntity){
-		if(err || !resultReadEntity){
-			util.fnProcessResultService(err, null, callback);
-		}else{
-			// Map body request fields to model object
-			resultReadEntity	= _.extend(resultReadEntity, accountVOtoUpd);
+	return AccountService.fnReadByID(accountVO._id)
+	.then(function(resultReadEntity){
+		// Map body request fields to model object
+		resultReadEntity	= _.extend(resultReadEntity, accountVOtoUpd);
 
-			resultReadEntity.save(function(err, resultSaveEntity){
-				util.fnProcessResultService(err, resultSaveEntity, callback);
-			});
-		}
+		resultReadEntity.save();
+		return resultReadEntity;
 	});
 };
 
-AccountService.fnReadByUserId = function(userId, callback) {
-	AccountEntity
+AccountService.fnReadByUserId = function(userId) {
+	return AccountEntity
 	.findOne()
 	.where({user: userId})
 	// .lean(true) // return plain objects, not mongoose models.
-	.exec(function(err, result){
-		util.fnProcessResultService(err, result, callback);
-	});
+	.exec();
 };
 
 AccountService.fnGetBalanceByUserId = function(userId){
@@ -67,5 +62,3 @@ AccountService.fnGetBalanceByUserId = function(userId){
 		return account.balance;
 	});
 };
-
-module.exports = AccountService;

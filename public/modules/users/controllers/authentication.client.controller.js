@@ -15,6 +15,8 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
 				// And redirect to the index page
 				if($scope.authentication.user.role === 'GAMBLER'){
 					$location.path('/gamblermain/panel');
+				}else if($scope.authentication.user.role === 'TRADER'){
+					$location.path('/tradermain/panel');
 				}else{
 					$location.path('/');
 				}
@@ -32,6 +34,8 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
 				// And redirect to the index page
 				if($scope.authentication.user.role === 'GAMBLER'){
 					$location.path('/gamblermain/panel');
+				}else if($scope.authentication.user.role === 'TRADER'){
+					$location.path('/tradermain/panel');
 				}else{
 					$location.path('/');
 				}

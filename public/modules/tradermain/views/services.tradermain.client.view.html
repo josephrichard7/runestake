@@ -1,0 +1,24 @@
+<div class="panel panel-primary" data-ng-controller="ServicesTradermainController as controller" data-ng-init="controller.fnInit()">	
+	<ol class="breadcrumb">
+		<li><a href="/#!/tradermain/panel">Control panel</a></li>
+		<li class="active">Services</li>
+	</ol>
+	<div class="panel-body">
+		<tabset>
+			<tab heading="Services">
+				<div data-ui-view="ServicesAttendingTradermainView">
+				</div>
+			</tab>
+			<tab heading="Services History">
+				<div data-ui-view="HistoryServicesTradermainView">
+				</div>
+			</tab>
+		</tabset>
+		<div data-ng-show="controller.tradermainSrv.error" class="text-danger text-center">
+			<strong data-ng-bind="controller.tradermainSrv.error"></strong>
+		</div>
+		<div data-ng-show="controller.tradermainSrv.info" class="text-success text-center">
+			<strong data-ng-bind="controller.tradermainSrv.info"></strong>
+		</div>
+	</div>
+</div>

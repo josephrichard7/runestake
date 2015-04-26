@@ -36,6 +36,13 @@ ServiceController.fnCreate = function(req,res){
 	util.fnProcessServicePromiseInController(promise, res);
 };
 
+ServiceController.fnDesist = function(req, res) {
+	var id 		= req.params.id || req.body.id;
+	var promise = serviceService.fnDesist(id);
+
+	util.fnProcessServicePromiseInController(promise, res);
+};
+
 ServiceController.fnList = function(req,res){
 	var id 		= req.user.id || req.params.id || req.body.id;
 	var promise = {};

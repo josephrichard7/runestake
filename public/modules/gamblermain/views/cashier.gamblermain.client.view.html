@@ -4,6 +4,9 @@
 		<li class="active">Cashier</li>
 	</ol>
 	<div class="panel-body">
+		<div data-ng-show="controller.gamblermainSrv.info && !controller.gamblermainSrv.error" class="text-success text-center">
+			<strong data-ng-bind="controller.gamblermainSrv.info"></strong>
+		</div>
 		<tabset>
 			<tab heading="Trade">
 				<div data-ui-view>

@@ -40,7 +40,10 @@
 		<ul class="nav navbar-nav navbar-right" data-ng-show="authentication.user">
 			<li>
 				<div>
-					<a class="btn btn-primary navbar-btn btn-sm" href="/#!/gamblermain/panel">
+					<a class="btn btn-primary navbar-btn btn-sm" data-ng-if="authentication.user.role === 'GAMBLER'" href="/#!/gamblermain/panel">
+						<span class="glyphicon glyphicon-home"></span>
+					</a>
+					<a class="btn btn-primary navbar-btn btn-sm" data-ng-if="authentication.user.role === 'TRADER'" href="/#!/tradermain/panel">
 						<span class="glyphicon glyphicon-home"></span>
 					</a>
 				</div>

@@ -1,55 +1,45 @@
 'use strict';
 
+var AccountController = {};
+
 /**
  * Module dependencies.
  */
-var _ 				  = require('lodash'),
-	util 		 	  = require('../utilities/util'),
+var util 		 	  = require('../utilities/util'),
 	accountService 	  = require('../services/account'),
 	enumUserRole 	  = require('../utilities/enums/userrole');
 
-/**
- * Functions
- */
-var fnReadByID,
-	fnCreate,
-	fnUpdate,
-	fnReadByUserId,
-	hasAuthorization;
+module.exports = AccountController;
 
-fnReadByID = function(req, res) {
-	var id = req.params.id || req.body.id;
+AccountController.fnReadByID = function(req, res) {
+	var id 		= req.params.id || req.body.id;
+	var promise = accountService.fnReadByID(id);
 
-	accountService.fnReadByID(id, function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
+	util.fnProcessServicePromiseInController(promise, res);
 };
 
-fnCreate = function(req,res){
-	var requestVO = req.body;
+// AccountController.fnCreate = function(req,res){
+// 	var requestVO 	= req.body;
+// 	var promise 	= accountService.fnCreate(requestVO);
 
-	accountService.fnCreate(requestVO, function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
+// 	util.fnProcessServicePromiseInController(promise, res);
+// };
+
+// AccountController.fnUpdate = function(req,res){
+// 	var requestVO 	= req.body;
+// 	var promise 	= accountService.fnUpdate(requestVO);
+
+// 	util.fnProcessServicePromiseInController(promise, res);
+// };
+
+AccountController.fnReadByUserId = function(req, res) {
+	var userId 	= req.params.userId || req.body.userId;
+	var promise = accountService.fnReadByUserId(userId);
+
+	util.fnProcessServicePromiseInController(promise, res);
 };
 
-fnUpdate = function(req,res){
-	var requestVO = req.body;
-
-	accountService.fnUpdate(requestVO, function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
-};
-
-fnReadByUserId = function(req, res) {
-	var userId = req.params.userId || req.body.userId;
-
-	accountService.fnReadByUserId(userId, function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
-};
-
-hasAuthorization = function(req,res,next){
+AccountController.hasAuthorization = function(req,res,next){
 	var userId 			= req.params.userId || req.body.userId || req.params.id || req.body.id;
 	var userIdLogged	= req.user.id;
 
@@ -64,7 +54,3 @@ hasAuthorization = function(req,res,next){
 	}
 	next();
 };
-
-exports.fnReadByID 			= fnReadByID;
-exports.fnReadByUserId 		= fnReadByUserId;
-exports.hasAuthorization	= hasAuthorization;

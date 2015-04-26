@@ -134,6 +134,22 @@ module.exports = function(config, db) {
 	app.use(helmet.ienoopen());
 	app.disable('x-powered-by');
 
+	//TODO validar contra una configuracion si puede cargar el archivo HTML de la vista segun el rol del usuario.
+	// app.use('/modules/gamblermain/views/gamblermain.client.view.html', function(req, res, next){  
+	//     var url = req.originalUrl;
+
+	//     if(url === '/gamblermain/panel'){
+
+	// 	    res.status(404).render('404', {
+	// 			url: req.originalUrl,
+	// 			error: 'Not Found'
+	// 		});	
+	//     }else{
+	//     	next();
+	//     }
+	//     
+	// });
+
 	// Setting the app router and static folder
 	app.use(express.static(path.resolve(config.appPaths.public)));
 

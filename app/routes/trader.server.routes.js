@@ -12,7 +12,7 @@ module.exports = function(app) {
 	app.route('/trader').post(userController.hasAuthorization([enumUserrole.ADMIN]), traderController.fnCreate)
 						.get (userController.hasAuthorization([enumUserrole.ADMIN]), traderController.fnList);
 
-	app.route('/trader/:id').get   (userController.hasAuthorization([enumUserrole.ADMIN]), traderController.fnReadByID)
+	app.route('/trader/:id').get   (userController.hasAuthorization([enumUserrole.ADMIN, enumUserrole.TRADER]), traderController.fnReadByID)
 							.put   (userController.hasAuthorization([enumUserrole.ADMIN]), traderController.fnUpdate)
 							.delete(userController.hasAuthorization([enumUserrole.ADMIN]), traderController.fnDelete);
 };

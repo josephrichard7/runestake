@@ -3,62 +3,63 @@
 /**
  * Module dependencies.
  */
-var _ 			 = require('lodash'),
-	errorUtil 	 = require('../../utilities/error'),
-	mongoose 	 = require('mongoose'),
-	passport 	 = require('passport'),
-	User 		 = mongoose.model('User'),
-	enumUserRole = require('../../utilities/enums/userrole'),
-	accountService = require('../../services/account');
+var errorUtil 	 	= require('../../utilities/error'),
+	mongoose 	 	= require('mongoose'),
+	passport 	 	= require('passport'),
+	User 		 	= mongoose.model('User'),
+	accountService 	= require('../../services/account');
 
 /**
  * Signup
  */
 exports.signup = function(role) {
-	return function(req,res,next){
+	return function(req,res){
+		var user 		= {};
+		var message 	= '';
+		var accountVO 	= {};
 
 		// For security measurement we remove the roles from the req.body object
 		delete req.body.role;
 
 		// Init Variables
-		var user = new User(req.body);
-		var message = null;
-		var accountVO = {};
+		user = new User(req.body);
 
 		// Add missing user fields
-		user.provider = 'local';
-		user.displayName = user.firstName + ' ' + user.lastName;
-		user.role = role;
+		user.provider 		= 'local';
+		user.displayName 	= user.firstName + ' ' + user.lastName;
+		user.role 			= role;
 
 		// Then save the user 
 		user.save(function(err, userResult) {
 			if (err) {
+				message = errorUtil.getErrorMessage(err);
 				return res.status(400).send({
-					message: errorUtil.getErrorMessage(err)
+					message: message
 				});
 			} else {
 				// Remove sensitive data before login
 				userResult.password = undefined;
-				userResult.salt = undefined;
+				userResult.salt 	= undefined;
 
 				// Create Account
 				accountVO.user 	  = userResult;
 				accountVO.balance = 0;
 				
-				accountService.fnCreate(accountVO,function(err, accountVOResult){
-					if (err) {
-						return res.status(400).send({
-							message: errorUtil.getErrorMessage(err)
-						});
-					}else{
-						req.login(userResult, function(err) {
-							if (err) {
-								res.status(400).send(err);
-							} else {
-								res.jsonp(userResult);
-							}
-						});
-					}
+				accountService.fnCreate(accountVO)
+				.then(function(accountVOResult){
+					req.login(userResult, function(err) {
+						if (err) {
+							res.status(400).send(err);
+						} else {
+							res.jsonp(userResult);
+						}
+					});
+				})
+				.catch(function(err){
+					message = errorUtil.getErrorMessage(err);
+					return res.status(400).send({
+						message: message
+					});
 				});
 
 			}

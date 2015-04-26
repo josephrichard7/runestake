@@ -1,7 +1,6 @@
 'use strict';
 
-// Configuring the Articles module
-angular.module('gamblermain').run(['Menus',
+angular.module(ApplicationConfiguration.modules.gamblermain).run(['Menus',
 	function(Menus) {
 		// Set top bar menu items
 		// Menus.addMenuItem('topbar', 'Trader', 'trader', 'dropdown', '/trader(/create)?', false, ['ADMIN']);

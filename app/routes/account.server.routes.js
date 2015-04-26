@@ -13,7 +13,7 @@ module.exports = function(app) {
 	// Get account by id
 	app.route('/account/:id')
 	.get(
-		userController.hasAuthorization([enumUserrole.ADMIN,enumUserrole.GAMBLER]),
+		userController.hasAuthorization([enumUserrole.ADMIN, enumUserrole.GAMBLER]),
 		accountController.hasAuthorization,
 		accountController.fnReadByID
 	);
@@ -21,7 +21,7 @@ module.exports = function(app) {
 	// Get account by userid
 	app.route('/account/user/:userId')
 	.get(
-		userController.hasAuthorization([enumUserrole.ADMIN,enumUserrole.GAMBLER]),
+		userController.hasAuthorization([enumUserrole.ADMIN, enumUserrole.GAMBLER, enumUserrole.TRADER]),
 		accountController.hasAuthorization,
 		accountController.fnReadByUserId
 	);				 

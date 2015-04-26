@@ -1,7 +1,8 @@
 'use strict';
 
 // Setting up route
-angular.module('gamblermain').config(['$stateProvider',
+angular.module(ApplicationConfiguration.modules.gamblermain)
+.config(['$stateProvider',
 	function($stateProvider) {
 		// State routing
 		$stateProvider
@@ -39,6 +40,14 @@ angular.module('gamblermain').config(['$stateProvider',
 			views: {
 				'@gamblermainState.cashier': {
 					templateUrl: 'modules/gamblermain/views/assigningsrv.cashier.gamblermain.client.view.html'
+				}
+		    }
+		})
+		.state('gamblermainState.cashier.srvassigned', {
+			url: '/srvassigned/:id',
+			views: {
+				'@gamblermainState.cashier': {
+					templateUrl: 'modules/gamblermain/views/srvassigned.cashier.gamblermain.client.view.html'
 				}
 		    }
 		})

@@ -1,70 +1,52 @@
 'use strict';
 
+var TraderController = {};
+
 /**
  * Module dependencies.
  */
-var util 		 	  = require('../utilities/util'),
-	traderService 	  = require('../services/trader');
+var util 		 	= require('../utilities/util'),
+	traderService 	= require('../services/trader');
 
-/**
- * Functions
- */
-var fnReadByID,
-	fnCreate,
-	fnRead,
-	fnUpdate,
-	fnDelete,
-	fnList;
+module.exports = TraderController;
 
-fnReadByID = function(req, res) {
-	var id = req.params.id || req.body.id;
+TraderController.fnReadByID = function(req, res) {
+	var id 		= req.params.id || req.body.id;
+	var promise = traderService.fnReadByID(id);
 
-	traderService.fnReadByID(id, function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
+	util.fnProcessServicePromiseInController(promise, res);
 };
 
-fnCreate = function(req,res){
-	var requestVO = req.body;
+TraderController.fnCreate = function(req,res){
+	var requestVO 	= req.body;
+	var promise 	= traderService.fnCreate(requestVO);
 
-	traderService.fnCreate(requestVO, function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
+	util.fnProcessServicePromiseInController(promise, res);
 };
 
-fnRead = function(req, res) {
-	var requestVO = req.body;
+TraderController.fnRead = function(req, res) {
+	var requestVO 	= req.body;
+	var promise 	= traderService.fnRead(requestVO);
 
-	traderService.fnRead(requestVO, function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
+	util.fnProcessServicePromiseInController(promise, res);
 };
 
-fnUpdate = function(req,res){
-	var requestVO = req.body;
+TraderController.fnUpdate = function(req,res){
+	var requestVO 	= req.body;
+	var promise 	= traderService.fnUpdate(requestVO);
 
-	traderService.fnUpdate(requestVO, function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
+	util.fnProcessServicePromiseInController(promise, res);
 };
 
-fnDelete = function(req,res){
-	var id = req.params.id || req.body.id;
+TraderController.fnDelete = function(req,res){
+	var id 		= req.params.id || req.body.id;
+	var promise = traderService.fnDelete(id);
 
-	traderService.fnDelete(id, function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
+	util.fnProcessServicePromiseInController(promise, res);
 };
 
-fnList = function(req,res){
-	traderService.fnList(function(err, resultVO){
-		return util.fnProcessResultController(err, res, resultVO);
-	});
-};
+TraderController.fnList = function(req,res){
+	var promise = traderService.fnList();
 
-exports.fnReadByID 	= fnReadByID;
-exports.fnCreate    = fnCreate;
-exports.fnRead      = fnRead;
-exports.fnUpdate    = fnUpdate;
-exports.fnDelete	= fnDelete;
-exports.fnList      = fnList;
+	util.fnProcessServicePromiseInController(promise, res);
+};

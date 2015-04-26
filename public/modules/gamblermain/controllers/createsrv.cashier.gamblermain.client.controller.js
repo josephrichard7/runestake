@@ -74,6 +74,11 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
     function fnCreateService(){
       var amountConvertedOld  = vm.amountConverted;
 
+      if(!vm.amount || vm.amount === '' || !vm.amountConverted || vm.amountConverted === ''){
+        vm.gamblermainSrv.error = 'Amount must be specified.';
+        return;
+      }
+
       fnConvertAmountByRate(function(amountConverted){
         if(amountConvertedOld !== amountConverted){
           vm.gamblermainSrv.error = 'Amount converted has changed because rate has changed as well. Please review your request.';

@@ -1,16 +1,16 @@
 'use strict';
 
-angular.module(ApplicationConfiguration.modules.gamblermain)
-.controller('GamblerChatController', 
+angular.module(ApplicationConfiguration.modules.global)
+.controller('ChatController', 
   ['$scope',
-    ApplicationConfiguration.services.gamblerchat,
-  function($scope, GamblerChatService) {
+    ApplicationConfiguration.services.chat,
+  function($scope, ChatService) {
     // Private variables
     var vm = this;
 
     // View functions and variables
     vm.fnSendMessage  = fnSendMessage;
-    vm.chatService    = GamblerChatService.instance;
+    vm.chatService    = ChatService.instance;
     vm.enumUserRole   = {
       ADMIN:    'ADMIN',
       BANK:     'BANK',

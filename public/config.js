@@ -4,7 +4,7 @@
 var ApplicationConfiguration = (function() {
 	// Init module configuration options
 	var applicationModuleName 	= 'runestake';
-	var modules 				= {
+	var modules = {
 		account: 		'account',
 		articles: 		'articles',
 		chat: 			'chat',
@@ -13,16 +13,28 @@ var ApplicationConfiguration = (function() {
 		global: 		'global',
 		service: 		'service',
 		trader: 		'trader',
+		tradermain: 	'tradermain',
 		user: 			'user'
 	};
-	var services				= {
+	var services = {
 		account: 		'AccountService',
 		authentication: 'Authentication',
+		chat: 			'ChatService',
+		gamblerchat: 	'GamblerChatService',
 		gamblermain: 	'GamblermainService',
 		service: 		'ServiceService',
+		trader: 		'TraderService',
+		tradermain: 	'TradermainService'
 	};
-	var chats = {
-		gamblermain: '/chat'
+	var factories = {
+		chat: 			'ChatFactory',
+		socket: 		'SocketFactory'
+	};
+	var sockets = {
+		services: 		'/services'
+	};
+	var chats 	= {
+		chat: 			'/chat'
 	};
 	var applicationModuleVendorDependencies = ['ngResource', 'ngCookies',  'ngAnimate',  'ngTouch',  'ngSanitize',  'ui.router', 'ui.bootstrap', 'ui.utils', 'angularUtils.directives.dirPagination'];
 
@@ -39,8 +51,10 @@ var ApplicationConfiguration = (function() {
 		applicationModuleName: 					applicationModuleName,
 		applicationModuleVendorDependencies: 	applicationModuleVendorDependencies,
 		chats: 									chats,
+		factories: 								factories,
 		modules: 								modules,
 		services: 								services,
+		sockets: 								sockets,
 		registerModule: 						registerModule
 	};
 })();

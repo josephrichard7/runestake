@@ -5,8 +5,7 @@ var ServiceService = {};
 /**
  * Module dependencies.
  */
-var _ 					= require('lodash'),
-	Promise				= require('bluebird'),
+var Promise				= require('bluebird'),
 	mongoose 			= require('mongoose'),
 	ServiceEntity 		= mongoose.model('Service'),
 	enumServiceState	= require('../utilities/enums/servicestate'),
@@ -25,7 +24,7 @@ stateMachine[enumServiceState.ASSIGNED][enumServiceState.DESISTED] 	= true;
 
 ServiceService.fnAssignTrader = function(serviceId, traderId){
 	// Get entity by Id
-	return ServiceEntity.findById(serviceId)
+	return ServiceService.fnReadByID(serviceId)
 	.then(function(resultReadEntity){
 		resultReadEntity.trader = traderId;
 
@@ -38,7 +37,7 @@ ServiceService.fnAssignTrader = function(serviceId, traderId){
 };
 
 ServiceService.fnCancelar = function(id){
-	return ServiceService.fnUpdateState(id, enumServiceState.CANCELED);
+	return fnUpdateState(id, enumServiceState.CANCELED);
 };
 
 ServiceService.fnCreate = function(serviceVO){
@@ -52,6 +51,9 @@ ServiceService.fnCreate = function(serviceVO){
 	.then(function(){
 		if(serviceEntity.amount === 0){
 			throw new Error('Amount must be greater than 0.');
+		}
+		if(!serviceEntity.amount || serviceEntity.amount === ''){
+			throw new Error('Amount must be specified.');
 		}
 		if(serviceEntity.type === enumServiceType.CASHOUT){
 			return fnVerifyBalanceForCashOut(serviceEntity.gambler, serviceEntity.amount);	
@@ -70,6 +72,10 @@ ServiceService.fnCreate = function(serviceVO){
 		serviceEntity.save();
 		return serviceEntity;
 	});
+};
+
+ServiceService.fnDesist = function(id){
+	return fnUpdateState(id, enumServiceState.DESISTED);
 };
 
 ServiceService.fnListByGambler = function(id){
@@ -97,13 +103,23 @@ ServiceService.fnListByTrader = function(id){
 };
 
 ServiceService.fnReadByID = function(id) {
-	return ServiceEntity.findById(id).exec();
+	return ServiceEntity
+	.findById(id)
+	.populate({
+	    path: 'gambler',
+	   	select: 'username'
+	})
+	.populate({
+	    path: 'trader',
+	   	select: 'username'
+	})
+	.exec();
 };
 
 /*jshint latedef: false*/
 function fnUpdateState(id, state){
 	// Get entity by Id
-	return ServiceEntity.findById(id)
+	return ServiceService.fnReadByID(id)
 	.then(function(resultReadEntity){
 		if(!fnValidateStateMachine(resultReadEntity.state, state)){
 			throw new Error('State change invalid.');	
@@ -124,7 +140,8 @@ function fnValidateStateMachine(startState, endState){
 }
 
 function fnVerifyBalanceForCashOut(userId, chipAmount){
-	return accountService.fnGetBalanceByUserId(userId).then(function(accountBalance){
+	return accountService.fnGetBalanceByUserId(userId)
+	.then(function(accountBalance){
 		if(chipAmount > accountBalance){
 			throw new Error('Your account balance is not enough for cash out requested.');
 		}

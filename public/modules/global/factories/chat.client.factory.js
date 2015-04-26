@@ -2,7 +2,9 @@
 
 //Service for chat
 angular.module(ApplicationConfiguration.modules.global)
-.factory('ChatFactory', ['SocketFactory', 'Authentication',
+.factory(ApplicationConfiguration.factories.chat, 
+	[ApplicationConfiguration.factories.socket, 
+	 'Authentication',
 	function(SocketFactory, Authentication) {
 
 		function Chat(namespace){

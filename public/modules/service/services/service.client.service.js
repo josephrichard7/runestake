@@ -18,12 +18,30 @@ angular.module(ApplicationConfiguration.modules.service)
 			}
 		});
 
+		_this.serviceDesistResource = $resource('service/:serviceId/desist',{
+			serviceId: '@id'
+		},{
+			desist:{
+				method: 'PUT'
+			}
+		});
+
 		_this.fnCancelService = function (id){
 			var serviceCancel = new _this.serviceCancelResource();
 			
 			serviceCancel.id = id;
 
 			return serviceCancel.$cancel({
+				serviceId: id
+			});
+		};
+
+		_this.fnDesistService = function (id){
+			var serviceDesist = new _this.serviceDesistResource();
+			
+			serviceDesist.id = id;
+
+			return serviceDesist.$desist({
 				serviceId: id
 			});
 		};
