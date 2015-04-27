@@ -92,7 +92,7 @@ ServicesSocketService.fnGetShiftTrader = function(queueTraders){
  */
 ServicesSocketService.prototype.fnDisconnection = function(socket, servicesSocketNsp){
 	return function(){
-		if(socket.request.user.role === enumUserrole.TRADER){
+		if(socket.role === enumUserrole.TRADER){
 			if (servicesSocketNsp.listConnectedTraders[socket.username]) {
 				delete servicesSocketNsp.listConnectedTraders[socket.username];
 				ServicesSocketService.fnDeleteTraderFromQueue(socket.username, servicesSocketNsp.queueTraders);
@@ -104,7 +104,7 @@ ServicesSocketService.prototype.fnDisconnection = function(socket, servicesSocke
 				// 	listConnectedTraders: _.values(servicesSocketNsp.listConnectedTraders)
 				// });
 			}
-		}else if(socket.request.user.role === enumUserrole.GAMBLER){
+		}else if(socket.role === enumUserrole.GAMBLER){
 			if (servicesSocketNsp.listConnectedGamblers[socket.username]) {
 				delete servicesSocketNsp.listConnectedGamblers[socket.username];
 				
