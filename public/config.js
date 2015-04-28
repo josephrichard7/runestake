@@ -24,7 +24,8 @@ var ApplicationConfiguration = (function() {
 		gamblermain: 	'GamblermainService',
 		service: 		'ServiceService',
 		trader: 		'TraderService',
-		tradermain: 	'TradermainService'
+		tradermain: 	'TradermainService',
+		utilities: 		'UtilitiesService',
 	};
 	var factories = {
 		chat: 			'ChatFactory',
@@ -36,7 +37,17 @@ var ApplicationConfiguration = (function() {
 	var chats 	= {
 		chat: 			'/chat'
 	};
-	var applicationModuleVendorDependencies = ['ngResource', 'ngCookies',  'ngAnimate',  'ngTouch',  'ngSanitize',  'ui.router', 'ui.bootstrap', 'ui.utils', 'angularUtils.directives.dirPagination'];
+	var applicationModuleVendorDependencies = [
+		'ngResource', 
+		'ngCookies',  
+		'ngAnimate',  
+		'ngTouch',  
+		'ngSanitize',  
+		'ui.router', 
+		'ui.bootstrap', 
+		'ui.utils', 
+		'angularUtils.directives.dirPagination'
+	];
 
 	// Add a new vertical module
 	var registerModule = function(moduleName, dependencies) {

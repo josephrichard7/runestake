@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module(ApplicationConfiguration.modules.gamblermain)
+angular.module(ApplicationConfiguration.modules.global)
 .service(ApplicationConfiguration.services.chat, 
 	[ApplicationConfiguration.factories.chat,
 	function(ChatFactory) {

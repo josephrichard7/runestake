@@ -1,281 +1,445 @@
 'use strict';
 
-var _ 					= require('lodash'),
-	enumUserrole		= require('../utilities/enums/userrole'),
+var enumUserrole		= require('../utilities/enums/userrole'),
 	enumServicesSocket 	= require('../utilities/enums/servicessocketevent'),
-	serviceService 		= require('../services/service');
+	serviceService 		= require('../services/service'),
+	Service 			= require('../classes/service');
 
-module.exports = new ServicesSocketService();
+module.exports = ServicesSocketService;
 
 /*jshint latedef: false */
-function ServicesSocketService(){
+function ServicesSocketService(nsp){
+	this.nsp 					= nsp;
+	this.listConnectedTraders 	= {};
+	this.listConnectedGamblers 	= {};
+	this.listServices			= {};
+	this.queueTraders 			= [];
+	this.numberServices			= 0;
+
+	// Constants
+	this.TRADER_ROOM 			= 'TRADER_ROOM';
 }
 
-ServicesSocketService.fnAddService = function(serviceId, gambler, trader, listServices, order){	
-	var service = {
-		serviceId: 		serviceId,
-		gambler: 		gambler,
-		trader: 		trader,
-		order: 			order
+/** 
+ * Add a gambler to the list of connected gamblers.
+ *
+ */
+ServicesSocketService.prototype.fnAddConnectedGambler = function(socket){
+	this.listConnectedGamblers[socket.username] = {
+		user: 		socket.request.user,
+		socket: 	socket,
+		service: 	{}
 	};
-	listServices[serviceId] = service;
-
-	return service;
 };
 
 /** 
- * Called upon new client connects. Add new user to namespace.
+ * Add a trader to the list of connected traders.
  *
  */
-ServicesSocketService.prototype.fnConnectUser = function(socket, servicesSocketNsp){
+ServicesSocketService.prototype.fnAddConnectedTrader = function(socket){
+	this.listConnectedTraders[socket.username] = {
+		user: 			socket.request.user,
+		socket: 		socket,
+		listServices: 	{}
+	};
+};
+
+/** 
+ * Add a service created by the gambler.
+ *
+ */
+ServicesSocketService.prototype.fnAddService = function(id, gamblerSocket, traderSocket){
+	var service = new Service(
+		id,
+		gamblerSocket,
+		traderSocket,
+		this.nsp
+	);
+	
+	this.listServices[id] = service;
+	this.numberServices++;
+	
+	return service;
+};
+	
+/** 
+ * Connects a new gambler or trader.
+ *
+ */
+ServicesSocketService.prototype.fnConnectUser = function(socket){
+	socket.username = socket.request.user.username;
+
 	if(socket.request.user.role === enumUserrole.TRADER){
 		// Connect new trader to be ready to accept service requests
-		ServicesSocketService.fnConnectTrader(socket, servicesSocketNsp.listConnectedTraders);
+		this.fnConnectTrader(socket);
 	}else if(socket.request.user.role === enumUserrole.GAMBLER){
 		// Connect new gambler to a service room
-		ServicesSocketService.fnConnectGambler(socket, servicesSocketNsp.listConnectedGamblers);
+		this.fnConnectGambler(socket);
 	}
+
 	socket.emit(enumServicesSocket.app.CONNECTED_USER);
 };
 
 /** 
- * Called upon new gambler request a service.
+ * Connects a new gambler.
  *
  */
-ServicesSocketService.fnConnectGambler = function(socket, listConnectedGamblers){
-	if(socket.request.user.role === enumUserrole.GAMBLER && !listConnectedGamblers[socket.username]){
-		listConnectedGamblers[socket.username] = {
-			userId: 	socket.userId,
-			username: 	socket.username,
-			role: 		socket.role,
-			socket: 	socket
-		};
+ServicesSocketService.prototype.fnConnectGambler = function(socket){
+	var connectedGambler = this.fnGetConnectedGambler(socket.username);
+
+	if(connectedGambler){
+		connectedGambler.socket = socket;
+	}else{
+		this.fnAddConnectedGambler(socket);
+	}
+
+	// Event handlers
+	socket.on(enumServicesSocket.app.TRADERS_AVAILABLE,		this.fnTradersAvailable(socket));
+	socket.on(enumServicesSocket.app.CREATE_SERVICE, 		this.fnCreateService(socket));
+	socket.on(enumServicesSocket.app.NEW_MESSAGE_SERVICE, 	this.fnNewMessage(socket));
+	socket.on(enumServicesSocket.natives.DISCONNECT, 		this.fnDisconnection(socket));
+};
+
+/** 
+ * Connects a new trader.
+ *
+ */
+ServicesSocketService.prototype.fnConnectTrader = function(socket){
+	var connectedTrader = this.fnGetConnectedTrader(socket.username);
+
+	if(connectedTrader){
+		connectedTrader.socket = socket;
+	}else{
+		this.fnAddConnectedTrader(socket);
+	}
+
+	// Event handlers
+	socket.on(enumServicesSocket.app.START_WORK, 			this.fnTraderStartWork(socket));
+	socket.on(enumServicesSocket.app.STOP_WORKING, 			this.fnTraderStopWorking(socket));
+	socket.on(enumServicesSocket.app.NEW_MESSAGE_SERVICE, 	this.fnNewMessage(socket));
+	socket.on(enumServicesSocket.app.SERVICE_FINISHED, 		this.fnServiceFinished(socket));
+	socket.on(enumServicesSocket.natives.DISCONNECT, 		this.fnDisconnection(socket));
+};
+
+/** 
+ * Delete connected gambler
+ *
+ * @param {String} gamblerUsername
+ */
+ServicesSocketService.prototype.fnDeleteConnectedGambler = function (gamblerUsername){
+	delete this.listConnectedGamblers[gamblerUsername];
+};
+
+/** 
+ * Delete connected trader
+ *
+ * @param {String} traderUsername
+ */
+ServicesSocketService.prototype.fnDeleteConnectedTrader = function (traderUsername){
+	delete this.listConnectedTraders[traderUsername];
+};
+
+/** 
+ * Delete service from list of services, from list services of the traders and from gambler
+ *
+ * @param {String} serviceId
+ */
+ServicesSocketService.prototype.fnDeleteService = function (serviceId){
+	var service 			= this.fnGetService(serviceId);
+	var connectedTrader 	= this.fnGetConnectedTrader(service.traderSocket.username);
+	var connectedGambler 	= this.fnGetConnectedGambler(service.gamblerSocket.username);
+
+	// Delete from list of services
+	if(service && this.listServices[service.id]){
+		delete this.listServices[service.id];
+	}
+
+	// Delete from list services of the trader
+	if(connectedTrader && connectedTrader.listServices[service.id]){
+		delete connectedTrader.listServices[service.id];		
+	}
+
+	// Delete from service of the gambler
+	if(connectedGambler && connectedGambler.service && connectedGambler.service.id === service.id){
+		delete connectedGambler.service;
 	}
 };
 
 /** 
- * Called upon new trader connects.
+ * Delete a trader from queue
  *
  */
-ServicesSocketService.fnConnectTrader = function(socket, listConnectedTraders){
-	if(socket.request.user.role === enumUserrole.TRADER && !listConnectedTraders[socket.username]){
-		listConnectedTraders[socket.username] = {
-			userId: 		socket.userId,
-			username: 		socket.username,
-			role: 			socket.role,
-			socket: 		socket,
-			listServices: 	{}
-		};
-	}
-};
-
-ServicesSocketService.fnDeleteTraderFromQueue = function(trader, queueTraders){
-	var index = queueTraders.indexOf(trader);
+ServicesSocketService.prototype.fnDeleteTraderFromQueue = function(traderUsername){
+	var index = this.queueTraders.indexOf(traderUsername);
 	if(index >= 0){
-		queueTraders.splice(index,1);
-		ServicesSocketService.fnDeleteTraderFromQueue(trader, queueTraders);
+		this.queueTraders.splice(index,1);
+		this.fnDeleteTraderFromQueue(traderUsername);
 	}
 };
 
+/** 
+ * Called upon client disconnects. Disconnect gambler or trader from namespace.
+ *
+ */
+ServicesSocketService.prototype.fnDisconnection = function(socket){
+	var self = this;
+	return function(){
+		if(socket.request.user.role === enumUserrole.TRADER){
+			self.fnDisconnectTrader(socket);
+		}else if(socket.request.user.role === enumUserrole.GAMBLER){
+			self.fnDisconnectGambler(socket);
+		}		
+	};
+};
 
-ServicesSocketService.fnGetShiftTrader = function(queueTraders){
-	var trader = queueTraders.shift();
+/** 
+ * Disconnect gambler.
+ *
+ * @param socket
+ */
+ServicesSocketService.prototype.fnDisconnectGambler = function (socket){
+	var connectedGambler = this.fnGetConnectedGambler(socket.username);
+
+	if (connectedGambler) {
+		// If Gambler is attending a service, notify that it has beed abandoned
+		if(connectedGambler.service){
+			serviceService.fnAbandonedByGambler(connectedGambler.service.id)
+			.then(function(){
+				connectedGambler.service.fnAbandonedByGambler();
+			});
+		}
+		// Delete connected trader
+		this.fnDeleteConnectedGambler(connectedGambler.user.username);
+	}
+};
+
+/** 
+ * Disconnect trader.
+ *
+ * @param socket
+ */
+ServicesSocketService.prototype.fnDisconnectTrader = function (socket){
+	var self 			= this;
+	var connectedTrader = this.fnGetConnectedTrader(socket.username);
+	var service;
+	// Its neccesary for avoiding to make functions within a loop
+	var fnAfterAbandonedByTrader = function (){
+		service.fnAbandonedByTrader();
+		self.fnDeleteService(service.id);
+	};
+
+	if (connectedTrader) {
+		// Notity to service rooms where trader was attending.
+		for(var serviceId in connectedTrader.listServices){
+			service = connectedTrader.listServices[serviceId];
+
+			serviceService.fnAbandonedByTrader(service.id)
+			.then(fnAfterAbandonedByTrader);
+		}	
+		// Delete trader from queue
+		this.fnDeleteTraderFromQueue(socket.username);
+		// Leave trader room
+		this.fnLeaveTraderRoom(socket);
+		// Send queue trader to traders room
+		this.fnSendQueueTradersToTradersRoom();
+		// Delete connected trader
+		this.fnDeleteConnectedTrader(connectedTrader.user.username);
+	}
+};
+
+/** 
+ * Get connected gambler
+ *
+ * @param {String} gamblerUsername
+ */
+ServicesSocketService.prototype.fnGetConnectedGambler = function (gamblerUsername){
+	return this.listConnectedGamblers[gamblerUsername];
+};
+
+/** 
+ * Get connected trader
+ *
+ * @param {String} traderUsername
+ */
+ServicesSocketService.prototype.fnGetConnectedTrader = function (traderUsername){
+	return this.listConnectedTraders[traderUsername];
+};
+
+/** 
+ * Get service from list of services
+ *
+ * @param {String} serviceId
+ */
+ServicesSocketService.prototype.fnGetService = function (serviceId){
+	return this.listServices[serviceId];
+};
+
+/** 
+ * Get shift trader from queue
+ *
+ */
+ServicesSocketService.prototype.fnGetShiftTrader = function(){
+	var trader = this.queueTraders.shift();
 	if(trader){
-		ServicesSocketService.fnQueueTrader(trader, queueTraders);
+		this.fnQueueTrader(trader);
 	}
 	return trader;
 };
 
 /** 
- * Called upon client disconnects. Disconnect user from namespace.
+ * Trader joins trader room.
  *
+ * @param socket
  */
-ServicesSocketService.prototype.fnDisconnection = function(socket, servicesSocketNsp){
-	return function(){
-		if(socket.role === enumUserrole.TRADER){
-			if (servicesSocketNsp.listConnectedTraders[socket.username]) {
-				delete servicesSocketNsp.listConnectedTraders[socket.username];
-				ServicesSocketService.fnDeleteTraderFromQueue(socket.username, servicesSocketNsp.queueTraders);
-
-				// echo globally that this client has left, including me
-				// socket.broadcast.emit(enumServicesSocket.app.USER_LEFT, {
-				// 	username: 			socket.username,
-				// 	numConnectedUsers: 	servicesSocketNsp.numConnectedUsers,
-				// 	listConnectedTraders: _.values(servicesSocketNsp.listConnectedTraders)
-				// });
-			}
-		}else if(socket.role === enumUserrole.GAMBLER){
-			if (servicesSocketNsp.listConnectedGamblers[socket.username]) {
-				delete servicesSocketNsp.listConnectedGamblers[socket.username];
-				
-
-				// echo globally that this client has left, including me
-				// socket.broadcast.emit(enumServicesSocket.app.USER_LEFT, {
-				// 	username: 			socket.username,
-				// 	numConnectedUsers: 	servicesSocketNsp.numConnectedUsers,
-				// 	listConnectedGamblers: _.values(servicesSocketNsp.listConnectedGamblers)
-				// });
-			}
-		}		
-	};
-};
-
-ServicesSocketService.fnGetServiceAssigned = function (serviceId, listServices){
-	return listServices[serviceId];
-	// ServicesSocketService.fnSendError('This service is already in process.');
-};
-
-ServicesSocketService.fnGetServiceRoomName = function(serviceId){
-	return 'room-' + serviceId;
-};
-
-ServicesSocketService.fnJoinToServiceRoom = function(serviceAssigned){
-	var serviceRoom = ServicesSocketService.fnGetServiceRoomName(serviceAssigned.serviceId);
-
-	serviceAssigned.trader.socket.join(serviceRoom);
-	serviceAssigned.gambler.socket.join(serviceRoom);
-};
-
-ServicesSocketService.fnJoinToTraderRoom = function(socket, servicesSocketNsp){
-	socket.join(servicesSocketNsp.TRADER_ROOM);
-};
-
-ServicesSocketService.fnLeaveServiceRoom = function(serviceAssigned){
-	var serviceRoom = 'room-'+serviceAssigned.serviceId;
-	
-	serviceAssigned.trader.socket.leave(serviceRoom);
-	serviceAssigned.gambler.socket.leave(serviceRoom);
-};
-
-ServicesSocketService.fnLeaveTraderRoom = function(socket, servicesSocketNsp){
-	socket.leave(servicesSocketNsp.TRADER_ROOM);
+ServicesSocketService.prototype.fnJoinToTraderRoom = function(socket){
+	socket.join(this.TRADER_ROOM);
 };
 
 /** 
- * Send chat message to trader or gambler users connected.
+ * Trader leaves trader room.
  *
- * @param {String} message
+ * @param socket
  */
-ServicesSocketService.prototype.fnNewMessage = function(socket, servicesSocketNsp){
-	return function (socketObjectMessage){
-		var serviceRoom = ServicesSocketService.fnGetServiceRoomName(socketObjectMessage.serviceId);
-
-		servicesSocketNsp.to(serviceRoom).emit(enumServicesSocket.app.NEW_MESSAGE_SERVICE, {
-			serviceId: 	socketObjectMessage.serviceId,
-			username: 	socket.username,
-			role: 		socket.role,
-			message:  	socketObjectMessage.message
-		});	
-	};
-};
-
-ServicesSocketService.fnProcessService = function(serviceId, gambler, servicesSocketNsp){
-	var trader 				= {};
-	var connectedTrader 	= {};
-	var connectedGambler 	= {};
-	var serviceAssigned 	= {};
-
-	// Get the first trader in the queue
-	trader 				= ServicesSocketService.fnGetShiftTrader(servicesSocketNsp.queueTraders);
-	connectedGambler 	= servicesSocketNsp.listConnectedGamblers[gambler];
-
-	if(trader){
-		// Get connected trader
-		connectedTrader 	= servicesSocketNsp.listConnectedTraders[trader];
-
-		//Update service state
-		serviceService.fnAssignTrader(serviceId, connectedTrader.userId)
-		.then(function(){
-			serviceAssigned = ServicesSocketService.fnAddService(
-				serviceId,
-				connectedGambler,
-				connectedTrader,
-				servicesSocketNsp.listServices,
-				servicesSocketNsp.numberServices++
-			);
-
-			ServicesSocketService.fnProcessServiceAssigned(serviceAssigned);
-		});
-	}else{
-		ServicesSocketService.fnSendError(connectedGambler.socket, 'Traders not available. Please wait for someone or cancel the service.');
-		return;
-	}
-};
-
-ServicesSocketService.fnProcessServiceAssigned = function(serviceAssigned){
-	serviceAssigned.trader.listServices[serviceAssigned.serviceId] = serviceAssigned;
-
-	// Notify to trader of the new requested service
-	serviceAssigned.trader.socket.emit(enumServicesSocket.app.NEW_SERVICE,{
-		serviceId: serviceAssigned.serviceId
-	});
-
-	// Notify to glamber that trader has been assigned
-	serviceAssigned.gambler.socket.emit(enumServicesSocket.app.TRADER_ASSIGNED,{
-		serviceId: 	serviceAssigned.serviceId,
-		trader: 	serviceAssigned.trader.username
-	});
-
-	ServicesSocketService.fnJoinToServiceRoom(serviceAssigned);
-};
-
-ServicesSocketService.fnQueueTrader = function(trader, queueTraders){
-	ServicesSocketService.fnDeleteTraderFromQueue(trader, queueTraders);
-	queueTraders.push(trader);	
+ServicesSocketService.prototype.fnLeaveTraderRoom = function(socket){
+	socket.leave(this.TRADER_ROOM);
 };
 
 /** 
- * Send chat message to all users connected.
+ * Send chat message to service room
  *
- * @param {String} message
+ * @param {Object} {serviceId, message}
  */
-ServicesSocketService.prototype.fnRequestTrader = function(socket, servicesSocketNsp){
+ServicesSocketService.prototype.fnNewMessage = function(socket){
+	var self = this;
 	return function (socketObjectMessage){
-		var serviceId			= socketObjectMessage.serviceId;
-		var serviceAssigned 	= {};
+		var service = self.fnGetService(socketObjectMessage.serviceId);
 
-		serviceAssigned = ServicesSocketService.fnGetServiceAssigned(serviceId, servicesSocketNsp.listServices);
+		service.fnNewMessage(socket, socketObjectMessage.message);
+	};
+};
 
-		if(serviceAssigned){
-			ServicesSocketService.fnProcessServiceAssigned(serviceAssigned);
-		}else{
-			ServicesSocketService.fnProcessService(serviceId, socket.username, servicesSocketNsp);
+/** 
+ * Queue a trader.
+ *
+ * @param {String} traderUsername
+ */
+ServicesSocketService.prototype.fnQueueTrader = function(traderUsername){
+	this.fnDeleteTraderFromQueue(traderUsername);
+	this.queueTraders.push(traderUsername);	
+};
+
+/** 
+ * Called when gambler wants to create a service.
+ *
+ * @param socket
+ */
+ServicesSocketService.prototype.fnCreateService = function(socket){
+	var self = this;
+	return function (socketObjectMessage){
+		var serviceVO 			= socketObjectMessage.service;
+		var service 			= {};
+		var connectedTrader 	= {};
+		var connectedGambler 	= {};
+		var gamblerUsername		= socket.username;
+		var traderUsername;
+
+		try{
+
+			// Get shift trader
+			traderUsername = self.fnGetShiftTrader();
+
+			// If there is not a trader available, send error.
+			if(!traderUsername){
+				self.fnSendError(socket, 'Traders not available.');
+				return;
+			}
+
+			// Get sokects of the trader and gambler connected
+			connectedTrader 	= self.fnGetConnectedTrader(traderUsername);
+			connectedGambler 	= self.fnGetConnectedGambler(gamblerUsername);
+
+			// Set gambler and trader id to the service
+			serviceVO.gambler 	= connectedGambler.user.id;
+			serviceVO.trader 	= connectedTrader.user.id;
+
+			// Create service in DB
+			serviceService.fnCreate(serviceVO)
+			.then(function(serviceEntity){
+				//Add service to Services Socket
+				service = self.fnAddService(
+					serviceEntity._id,
+					connectedGambler.socket,
+					connectedTrader.socket
+				);
+
+				connectedGambler.service = service;
+				connectedTrader.listServices[service.id].push(service);
+
+				// Notify to trader of the new requested service
+				service.fnNotifyNewServiceToTrader();
+
+				// Notify to glamber that trader has been assigne
+				service.fnNotifyTraderAssignedToGambler();
+			});
+
+		}catch(err){
+			self.fnSendError('Error creating the service. Please contact to administrator.');
+			return;
 		}
 	};
 };
 
-ServicesSocketService.fnSendError = function(socket, error){
+/** 
+ * Send error to gambler or trader.
+ *
+ * @param socket
+ * @param error
+ */
+ServicesSocketService.prototype.fnSendError = function(socket, error){
 	socket.emit(enumServicesSocket.app.ERROR,{
 		error: error
 	});
 };
 
-ServicesSocketService.fnSendShiftQueueToTradersRoom = function(servicesSocketNsp){
-	servicesSocketNsp.to(servicesSocketNsp.TRADER_ROOM).emit(enumServicesSocket.app.SHIFT_QUEUE,{
-		queueTraders: servicesSocketNsp.queueTraders
+/** 
+ * Send queue traders to trader room.
+ *
+ */
+ServicesSocketService.prototype.fnSendQueueTradersToTradersRoom = function(){
+	this.nsp.to(this.TRADER_ROOM).emit(enumServicesSocket.app.SHIFT_QUEUE,{
+		queueTraders: this.queueTraders
 	});
 };
 
-ServicesSocketService.prototype.fnServiceFinished = function (socket, servicesSocketNsp){
+/** 
+ * Called when traders says that service has been completed
+ *
+ * @param socket
+ */
+ServicesSocketService.prototype.fnServiceFinished = function (socket){
+	var self = this;
 	return function(serviceId){
-		var serviceAssigned = ServicesSocketService.fnGetServiceAssigned(serviceId, servicesSocketNsp.listServices);
+		var service = self.fnGetService(serviceId);
 
-		// Notify to gambler that service has finished
-		serviceAssigned.gambler.socket.emit(enumServicesSocket.app.SERVICE_FINISHED);
+		// Finish service
+		service.fnFinish();
 
-		// Gambler and trader must leave service room.
-		ServicesSocketService.fnLeaveServiceRoom(serviceAssigned);
-
-		// Splice service from services list assigned to a trader
-		serviceAssigned.trader.listServices.push(serviceAssigned);
+		// Delete service from services list
+		self.fnDeleteService(service.id);
 	};
 };
 
-ServicesSocketService.prototype.fnTradersAvailable = function(socket, servicesSocketNsp){
+/** 
+ * Called when Gambler ask for trader availability.
+ *
+ * @param socket
+ */
+ServicesSocketService.prototype.fnTradersAvailable = function(socket){
+	var self = this;
 	return function(){
 		var isTradersAvailable = false;
 		
-		if(servicesSocketNsp.queueTraders.length > 0 ){
+		if(self.queueTraders.length > 0 ){
 			isTradersAvailable = true;
 		}
 
@@ -285,25 +449,32 @@ ServicesSocketService.prototype.fnTradersAvailable = function(socket, servicesSo
 	};
 };
 
-ServicesSocketService.prototype.fnTraderStopWorking = function(socket, servicesSocketNsp){
+/** 
+ * Trader decides to stop to receive services, so, It is deleted from queue and leaves from trader room.
+ *
+ * @param socket
+ */
+ServicesSocketService.prototype.fnTraderStopWorking = function(socket){
+	var self = this;
 	return function(){
-		ServicesSocketService.fnDeleteTraderFromQueue(socket.username, servicesSocketNsp.queueTraders);
-		ServicesSocketService.fnLeaveTraderRoom(socket, servicesSocketNsp);
+		self.fnDeleteTraderFromQueue(socket.username);
+		self.fnLeaveTraderRoom(socket);
+		self.fnSendQueueTradersToTradersRoom();
 		socket.emit(enumServicesSocket.app.STOP_WORKING);
-		// ServicesSocketService.fnSendShiftQueueToTradersRoom(socket, servicesSocketNsp); //TODO Por confirmar
 	};
 };
 
 /** 
- * Trader decide to start to receive services, so, It is queued.
+ * Trader decides to start to receive services, so, It is queued.
  *
- * @param
+ * @param socket
  */
-ServicesSocketService.prototype.fnTraderStartWork = function(socket, servicesSocketNsp){
+ServicesSocketService.prototype.fnTraderStartWork = function(socket){
+	var self = this;
 	return function(){
 		// Queue trader to be ready to accept requested services
-		ServicesSocketService.fnQueueTrader(socket.username, servicesSocketNsp.queueTraders);
-		ServicesSocketService.fnJoinToTraderRoom(socket, servicesSocketNsp);
-		ServicesSocketService.fnSendShiftQueueToTradersRoom(servicesSocketNsp);
+		self.fnQueueTrader(socket.username);
+		self.fnJoinToTraderRoom(socket);
+		self.fnSendQueueTradersToTradersRoom();
 	};
 };

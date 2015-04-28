@@ -1,23 +1,23 @@
 'use strict';
 
-var GamblermainController = {};
+var GamblerController = {};
 /**
  * Module dependencies.
  */
 var util 		 	  = require('../utilities/util'),
-	gamblerService 	  = require('../services/gamblermain'),
+	gamblerService 	  = require('../services/gambler'),
 	enumUserRole 	  = require('../utilities/enums/userrole');	
 
-module.exports = GamblermainController;
+module.exports = GamblerController;
 
-GamblermainController.fnReadByID = function(req, res) {
+GamblerController.fnReadByID = function(req, res) {
 	var id 		= req.params.id || req.body.id;
 	var promise = gamblerService.fnReadByID(id);
 
 	util.fnProcessServicePromiseInController(promise, res);
 };
 
-GamblermainController.hasAuthorization = function(req,res,next){
+GamblerController.hasAuthorization = function(req,res,next){
 	var userId 			= req.params.id || req.body.id;
 	var userIdLogged	= req.user.id;
 

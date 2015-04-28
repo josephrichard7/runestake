@@ -1,6 +1,6 @@
 'use strict';
 
-var GamblermainService = {};
+var GamblerService = {};
 
 /**
  * Module dependencies.
@@ -13,9 +13,9 @@ var _ 				= require('lodash'),
 	enumUserRole 	= require('../utilities/enums/userrole'),
 	accountService 	= require('../services/account');
 
-module.exports = GamblermainService;
+module.exports = GamblerService;
 
-GamblermainService.fnReadByID = function(id) {
+GamblerService.fnReadByID = function(id) {
 	return UserEntity
 	.findById(id)
 	.where('role').equals(enumUserRole.GAMBLER)
@@ -25,7 +25,7 @@ GamblermainService.fnReadByID = function(id) {
 	.exec();
 };
 
-GamblermainService.fnCreate = function(gamblerVO){
+GamblerService.fnCreate = function(gamblerVO){
 	var gamblerEntity 	= {};
 	var accountVO	  	= {};
 
@@ -58,15 +58,15 @@ GamblermainService.fnCreate = function(gamblerVO){
 	});
 };
 
-GamblermainService.fnRead = function(gamblerVO) {
-	return GamblermainService.fnReadByID(gamblerVO._id);
+GamblerService.fnRead = function(gamblerVO) {
+	return GamblerService.fnReadByID(gamblerVO._id);
 };
 
-GamblermainService.fnUpdate = function(gamblerVO){
+GamblerService.fnUpdate = function(gamblerVO){
 	var gamblerVOtoUpd	= {};
 
 	// Get entity by Id
-	return GamblermainService.fnReadByID(gamblerVO._id)
+	return GamblerService.fnReadByID(gamblerVO._id)
 	.then(function(resultReadEntity){
 		// For security measurement only get some fields
 		gamblerVOtoUpd = _.pick(gamblerVO, 'firstName', 'lastName', 'email', 'state');
@@ -80,7 +80,7 @@ GamblermainService.fnUpdate = function(gamblerVO){
 	});
 };
 
-GamblermainService.fnDelete = function(id){
+GamblerService.fnDelete = function(id){
 	// Get entity by Id
 	return UserEntity.findById(id,'-password -salt').exec()
 	.then(function(resultReadEntity){
@@ -93,7 +93,7 @@ GamblermainService.fnDelete = function(id){
 	});
 };
 
-GamblermainService.fnList = function(){
+GamblerService.fnList = function(){
 	return UserEntity
 	.where('role').equals(enumUserRole.GAMBLER)
 	.where('state').nin([enumUserState.DELETED])

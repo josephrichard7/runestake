@@ -6,10 +6,10 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a href="/#!/" class="navbar-brand">
+		<a data-ng-click="util.go('home')" class="navbar-brand">
 			<img alt="Runestake" style="max-width:100px; margin-top: -15px;" src="modules/core/img/brand/logo.png" />
 		</a>
-		<a href="/#!/" class="navbar-brand">
+		<a data-ng-click="util.go('home')" class="navbar-brand">
 			Runestake
 		</a>
 	</div>
@@ -22,28 +22,28 @@
 				</a>
 				<ul ng-switch-when="dropdown" class="dropdown-menu">
 					<li data-ng-repeat="subitem in item.items | orderBy: 'position'" data-ng-if="subitem.shouldRender(authentication.user);" ui-route="{{subitem.uiRoute}}" ng-class="{active: $uiRoute}">
-						<a href="/#!/{{subitem.link}}" data-ng-bind="subitem.title"></a>
+						<a data-ng-click="util.go(subitem.link)" data-ng-bind="subitem.title"></a>
 					</li>
 				</ul>
-				<a ng-switch-default href="/#!/{{item.link}}" data-ng-bind="item.title"></a>
+				<a ng-switch-default data-ng-click="util.go(item.link)" data-ng-bind="item.title"></a>
 			</li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right" data-ng-hide="authentication.user">
-			<li ui-route="/signup" ng-class="{active: $uiRoute}">
-				<a href="/#!/signup">Sign Up</a>
+			<li ui-route="/signin" ng-class="{active: $uiRoute}">
+				<a data-ng-click="util.go('signup')" href="/#!/signup">Sign Up</a>
 			</li>
 			<li class="divider-vertical"></li>
 			<li ui-route="/signin" ng-class="{active: $uiRoute}">
-				<a href="/#!/signin">Sign In</a>
+				<a data-ng-click="util.go('signin')">Sign In</a>
 			</li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right" data-ng-show="authentication.user">
 			<li>
 				<div>
-					<a class="btn btn-primary navbar-btn btn-sm" data-ng-if="authentication.user.role === 'GAMBLER'" href="/#!/gamblermain/panel">
+					<a class="btn btn-primary navbar-btn btn-sm" data-ng-if="authentication.user.role === 'GAMBLER'" href="util.go('gamblermain.panel')">
 						<span class="glyphicon glyphicon-home"></span>
 					</a>
-					<a class="btn btn-primary navbar-btn btn-sm" data-ng-if="authentication.user.role === 'TRADER'" href="/#!/tradermain/panel">
+					<a class="btn btn-primary navbar-btn btn-sm" data-ng-if="authentication.user.role === 'TRADER'" href="util.go('tradermain.panel')">
 						<span class="glyphicon glyphicon-home"></span>
 					</a>
 				</div>
@@ -54,13 +54,13 @@
 				</a>
 				<ul class="dropdown-menu">
 					<li>
-						<a href="/#!/settings/profile">Edit Profile</a>
+						<a href="util.go('profile')">Edit Profile</a>
 					</li>
 					<!-- <li>
 						<a href="/#!/settings/accounts">Manage Social Accounts</a>
 					</li> -->
 					<li data-ng-show="authentication.user.provider === 'local'">
-						<a href="/#!/settings/password">Change Password</a>
+						<a href="util.go('password')">Change Password</a>
 					</li>
 					<li class="divider"></li>
 					<li>
