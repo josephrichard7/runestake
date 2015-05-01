@@ -4,7 +4,8 @@ angular.module(ApplicationConfiguration.modules.global)
 .service(ApplicationConfiguration.services.utilities, 
 	['$resource',
 	 '$location',
-	function($resource, $location){
+	 '$state',
+	function($resource, $location, $state){
 		var defaultOptionsGoFunction = {
 			location: 	false,
 			inherit: 	false,
@@ -25,7 +26,7 @@ angular.module(ApplicationConfiguration.modules.global)
 		this.enumResource = $resource('enum/:name/:type');
 
 		this.util.go = function(state, params, options){
-			$location.go(state, params, options || defaultOptionsGoFunction);
+			$state.go(state, params, options || defaultOptionsGoFunction);
 		};
 	}
 ]);

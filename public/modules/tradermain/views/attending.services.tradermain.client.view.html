@@ -1,14 +1,31 @@
 <div class="row">
     <div class="col-md-12">
-      <button data-ng-class="controller.tradermainSrv.isWorking? 'btn btn-danger pull-right':'btn btn-success pull-right'" data-ng-click="controller.fnToggleWork()">
+      <button data-ng-class="{'btn btn-danger pull-right': controller.tradermainSrv.isWorking, 'btn btn-success pull-right': !controller.tradermainSrv.isWorking}" data-ng-click="controller.fnToggleWork()">
         {{controller.tradermainSrv.isWorking?'Stop Working':'Start work'}}
       </button>
     </div>
     <div class="col-md-12">
-        <accordion close-others="oneAtATime">
-            <accordion-group ng-repeat="service in controller.tradermainSrv.arrayServicesAttending">
+        <accordion close-others="false">
+            <accordion-group 
+                data-ng-repeat="serviceId in controller.tradermainSrv.arrayServicesInAttention track by $index" 
+                is-open="controller.tradermainSrv.listServicesInAttention[serviceId].isOpen" 
+                is-disabled="controller.tradermainSrv.listServicesInAttention[serviceId].isDisabled">
                 <accordion-heading>
-                    Service (<span data-ng-bind="service.service._id"></span>): <mark data-ng-bind="service.service.gambler.username"></mark>
+                  <i data-ng-if="!controller.tradermainSrv.listServicesInAttention[serviceId].isDisabled" class="fa fa-play-circle"></i>
+                  <i data-ng-if="controller.tradermainSrv.listServicesInAttention[serviceId].isAbandoned" class="fa fa-plane"></i>
+                  <i data-ng-if="controller.tradermainSrv.listServicesInAttention[serviceId].isDesisted" class="fa fa-user-times"></i>
+                  <i data-ng-if="controller.tradermainSrv.listServicesInAttention[serviceId].isCompleted" class="fa fa-check-circle"></i>
+                  Service (id:&nbsp;{{controller.tradermainSrv.listServicesInAttention[serviceId].service._id}},&nbsp;username:&nbsp;
+                  <mark data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.gambler.username"></mark>)&nbsp;
+                  <span data-ng-if="controller.tradermainSrv.listServicesInAttention[serviceId].isDesisted">
+                    Service has been <b>desisted</b> by Gambler
+                  </span>
+                  <span data-ng-if="controller.tradermainSrv.listServicesInAttention[serviceId].isAbandoned">
+                    Service has been <b>abandoned</b> by Gambler
+                  </span>
+                  <span data-ng-if="controller.tradermainSrv.listServicesInAttention[serviceId].isCompleted">
+                    Service has been <b>completed</b>.
+                  </span>                    
                 </accordion-heading>
                 <div class="row">
                     <div class="col-md-12">
@@ -26,32 +43,50 @@
                           <tbody>
                               <tr>
                                 <td>
-                                  <span data-ng-bind="service.service.gambler.username"></span>
+                                  <span data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.gambler.username"></span>
                                 </td>
                                 <td>
-                                  <span data-ng-bind="service.service.type"></span>
+                                  <span data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.type"></span>
                                 </td>
                                 <td>
-                                  <span data-ng-bind="service.service.amount"></span>
+                                  <span data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.amount"></span>
                                   &nbsp;
-                                  <span data-ng-bind="service.service.sourceCurrency"></span>
+                                  <span data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.sourceCurrency"></span>
                                   &nbsp;to&nbsp;
-                                  <span data-ng-bind="service.service.destinationCurrency"></span>
+                                  <span data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.destinationCurrency"></span>
                                 </td>
                                 <td>
-                                  <div ng-switch="service.service.state">
-                                    <span ng-switch-when="CREATED" data-ng-bind="service.service.state" data-toggle="tooltip" title="Waiting for a Trader" class="label label-primary"></span>
-                                    <span ng-switch-when="ASSIGNED" data-ng-bind="service.service.state" data-toggle="tooltip" title="Trader has been assigned"></span>
-                                    <span ng-switch-when="COMPLETED" data-ng-bind="service.service.state" data-toggle="tooltip" title="Service has been completed"></span>
-                                    <span ng-switch-when="CANCELED" data-ng-bind="service.service.state" data-toggle="tooltip" title="User has canceled the service" class="label label-danger"></span>
-                                    <span ng-switch-when="DESISTED" data-ng-bind="service.service.state" data-toggle="tooltip" title="User desisted the service"></span>
-                                </div>
+                                  <span 
+                                    data-ng-if="controller.tradermainSrv.listServicesInAttention[serviceId].service.state === controller.tradermainSrv.enumServiceState.CREATED" 
+                                    data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.state" 
+                                    data-toggle="tooltip" 
+                                    title="Service has been created. Waiting for trader approval."></span>
+                                  <span 
+                                    data-ng-if="controller.tradermainSrv.listServicesInAttention[serviceId].service.state === controller.tradermainSrv.enumServiceState.COMPLETED" 
+                                    data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.state" 
+                                    data-toggle="tooltip" 
+                                    title="Service has been completed"></span>
+                                  <span 
+                                    data-ng-if="controller.tradermainSrv.listServicesInAttention[serviceId].service.state === controller.tradermainSrv.enumServiceState.DESISTED" 
+                                    data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.state" 
+                                    data-toggle="tooltip" 
+                                    title="Service has been desisted by Gambler"></span>
+                                  <span 
+                                    data-ng-if="controller.tradermainSrv.listServicesInAttention[serviceId].service.state === controller.tradermainSrv.enumServiceState.ABANDONED_BY_TRADER" 
+                                    data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.state" 
+                                    data-toggle="tooltip" 
+                                    title="Trader had connection problems"></span>
+                                  <span 
+                                    data-ng-if="controller.tradermainSrv.listServicesInAttention[serviceId].service.state === controller.tradermainSrv.enumServiceState.ABANDONED_BY_GAMBLER" 
+                                    data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.state" 
+                                    data-toggle="tooltip" 
+                                    title="Service has been abandoned by Gambler"></span>
                                 </td>
                                 <td>
-                                  <span data-ng-bind="service.service.createdDate | date:'medium'"></span>
+                                  <span data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.createdDate | date:'medium'"></span>
                                 </td>
                                 <td>
-                                  <span data-ng-bind="service.service.updatedDate | date:'medium'"></span>
+                                  <span data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.updatedDate | date:'medium'"></span>
                                 </td>
                               </tr>
                           </tbody>
@@ -63,8 +98,7 @@
                           Chat with Trader
                         </div>
                         <div id="chatPanelService" class="panel-body" jm-autoscroll>
-                          <!-- {{controller.tradermainSrv.listServicesAttending[service.service._id].listChatMessages.length}} -->
-                          <div class="row" data-ng-repeat="message in controller.tradermainSrv.listServicesAttending[service.service._id].listChatMessages track by $index">
+                          <div class="row" data-ng-repeat="message in controller.tradermainSrv.listServicesInAttention[serviceId].listChatMessages track by $index">
                             <div class="col-md-12">
                               <small>
                                   <mark data-ng-bind="message.username"></mark>
@@ -74,9 +108,12 @@
                           </div>
                         </div>
                         <div class="panel-footer">
-                          <form class="form-horizontal" autocomplete="off" data-ng-submit="controller.fnSendMessage(service.service)">
+                          <form 
+                              class="form-horizontal" 
+                              autocomplete="off" 
+                              data-ng-submit="controller.fnSendMessage(controller.tradermainSrv.listServicesInAttention[serviceId])">
                             <div class="input-group">
-                              <input type="text" data-ng-model="service.service.message" class="form-control" placeholder="Write to the trader...">
+                              <input type="text" data-ng-model="controller.tradermainSrv.listServicesInAttention[serviceId].message" class="form-control" placeholder="Write to the trader...">
                               <span class="input-group-btn">
                                 <button class="btn btn-default" type="submit">Send</button>
                               </span>
@@ -85,8 +122,10 @@
                         </div>
                       </div>
                       <div class="col-md-12 text-center">
-                        <button class="btn btn-success" data-ng-click="controller.fnApplyService(service.service)">
-                          Apply
+                        <button 
+                            class="btn btn-success" 
+                            data-ng-click="controller.fnCompleteService(controller.tradermainSrv.listServicesInAttention[serviceId])">
+                          Complete
                         </button>
                       </div>                    
                     </div>

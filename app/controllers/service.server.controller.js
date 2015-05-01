@@ -11,19 +11,19 @@ var util 		 	  	= require('../utilities/util'),
 
 module.exports	= ServiceController;
 
-ServiceController.fnAssignTrader = function(req,res){
-	var requestVO 	= req.body;
-	var promise 	= serviceService.fnUpdate(requestVO);
+// ServiceController.fnAssignTrader = function(req,res){
+// 	var requestVO 	= req.body;
+// 	var promise 	= serviceService.fnUpdate(requestVO);
 
-	util.fnProcessServicePromiseInController(promise, res);
-};
+// 	util.fnProcessServicePromiseInController(promise, res);
+// };
 
-ServiceController.fnCancelar = function(req, res) {
-	var id 		= req.params.id || req.body.id;
-	var promise = serviceService.fnCancelar(id);
+// ServiceController.fnCancelar = function(req, res) {
+// 	var id 		= req.params.id || req.body.id;
+// 	var promise = serviceService.fnCancelar(id);
 
-	util.fnProcessServicePromiseInController(promise, res);
-};
+// 	util.fnProcessServicePromiseInController(promise, res);
+// };
 
 ServiceController.fnCreate = function(req,res){
 	var requestVO 	= req.body;
@@ -58,7 +58,13 @@ ServiceController.fnList = function(req,res){
 
 ServiceController.fnReadByID = function(req, res) {
 	var id 		= req.params.id || req.body.id;
-	var promise = serviceService.fnReadByID(id);
+	var promise = {};
+
+	if(req.user.role === enumUserRole.GAMBLER){
+		promise = serviceService.fnReadByIDByGambler(id);
+	}else{
+		serviceService.fnReadByID(id);
+	}
 
 	util.fnProcessServicePromiseInController(promise, res);
 };

@@ -40,10 +40,10 @@
 		<ul class="nav navbar-nav navbar-right" data-ng-show="authentication.user">
 			<li>
 				<div>
-					<a class="btn btn-primary navbar-btn btn-sm" data-ng-if="authentication.user.role === 'GAMBLER'" href="util.go('gamblermain.panel')">
+					<a class="btn btn-primary navbar-btn btn-sm" data-ng-if="authentication.user.role === 'GAMBLER'" data-ng-click="util.go('gamblermainState.panel')">
 						<span class="glyphicon glyphicon-home"></span>
 					</a>
-					<a class="btn btn-primary navbar-btn btn-sm" data-ng-if="authentication.user.role === 'TRADER'" href="util.go('tradermain.panel')">
+					<a class="btn btn-primary navbar-btn btn-sm" data-ng-if="authentication.user.role === 'TRADER'" data-ng-click="util.go('tradermainState.panel')">
 						<span class="glyphicon glyphicon-home"></span>
 					</a>
 				</div>
@@ -54,13 +54,13 @@
 				</a>
 				<ul class="dropdown-menu">
 					<li>
-						<a href="util.go('profile')">Edit Profile</a>
+						<a data-ng-click="util.go('profile')">Edit Profile</a>
 					</li>
 					<!-- <li>
 						<a href="/#!/settings/accounts">Manage Social Accounts</a>
 					</li> -->
 					<li data-ng-show="authentication.user.provider === 'local'">
-						<a href="util.go('password')">Change Password</a>
+						<a data-ng-click="util.go('password')">Change Password</a>
 					</li>
 					<li class="divider"></li>
 					<li>

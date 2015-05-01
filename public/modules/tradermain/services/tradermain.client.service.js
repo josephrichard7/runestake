@@ -20,23 +20,24 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 			},
 			// App events
 			app: {
-				CONNECTED_USER: 	'CONNECTED_USER',
-				TRADERS_AVAILABLE: 	'TRADERS_AVAILABLE',
-				START_WORK: 		'START_WORK',
-				SHIFT_QUEUE: 		'SHIFT_QUEUE',
-				STOP_WORKING: 		'STOP_WORKING',
-				REQUEST_TRADER: 	'REQUEST_TRADER',
-				TRADER_ASSIGNED: 	'TRADER_ASSIGNED ',
-				NEW_SERVICE: 		'NEW_SERVICE',
-				NEW_MESSAGE_SERVICE:'NEW_MESSAGE_SERVICE',
-				SERVICE_FINISHED: 	'SERVICE_FINISHED',
-				ERROR: 				'ERROR'
+				ABANDONED_BY_GAMBLER: 	'ABANDONED_BY_GAMBLER',
+				ABANDONED_BY_TRADER: 	'ABANDONED_BY_TRADER',
+				CREATE_SERVICE: 		'CREATE_SERVICE',
+				COMPLETE_SERVICE: 		'COMPLETE_SERVICE',
+				CONNECTED_USER: 		'CONNECTED_USER',
+				DESIST_SERVICE: 		'DESIST_SERVICE',
+				ERROR: 					'ERROR',
+				NEW_MESSAGE_SERVICE:	'NEW_MESSAGE_SERVICE',
+				NEW_SERVICE: 			'NEW_SERVICE',
+				SHIFT_QUEUE: 			'SHIFT_QUEUE',
+				START_WORK: 			'START_WORK',
+				STOP_WORKING: 			'STOP_WORKING',
+				SERVICE_CREATED: 		'SERVICE_CREATED',
+				SERVICE_COMPLETED: 		'SERVICE_COMPLETED',
+				SERVICE_DESISTED: 		'SERVICE_DESISTED',
+				TRADERS_AVAILABLE: 		'TRADERS_AVAILABLE'
 			}
 		};
-
-		// _this.traderResource 		= $resource('tradermain/:traderId', {
-		// 	traderId: '@_id'
-		// });
 		
 		_this.servicesSocket 			= {};
 		_this.authentication 			= Authentication;
@@ -44,8 +45,8 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 		_this.trader.account 			= {};
 		_this.service 					= {};
 		_this.arrayServices 			= [];
-		_this.listServicesAttending		= {};
-		_this.arrayServicesAttending	= [];
+		_this.listServicesInAttention	= {};
+		_this.arrayServicesInAttention	= [];
 		_this.queueTraders 				= [];
 		_this.error 					= undefined;
 		_this.info 						= undefined;
@@ -56,36 +57,73 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 	      TRADER:   'TRADER',
 	      GAMBLER:  'GAMBLER'
 	    };
+	    _this.enumServiceState = {
+			CREATED: 				'CREATED',
+			COMPLETED: 				'COMPLETED',
+			DESISTED: 				'DESISTED',
+			ABANDONED_BY_GAMBLER: 	'ABANDONED_BY_GAMBLER',
+			ABANDONED_BY_TRADER: 	'ABANDONED_BY_TRADER'
+		};
 
 	    _this.fnAddChatMessage = function(serviceId, username, role, message, type) {
-	    	var objMessage 			= {};
-	    	var serviceAttending 	= _this.listServicesAttending[serviceId];
+	    	var objMessage 	= {};
+	    	var service 	= _this.fnGetService(serviceId);
 
-	    	if(serviceAttending){
+	    	if(service){
 				objMessage = {
 					username: 	username,
 					message:  	message,
 					role: 		role,
 					type:     	type
 				};
-				serviceAttending.listChatMessages.push(objMessage);
+				service.listChatMessages.push(objMessage);
 			}
 	    };
+
+		_this.fnAddServiceInAttention = function(service) {
+			_this.arrayServicesInAttention.unshift(service._id);
+
+			_this.listServicesInAttention[service._id] = {
+				service: 			service,
+				listChatMessages: 	[],
+				isAbandoned:		false,
+				isCompleted: 		false,
+				isDesisted:			false,
+				isDisabled:			false,
+				isOpen: 			false
+			};
+		};
+
+		_this.fnCompleteService = function (serviceId){
+			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.COMPLETE_SERVICE,{
+				serviceId: serviceId
+			});
+		};
+
+	    _this.fnDeleteService = function(serviceId){
+			delete _this.listServicesInAttention[serviceId];
+		};
 
 		function fnErrorHandling(err) {
 			_this.error = err.data.message;
 		}
 
+		_this.fnGetService = function(serviceId){
+			return _this.listServicesInAttention[serviceId];
+		};
+
 		_this.fnInitServicesSocket = function(){
 			_this.servicesSocket =  new ChatFactory(ApplicationConfiguration.sockets.services);
 
-			_this.fnOnConnectedUser(function(){
-				// _this.fnStartWork();
-			});
-			_this.fnOnShiftQueue();
-			_this.fnOnNewService();
-			_this.fnOnNewMessage();
+			_this.fnOnConnectedUser();
 			_this.fnOnError();
+			_this.fnOnNewMessage();
+			_this.fnOnNewService();
+			_this.fnOnServiceAbandonedByGambler();
+			_this.fnOnServiceCompleted();
+			_this.fnOnServiceDesisted();
+			_this.fnOnShiftQueue();
+			_this.fnOnStopWorking();
 		};
 
 		_this.fnLoadListServices = function (){
@@ -115,8 +153,23 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 			.catch(fnErrorHandling);
 		};
 
+		_this.fnOnServiceAbandonedByGambler = function (callback){
+			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.ABANDONED_BY_GAMBLER, function(data){
+	    		var service = _this.fnGetService(data.serviceId);
+	    		
+	    		service.isAbandoned	= true;
+	    		service.isDisabled	= true;
+	    		service.isOpen 		= false;
+
+				if(callback){
+					callback();
+				}
+			});
+		};
+
 		_this.fnOnConnectedUser = function (callback){
 			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.CONNECTED_USER, function(){
+				_this.isWorking = false;
 				if(callback){
 					callback();
 				}
@@ -145,16 +198,12 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 		};
 
 		_this.fnOnNewService = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.NEW_SERVICE, function(obj){
-				serviceSrv.fnReadServiceById(obj.serviceId)
+			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.NEW_SERVICE, function(data){
+				_this.fnLoadListServices();
+
+				serviceSrv.fnReadServiceById(data.serviceId)
 				.then(function(service){
-					_this.arrayServicesAttending.unshift({
-						service: service
-					});
-					_this.listServicesAttending[obj.serviceId] = {
-						service: 			service,
-						listChatMessages: 	[]
-					};
+					_this.fnAddServiceInAttention(service);
 				})
 				.catch(fnErrorHandling);
 
@@ -164,9 +213,39 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 			});
 		};
 
+		_this.fnOnServiceCompleted = function (callback){
+			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.SERVICE_COMPLETED, function(data){
+				var service = _this.fnGetService(data.serviceId);
+				
+				_this.fnLoadListServices();
+	    		service.isCompleted	= true;
+	    		service.isDisabled	= true;
+				service.isOpen 		= false;
+
+				if(callback){
+					callback();
+				}
+			});
+		};
+
+		_this.fnOnServiceDesisted = function (callback){
+			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.SERVICE_DESISTED, function(data){
+				var service = _this.fnGetService(data.serviceId);
+
+				_this.fnLoadListServices();
+				service.isDesisted 	= true;
+				service.isDisabled 	= true;
+				service.isOpen 		= false;
+
+				if(callback){
+					callback();
+				}
+			});
+		};
+
 		_this.fnOnShiftQueue = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.SHIFT_QUEUE, function(obj){
-				_this.queueTraders = obj.queueTraders;
+			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.SHIFT_QUEUE, function(data){
+				_this.queueTraders = data.queueTraders;
 				if(callback){
 					callback();
 				}
@@ -191,12 +270,12 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 			.catch(fnErrorHandling);
 		};
 
-		_this.fnRemoveService = function (index, serviceId){
-			var service = _this.arrayServicesAttending[index];
+		_this.fnRemoveService = function (service){
+			var index = _this.arrayServicesInAttention.indexOf(service._id);
 
-			if(service._id === serviceId){
-				_this.arrayServicesAttending.splice(index,1);
-				delete _this.listServicesAttending[service._id];
+			if(index >= 0){
+				_this.arrayServicesInAttention.splice(index);
+				_this.fnDeleteService(service._id);
 			}
 		};
 
@@ -204,17 +283,12 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 			_this.service = {};
 		};
 
-		_this.fnServiceFinished = function (){
-			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.START_WORK,{
-				serviceId: _this.service._id
-			});
-		};
-
 		_this.fnSendMessage = function (serviceId, message, callback){
 			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.NEW_MESSAGE_SERVICE, {
 				serviceId: 	serviceId,
 				message: 	message
 			});
+
 			if(callback){
 				callback();
 			}

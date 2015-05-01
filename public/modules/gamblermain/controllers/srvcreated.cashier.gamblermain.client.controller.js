@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module(ApplicationConfiguration.modules.gamblermain)
-.controller('SrvAssignedCashierController',
+.controller('SrvCreatedCashierController',
   ['$scope',
   '$stateParams',
   '$location',
@@ -18,16 +18,13 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
     function fnInit(){
       vm.gamblermainSrv = gamblermainSrv;
       
-      gamblermainSrv.error     = undefined;
+      gamblermainSrv.error  = undefined;
+      gamblermainSrv.info   = undefined;
       gamblermainSrv.fnReadServiceById($stateParams.id);
     }
 
     function fnDesistService(){
-      gamblermainSrv.fnDesistService(gamblermainSrv.service._id)
-      .then(function(service){
-        gamblermainSrv.fnLoadListServices();
-        $location.path('/gamblermain/panel/cashier/createsrv');
-      });
+      gamblermainSrv.fnDesistService();
     }
      
     function fnSendMessage() {

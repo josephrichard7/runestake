@@ -35,30 +35,22 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 				}
 		    }
 		})
-		.state('gamblermainState.cashier.assigningsrv', {
-			url: '/assigningsrv/:id',
+		.state('gamblermainState.cashier.srvcreated', {
+			url: '/srvcreated/:id',
 			views: {
 				'@gamblermainState.cashier': {
-					templateUrl: 'modules/gamblermain/views/assigningsrv.cashier.gamblermain.client.view.html'
+					templateUrl: 'modules/gamblermain/views/srvcreated.cashier.gamblermain.client.view.html'
 				}
 		    }
 		})
-		.state('gamblermainState.cashier.srvassigned', {
-			url: '/srvassigned/:id',
+		.state('gamblermainState.cashier.srvstate', {
+			url: '/srvstate/:id',
 			views: {
 				'@gamblermainState.cashier': {
-					templateUrl: 'modules/gamblermain/views/srvassigned.cashier.gamblermain.client.view.html'
+					templateUrl: 'modules/gamblermain/views/srvstate.cashier.gamblermain.client.view.html'
 				}
 		    }
 		})
-		// .state('gamblermainState.srvcanceled', {
-		// 	url: '/panel/cashier/srvcanceled/:id',
-		// 	templateUrl: 'modules/gamblermain/views/srvcanceled.cashier.gamblermain.client.view.html'
-		// })
-		// .state('gamblermainState.srvcompleted', {
-		// 	url: '/panel/cashier/srvcompleted/:id',
-		// 	templateUrl: 'modules/gamblermain/views/srvcompleted.cashier.gamblermain.client.view.html'
-		// })
 		.state('gamblermainState.stake', {
 			url: '/stake',
 			templateUrl: 'modules/gamblermain/views/stake.gamblermain.client.view.html'

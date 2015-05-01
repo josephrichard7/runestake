@@ -15,6 +15,12 @@ function Service(id, gamblerSocket, traderSocket, nsp){
 
 	// Joing gambler and trader to service room.
 	this.fnJoinToServiceRoom();
+
+	// Notify to trader of the new requested service
+	this.fnNotifyNewServiceToTrader();
+
+	// Notify to glamber that trader has been assigne
+	this.fnNotifyServiceCreatedToGambler();
 }
 
 
@@ -38,22 +44,21 @@ Service.prototype.fnAbandonedByTrader = function(){
 	this.fnLeaveServiceRoom();
 };
 
-// Notify to service room that service was canceled
-Service.prototype.fnCancel = function(){
-	this.fnSendEventToServiceRoom(enumServicesSocket.app.SERVICE_CANCELED, {
+// Trader decides to complete the service. Gambler and trader must leave service room. Notify to service room.
+Service.prototype.fnComplete = function(){
+	// Notify to service room that service has beed completed		
+	this.fnSendEventToServiceRoom(enumServicesSocket.app.SERVICE_COMPLETED, {
 		serviceId: 	this.id
 	});
+
+	// Gambler and trader must leave service room.
+	this.fnLeaveServiceRoom();
 };
 
-// Send event to service room
-Service.prototype.fnSendEventToServiceRoom = function(event, object){
-	this.nsp.to(this.roomName).emit(event, object);	
-};
-
-// Service has been finished by trader. Gambler and trader must leave service room. Notify to service room.
-Service.prototype.fnFinish = function(){
-	// Notify to service room that service finished		
-	this.fnSendEventToServiceRoom(enumServicesSocket.app.SERVICE_FINISHED, {
+// Trader decides to desist the service. Gambler and trader must leave service room. Notify to service room.
+Service.prototype.fnDesist = function(){
+	// Notify to service room that service has been desisted		
+	this.fnSendEventToServiceRoom(enumServicesSocket.app.SERVICE_DESISTED, {
 		serviceId: 	this.id
 	});
 
@@ -99,12 +104,17 @@ Service.prototype.fnNotifyNewServiceToTrader = function(){
 };
 
 /** 
- * Notify to glamber that trader has been assigne
+ * Notify to glamber that trader has been created
  *
  * @param {String} message
  */
-Service.prototype.fnNotifyTraderAssignedToGambler = function(){
-	this.gamblerSocket.emit(enumServicesSocket.app.TRADER_ASSIGNED,{
+Service.prototype.fnNotifyServiceCreatedToGambler = function(){
+	this.gamblerSocket.emit(enumServicesSocket.app.SERVICE_CREATED,{
 		serviceId: this.id
 	});
+};
+
+// Send event to service room
+Service.prototype.fnSendEventToServiceRoom = function(event, object){
+	this.nsp.to(this.roomName).emit(event, object);	
 };

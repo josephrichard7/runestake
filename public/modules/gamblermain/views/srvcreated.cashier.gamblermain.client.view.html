@@ -1,0 +1,106 @@
+<div data-ng-controller="SrvCreatedCashierController as controller" data-ng-init="controller.fnInit()">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<table class="table table-striped table-condensed">
+					<thead>
+				        <tr>
+				            <!-- <th>Trader</th> -->
+				            <th>Type</th>
+				            <th>Description</th>
+				            <th>State</th>
+				            <th>Created Date</th>
+				            <th>Updated Date</th>
+				        </tr>
+				    </thead>
+				    <tbody class="searchable">
+				    	<tr>
+				    		<!-- <td>
+				    			<span data-ng-bind="controller.gamblermainSrv.service.trader.username"></span>
+				    		</td> -->
+				    		<td>
+				    			<span data-ng-bind="controller.gamblermainSrv.service.type"></span>
+				    		</td>
+				    		<td>
+				    			<span data-ng-bind="controller.gamblermainSrv.service.amount"></span>
+				    			&nbsp;
+				    			<span data-ng-bind="controller.gamblermainSrv.service.sourceCurrency"></span>
+				    			&nbsp;to&nbsp;
+				    			<span data-ng-bind="controller.gamblermainSrv.service.destinationCurrency"></span>
+				    		</td>
+				    		<td>
+				    			<div ng-switch="controller.gamblermainSrv.service.state">
+				    				<span 
+				    					data-ng-if="controller.gamblermainSrv.service.state === controller.gamblermainSrv.enumServiceState.CREATED" 
+				    					data-ng-bind="controller.gamblermainSrv.service.state" 
+				    					data-toggle="tooltip" 
+				    					title="Service has been created. Waiting for trader approval."></span>
+				    				<span 
+				    					data-ng-if="controller.gamblermainSrv.service.state === controller.gamblermainSrv.enumServiceState.COMPLETED" 
+				    					data-ng-bind="controller.gamblermainSrv.service.state" 
+				    					data-toggle="tooltip" 
+				    					title="Service has been completed"></span>
+				    				<span 
+				    					data-ng-if="controller.gamblermainSrv.service.state === controller.gamblermainSrv.enumServiceState.DESISTED" 
+				    					data-ng-bind="controller.gamblermainSrv.service.state" 
+				    					data-toggle="tooltip" 
+				    					title="Service has been desisted by Gambler"></span>
+				    				<span 
+				    					data-ng-if="controller.gamblermainSrv.service.state === controller.gamblermainSrv.enumServiceState.ABANDONED_BY_TRADER" 
+				    					data-ng-bind="controller.gamblermainSrv.service.state" 
+				    					data-toggle="tooltip" 
+				    					title="Trader had connection problems"></span>
+				    				<span 
+				    					data-ng-if="controller.gamblermainSrv.service.state === controller.gamblermainSrv.enumServiceState.ABANDONED_BY_GAMBLER" 
+				    					data-ng-bind="controller.gamblermainSrv.service.state" 
+				    					data-toggle="tooltip" 
+				    					title="Service has been abandoned by Gambler"></span>
+								</div>
+				    		</td>
+				    		<td>
+				    			<span data-ng-bind="controller.gamblermainSrv.service.createdDate | date:'medium'"></span>
+				    		</td>
+				    		<td>
+				    			<span data-ng-bind="controller.gamblermainSrv.service.updatedDate | date:'medium'"></span>
+				    		</td>
+				    	</tr>
+				    </tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					Service
+					<small>
+						({{controller.gamblermainSrv.service._id}})
+					</small>
+					<button class="btn btn-link btn-xs" data-ng-click="controller.fnDesistService()">Desist</button>
+				</div>
+				<div id="chatPanelService" class="panel-body" jm-autoscroll>
+					<div class="row" data-ng-repeat="message in controller.gamblermainSrv.servicesSocket.listMessages track by $index">
+						<div class="col-md-12">
+							<small>
+								<mark data-ng-if="message.role === controller.gamblermainSrv.enumUserRole.TRADER">Trader</mark>
+								<mark data-ng-if="message.role === controller.gamblermainSrv.enumUserRole.GAMBLER" data-ng-bind="message.username"></mark>
+								<span data-ng-bind="message.message" data-ng-class="message.type === 'INFO' ? 'text-info':''"></span>
+							</small>
+						</div>
+					</div>
+				</div>
+				<div class="panel-footer">
+					<form class="form-horizontal" autocomplete="off" data-ng-submit="controller.fnSendMessage()">
+						<div class="input-group">
+							<input type="text" data-ng-model="controller.message" class="form-control" placeholder="Write to the trader...">
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="submit">Send</button>
+							</span>
+					    </div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

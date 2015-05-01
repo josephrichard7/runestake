@@ -16,28 +16,35 @@ Promise.promisifyAll(require('mongoose'));
 
 var stateMachine = {};
 stateMachine[enumServiceState.CREATED] = {};
-stateMachine[enumServiceState.CREATED][enumServiceState.ASSIGNED] 	= true;
-stateMachine[enumServiceState.CREATED][enumServiceState.CANCELED] 	= true;
-stateMachine[enumServiceState.ASSIGNED] = {};
-stateMachine[enumServiceState.ASSIGNED][enumServiceState.COMPLETED] = true;
-stateMachine[enumServiceState.ASSIGNED][enumServiceState.DESISTED] 	= true;
+stateMachine[enumServiceState.CREATED][enumServiceState.DESISTED] 				= true;
+stateMachine[enumServiceState.CREATED][enumServiceState.COMPLETED] 				= true;
+stateMachine[enumServiceState.CREATED][enumServiceState.ABANDONED_BY_GAMBLER] 	= true;
+stateMachine[enumServiceState.CREATED][enumServiceState.ABANDONED_BY_TRADER] 	= true;
 
-ServiceService.fnAssignTrader = function(serviceId, traderId){
-	// Get entity by Id
-	return ServiceService.fnReadByID(serviceId)
-	.then(function(resultReadEntity){
-		resultReadEntity.trader = traderId;
+// ServiceService.fnAssignTrader = function(serviceId, traderId){
+// 	// Get entity by Id
+// 	return ServiceService.fnReadByID(serviceId)
+// 	.then(function(resultReadEntity){
+// 		resultReadEntity.trader = traderId;
 
-		resultReadEntity.save();
-		return resultReadEntity;
-	})
-	.then(function(){
-		return fnUpdateState(serviceId, enumServiceState.ASSIGNED);
-	});
+// 		resultReadEntity.save();
+// 		return resultReadEntity;
+// 	})
+// 	.then(function(){
+// 		return fnUpdateState(serviceId, enumServiceState.ASSIGNED);
+// 	});
+// };
+
+// ServiceService.fnCancelar = function(id){
+// 	return fnUpdateState(id, enumServiceState.CANCELED);
+// };
+
+ServiceService.fnAbandonedByGambler = function(id){
+	return fnUpdateState(id, enumServiceState.ABANDONED_BY_GAMBLER);
 };
 
-ServiceService.fnCancelar = function(id){
-	return fnUpdateState(id, enumServiceState.CANCELED);
+ServiceService.fnAbandonedByTrader = function(id){
+	return fnUpdateState(id, enumServiceState.ABANDONED_BY_TRADER);
 };
 
 ServiceService.fnCreate = function(serviceVO){
@@ -74,6 +81,28 @@ ServiceService.fnCreate = function(serviceVO){
 	});
 };
 
+ServiceService.fnComplete = function(id){
+	// Get entity by Id
+	return ServiceService.fnReadByID(id)
+	.then(function(serviceEntity){
+		// Update service to PROCESSING
+		return fnUpdateState(id, enumServiceState.PROCESSING)
+		// Generate transactions for the service
+		.then(function(){
+			// return transactionService.fnProcessService(serviceEntity);
+			return 1;
+		})
+		// If an error ocurrs while generate transactions, update service state to ERROR
+		.then(null, function(err){
+			return fnUpdateState(id, enumServiceState.ERROR);
+		})
+		// If generate transactions successfully, update service state to COMPLETED
+		.then(function(){
+			return fnUpdateState(id, enumServiceState.COMPLETED);
+		});
+	});	
+};
+
 ServiceService.fnDesist = function(id){
 	return fnUpdateState(id, enumServiceState.DESISTED);
 };
@@ -82,10 +111,7 @@ ServiceService.fnListByGambler = function(id){
 	return ServiceEntity
 	.find()
 	.sort('-createdDate')
-	.populate({
-	    path: 'trader',
-	  	select: 'username'
-	})
+	.select('-trader')
 	.where('gambler').equals(id)
 	.exec();
 };
@@ -113,6 +139,17 @@ ServiceService.fnReadByID = function(id) {
 	    path: 'trader',
 	   	select: 'username'
 	})
+	.exec();
+};
+
+ServiceService.fnReadByIDByGambler = function(id) {
+	return ServiceEntity
+	.findById(id)
+	.populate({
+	    path: 'gambler',
+	   	select: 'username'
+	})
+	.select('-trader')
 	.exec();
 };
 

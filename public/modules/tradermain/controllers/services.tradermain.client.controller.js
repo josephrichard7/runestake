@@ -9,9 +9,10 @@ angular.module(ApplicationConfiguration.modules.tradermain)
     // Private variables
     var vm = this;    
 
-    vm.fnInit         = fnInit;
-    vm.fnSendMessage  = fnSendMessage;
-    vm.fnToggleWork   = fnToggleWork;
+    vm.fnInit             = fnInit;
+    vm.fnCompleteService  = fnCompleteService;
+    vm.fnSendMessage      = fnSendMessage;
+    vm.fnToggleWork       = fnToggleWork;
 
     /*jshint latedef: false*/
     function fnInit(){
@@ -21,8 +22,12 @@ angular.module(ApplicationConfiguration.modules.tradermain)
       tradermainSrv.fnLoadListServices();
     }
 
+    function fnCompleteService(service){
+      tradermainSrv.fnCompleteService(service.service._id);
+    }
+
     function fnSendMessage(service) {
-      tradermainSrv.fnSendMessage(service._id, service.message, function(){
+      tradermainSrv.fnSendMessage(service.service._id, service.message, function(){
         service.message = '';
       });
     }

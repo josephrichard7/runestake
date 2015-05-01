@@ -23,8 +23,6 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
     vm.fnCreateService        = fnCreateService;
     vm.fnConvertAmountByRate  = fnConvertAmountByRate;
 
-    // fnUpdateLabels();
-
     /*jshint latedef: false */
     // function fnReadAllExchangeRate(sourceCurrency, destinationCurrency){
     //   var size          = 0;
@@ -57,60 +55,54 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
       vm.exchangeRateList[vm.enumCurrency.RSCHIP][vm.enumCurrency.RS07] = 0.12;
       vm.exchangeRateList[vm.enumCurrency.RSCHIP][vm.enumCurrency.RSGP] = 1;
 
-      gamblermainSrv.error     = undefined;
+      gamblermainSrv.error  = undefined;
+      gamblermainSrv.info   = undefined;
       gamblermainSrv.fnResetService();
+
+      fnUpdateLabels();
+      gamblermainSrv.fnTradersAvailable();
     }
 
     function fnConvertAmountByRate(callback){
       fnUpdateLabels();
-      fnReadExchangeRate(function(rate){
-        vm.amountConverted = vm.amount * rate;
-        if(callback){
-          callback(vm.amountConverted);
-        }
-      });
+
+      // vm.exchangeRate = ExchangeRateService.get({
+      //   sourceCurrency:       vm.sourceCurrency,
+      //   destinationCurrency:  vm.destinationCurrency
+      // },function(exchangeRate){
+      //   vm.serviceRate = exchangeRate.rate;
+      // });
+      vm.serviceRate      = vm.exchangeRateList[vm.sourceCurrency][vm.destinationCurrency];
+      vm.amountConverted  = vm.amount * vm.serviceRate;
+      if(callback){
+        callback();
+      }
     }
 
     function fnCreateService(){
       var amountConvertedOld  = vm.amountConverted;
 
-      if(!vm.amount || vm.amount === '' || !vm.amountConverted || vm.amountConverted === ''){
+      if(!vm.amount || vm.amount === ''){
         vm.gamblermainSrv.error = 'Amount must be specified.';
         return;
       }
-
-      fnConvertAmountByRate(function(amountConverted){
-        if(amountConvertedOld !== amountConverted){
+      
+      fnConvertAmountByRate(function(){
+        if(amountConvertedOld !== vm.amountConverted){
           vm.gamblermainSrv.error = 'Amount converted has changed because rate has changed as well. Please review your request.';
-        }else{
-          gamblermainSrv.fnResetService();
-
-          gamblermainSrv.service.type                = vm.serviceType;
-          gamblermainSrv.service.sourceCurrency      = vm.sourceCurrency;
-          gamblermainSrv.service.destinationCurrency = vm.destinationCurrency;
-          gamblermainSrv.service.amount              = vm.amount;
-          gamblermainSrv.service.rate                = vm.serviceRate;
-
-          gamblermainSrv.fnCreateService()
-          .then(function(service){
-            gamblermainSrv.fnLoadListServices();
-            $location.path('/gamblermain/panel/cashier/assigningsrv/' + service._id);
-          });
+          return;
         }
+
+        gamblermainSrv.fnResetService();
+
+        gamblermainSrv.service.type                = vm.serviceType;
+        gamblermainSrv.service.sourceCurrency      = vm.sourceCurrency;
+        gamblermainSrv.service.destinationCurrency = vm.destinationCurrency;
+        gamblermainSrv.service.amount              = vm.amount;
+        gamblermainSrv.service.rate                = vm.serviceRate;
+
+        gamblermainSrv.fnCreateService();
       });
-    }
-    
-    function fnReadExchangeRate(callback){
-      // vm.exchangeRate = ExchangeRateService.get({
-      //   sourceCurrency:       vm.sourceCurrency,
-      //   destinationCurrency:  vm.destinationCurrency
-      // },function(exchangeRate){
-      //   vm.service.rate = exchangeRate.rate;
-      // });
-      vm.serviceRate = vm.exchangeRateList[vm.sourceCurrency][vm.destinationCurrency];
-      if(callback){
-        callback(vm.serviceRate);
-      }
     }
 
     function fnUpdateLabels(){

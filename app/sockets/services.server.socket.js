@@ -13,7 +13,7 @@ function ServicesSocket(io, expressSession){
 	// Create 'servicesSocket' namespace 
 	var servicesSocketNsp 	= io.of('/services');
 
-	servicesSocketNsp.servicesSocketSrv = new ServicesSocketService(servicesSocketNsp);
+	servicesSocketNsp.servicesSocketService = new ServicesSocketService(servicesSocketNsp);
 	
 	// Bind middleware functions to namespace
 	fnLoadMiddlewareFunctions(servicesSocketNsp, expressSession);

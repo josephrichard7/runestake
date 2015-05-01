@@ -1,11 +1,6 @@
 <div>
 	<div data-ng-show="!controller.tradermainSrv.arrayServices.$resolved || controller.tradermainSrv.arrayServices.length">
 		<div class="row">
-			<div class="col-md-8">
-				<!-- <a class="btn btn-primary" href="/#!/tradermain/panel/cashier">
-					<i class="glyphicon glyphicon-plus"></i>
-				</a> -->
-			</div>
 			<div class="col-md-4">
 			    <input id="filter" name="filter" type="text" data-ng-model="controller.filter"  class="form-control" placeholder="Filter here...">
 			</div>
@@ -41,11 +36,31 @@
 					    		</td>
 					    		<td>
 					    			<div ng-switch="service.state">
-					    				<span ng-switch-when="CREATED" data-ng-bind="service.state" data-toggle="tooltip" title="Waiting for a Trader" class="label label-primary"></span>
-					    				<span ng-switch-when="ASSIGNED" data-ng-bind="service.state" data-toggle="tooltip" title="Trader has been assigned"></span>
-					    				<span ng-switch-when="COMPLETED" data-ng-bind="service.state" data-toggle="tooltip" title="Service has been completed"></span>
-					    				<span ng-switch-when="CANCELED" data-ng-bind="service.state" data-toggle="tooltip" title="User has canceled the service" class="label label-danger"></span>
-					    				<span ng-switch-when="DESISTED" data-ng-bind="service.state" data-toggle="tooltip" title="User desisted the service"></span>
+					    				<span 
+					    					data-ng-if="service.state === controller.tradermainSrv.enumServiceState.CREATED" 
+					    					data-ng-bind="service.state" 
+					    					data-toggle="tooltip" 
+					    					title="Service has been created. Waiting for trader approval."></span>
+					    				<span 
+					    					data-ng-if="service.state === controller.tradermainSrv.enumServiceState.COMPLETED" 
+					    					data-ng-bind="service.state" 
+					    					data-toggle="tooltip" 
+					    					title="Service has been completed"></span>
+					    				<span 
+					    					data-ng-if="service.state === controller.tradermainSrv.enumServiceState.DESISTED" 
+					    					data-ng-bind="service.state" 
+					    					data-toggle="tooltip" 
+					    					title="Service has been desisted by Gambler"></span>
+					    				<span 
+					    					data-ng-if="service.state === controller.tradermainSrv.enumServiceState.ABANDONED_BY_TRADER" 
+					    					data-ng-bind="service.state" 
+					    					data-toggle="tooltip" 
+					    					title="Trader had connection problems"></span>
+					    				<span 
+					    					data-ng-if="service.state === controller.tradermainSrv.enumServiceState.ABANDONED_BY_GAMBLER" 
+					    					data-ng-bind="service.state" 
+					    					data-toggle="tooltip" 
+					    					title="Service has been abandoned by Gambler"></span>
 									</div>
 					    		</td>
 					    		<td>
@@ -66,8 +81,10 @@
 			<div class="text-center">
 				<dir-pagination-controls boundary-links="true"></dir-pagination-controls>
 			</div>
-			<div class="alert alert-warning text-center" data-ng-if="controller.tradermainSrv.arrayServices.$resolved && !controller.tradermainSrv.arrayServices.length">
-				No services yet. <!-- <a href="/#!/tradermain/panel/cashier">create one</a>? -->
+			<div 
+				class="alert alert-warning text-center" 
+				data-ng-if="controller.tradermainSrv.arrayServices.$resolved && !controller.tradermainSrv.arrayServices.length">
+				No services yet.
 			</div>
 		</div>
 	</div>

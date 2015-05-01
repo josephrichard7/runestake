@@ -1,12 +1,9 @@
 <div class="panel panel-primary" data-ng-controller="CashierController as controller" data-ng-init="controller.fnInit()">	
 	<ol class="breadcrumb">
-		<li><a href="/#!/gamblermain/panel">Control panel</a></li>
+		<li><a data-ng-click="util.go('gamblermainState.panel')">Control panel</a></li>
 		<li class="active">Cashier</li>
 	</ol>
 	<div class="panel-body">
-		<div data-ng-show="controller.gamblermainSrv.info && !controller.gamblermainSrv.error" class="text-success text-center">
-			<strong data-ng-bind="controller.gamblermainSrv.info"></strong>
-		</div>
 		<tabset>
 			<tab heading="Trade">
 				<div data-ui-view>
@@ -19,6 +16,9 @@
 		</tabset>
 		<div data-ng-show="controller.gamblermainSrv.error" class="text-danger text-center">
 			<strong data-ng-bind="controller.gamblermainSrv.error"></strong>
+		</div>
+		<div data-ng-show="controller.gamblermainSrv.info" class="text-success text-center">
+			<strong data-ng-bind="controller.gamblermainSrv.info"></strong>
 		</div>
 	</div>
 </div>

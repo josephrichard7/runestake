@@ -1,0 +1,92 @@
+<div data-ng-controller="SrvStateCashierController as controller" data-ng-init="controller.fnInit()">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<table class="table table-striped table-condensed">
+					<thead>
+				        <tr>
+				            <th>Trader</th>
+				            <th>Type</th>
+				            <th>Description</th>
+				            <th>State</th>
+				            <th>Created Date</th>
+				            <th>Updated Date</th>
+				        </tr>
+				    </thead>
+				    <tbody class="searchable">
+				    	<tr>
+				    		<td>
+				    			<span data-ng-bind="controller.gamblermainSrv.service.trader.username"></span>
+				    		</td>
+				    		<td>
+				    			<span data-ng-bind="controller.gamblermainSrv.service.type"></span>
+				    		</td>
+				    		<td>
+				    			<span data-ng-bind="controller.gamblermainSrv.service.amount"></span>
+				    			&nbsp;
+				    			<span data-ng-bind="controller.gamblermainSrv.service.sourceCurrency"></span>
+				    			&nbsp;to&nbsp;
+				    			<span data-ng-bind="controller.gamblermainSrv.service.destinationCurrency"></span>
+				    		</td>
+				    		<td>
+				    			<div ng-switch="controller.gamblermainSrv.service.state">
+				    				<span 
+				    					data-ng-if="controller.gamblermainSrv.service.state === controller.gamblermainSrv.enumServiceState.CREATED" 
+				    					data-ng-bind="controller.gamblermainSrv.service.state" 
+				    					data-toggle="tooltip" 
+				    					title="Service has been created. Waiting for trader approval."></span>
+				    				<span 
+				    					data-ng-if="controller.gamblermainSrv.service.state === controller.gamblermainSrv.enumServiceState.COMPLETED" 
+				    					data-ng-bind="controller.gamblermainSrv.service.state" 
+				    					data-toggle="tooltip" 
+				    					title="Service has been completed"></span>
+				    				<span 
+				    					data-ng-if="controller.gamblermainSrv.service.state === controller.gamblermainSrv.enumServiceState.DESISTED" 
+				    					data-ng-bind="controller.gamblermainSrv.service.state" 
+				    					data-toggle="tooltip" 
+				    					title="Service has been desisted by Gambler"></span>
+				    				<span 
+				    					data-ng-if="controller.gamblermainSrv.service.state === controller.gamblermainSrv.enumServiceState.ABANDONED_BY_TRADER" 
+				    					data-ng-bind="controller.gamblermainSrv.service.state" 
+				    					data-toggle="tooltip" 
+				    					title="Trader had connection problems"></span>
+				    				<span 
+				    					data-ng-if="controller.gamblermainSrv.service.state === controller.gamblermainSrv.enumServiceState.ABANDONED_BY_GAMBLER" 
+				    					data-ng-bind="controller.gamblermainSrv.service.state" 
+				    					data-toggle="tooltip" 
+				    					title="Service has been abandoned by Gambler"></span>
+								</div>
+				    		</td>
+				    		<td>
+				    			<span data-ng-bind="controller.gamblermainSrv.service.createdDate | date:'medium'"></span>
+				    		</td>
+				    		<td>
+				    			<span data-ng-bind="controller.gamblermainSrv.service.updatedDate | date:'medium'"></span>
+				    		</td>
+				    	</tr>
+				    </tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12 text-center">
+			<span data-ng-if="controller.gamblermainSrv.service.state === controller.gamblermainSrv.enumServiceState.CREATED">
+				Service has beed <b>CREATED</b>.
+			</span>
+			<span data-ng-if="controller.gamblermainSrv.service.state === controller.gamblermainSrv.enumServiceState.COMPLETED">
+				Service has beed <b>COMPLETED</b>.
+			</span>
+			<span data-ng-if="controller.gamblermainSrv.service.state === controller.gamblermainSrv.enumServiceState.DESISTED">
+				Service has beed <b>DESISTED</b> by the Gambler.
+			</span>
+			<span data-ng-if="controller.gamblermainSrv.service.state === controller.gamblermainSrv.enumServiceState.ABANDONED_BY_TRADER">
+				Trader had connection problems, and the service could not be attended. We apologize for the inconveniences.
+			</span>
+			<span data-ng-if="controller.gamblermainSrv.service.state === controller.gamblermainSrv.enumServiceState.ABANDONED_BY_GAMBLER">
+				Service has beed <b>ABANDONED</b> by the Gambler.
+			</span>
+			Request&nbsp;<a data-ng-click="util.go('gamblermainState.cashier.createsrv')">new service</a>.
+		</div>
+	</div>
+</div>

@@ -16,8 +16,8 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
       vm.gamblermainSrv       = gamblermainSrv;
       vm.currentPage          = 1;
       vm.pageSize             = 10;
+      gamblermainSrv.fnInitServicesSocket();
       gamblermainSrv.fnLoadListServices();
-      gamblermainSrv.fnTradersAvailable();
     }
 
   }
