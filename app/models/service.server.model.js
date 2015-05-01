@@ -14,11 +14,11 @@ var mongoose 		 	= require('mongoose'),
  * Service Schema
  */
 var ServiceSchema = new Schema({
-	trader:{
+	requestingUser:{
 		type: Schema.Types.ObjectId,
 		ref: 'User'
 	},
-	gambler:{
+	attendantUser:{
 		type: Schema.Types.ObjectId,
 		ref: 'User'
 	},

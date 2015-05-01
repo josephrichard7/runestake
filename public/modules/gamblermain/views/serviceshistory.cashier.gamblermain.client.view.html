@@ -22,7 +22,7 @@
 					    <tbody class="searchable">
 					    	<tr dir-paginate="service in controller.gamblermainSrv.listServices | filter:controller.filter | itemsPerPage: controller.pageSize" current-page="controller.currentPage">
 					    		<!-- <td>
-					    			<span data-ng-bind="service.trader.username"></span>
+					    			<span data-ng-bind="service.attendantUser.username"></span>
 					    		</td> -->
 					    		<td>
 					    			<span data-ng-bind="service.type"></span>

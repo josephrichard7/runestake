@@ -12,7 +12,7 @@ var Promise				= require('bluebird'),
 	enumServiceType		= require('../utilities/enums/servicetype'),
 	accountService 		= require('../services/account');
 
-Promise.promisifyAll(require('mongoose'));	
+module.exports = ServiceService;
 
 var stateMachine = {};
 stateMachine[enumServiceState.CREATED] = {};
@@ -89,8 +89,7 @@ ServiceService.fnComplete = function(id){
 		return fnUpdateState(id, enumServiceState.PROCESSING)
 		// Generate transactions for the service
 		.then(function(){
-			// return transactionService.fnProcessService(serviceEntity);
-			return 1;
+			return transactionService.fnProcessService(serviceEntity);
 		})
 		// If an error ocurrs while generate transactions, update service state to ERROR
 		.then(null, function(err){
@@ -111,8 +110,8 @@ ServiceService.fnListByGambler = function(id){
 	return ServiceEntity
 	.find()
 	.sort('-createdDate')
-	.select('-trader')
-	.where('gambler').equals(id)
+	.select('-attendantUser')
+	.where('requestingUser').equals(id)
 	.exec();
 };
 
@@ -121,10 +120,14 @@ ServiceService.fnListByTrader = function(id){
 	.find()
 	.sort('-createdDate')
 	.populate({
-	    path: 'gambler',
+	    path: 'requestingUser',
 	   	select: 'username'
 	})
-	.where('trader').equals(id)
+	.populate({
+	    path: 'attendantUser',
+	   	select: 'username'
+	})
+	.where('attendantUser').equals(id)
 	.exec();
 };
 
@@ -132,11 +135,11 @@ ServiceService.fnReadByID = function(id) {
 	return ServiceEntity
 	.findById(id)
 	.populate({
-	    path: 'gambler',
+	    path: 'requestingUser',
 	   	select: 'username'
 	})
 	.populate({
-	    path: 'trader',
+	    path: 'attendantUser',
 	   	select: 'username'
 	})
 	.exec();
@@ -146,10 +149,10 @@ ServiceService.fnReadByIDByGambler = function(id) {
 	return ServiceEntity
 	.findById(id)
 	.populate({
-	    path: 'gambler',
+	    path: 'requestingUser',
 	   	select: 'username'
 	})
-	.select('-trader')
+	.select('-attendantUser')
 	.exec();
 };
 
@@ -184,5 +187,3 @@ function fnVerifyBalanceForCashOut(userId, chipAmount){
 		}
 	});
 }
-
-module.exports = ServiceService;

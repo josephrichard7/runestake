@@ -28,9 +28,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
     }
      
     function fnSendMessage() {
-      gamblermainSrv.fnSendMessage(vm.message, function(){
-        vm.message = '';
-      });
+      gamblermainSrv.fnSendMessage();
     }
 
   }

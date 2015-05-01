@@ -16,8 +16,8 @@ module.exports = function(app) {
 	app.route('/service/:id')
 	.get(userController.hasAuthorization([enumUserrole.GAMBLER, enumUserrole.TRADER]), serviceController.fnReadByID);
 
-	app.route('/service/:id/cancelar')
-	.put(userController.hasAuthorization([enumUserrole.GAMBLER]), serviceController.fnCancelar);
+	// app.route('/service/:id/cancelar')
+	// .put(userController.hasAuthorization([enumUserrole.GAMBLER]), serviceController.fnCancelar);
 
 	app.route('/service/:id/desist')
 	.put(userController.hasAuthorization([enumUserrole.GAMBLER]), serviceController.fnDesist);

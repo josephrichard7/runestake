@@ -16,7 +16,7 @@
 				    <tbody class="searchable">
 				    	<tr>
 				    		<!-- <td>
-				    			<span data-ng-bind="controller.gamblermainSrv.service.trader.username"></span>
+				    			<span data-ng-bind="controller.gamblermainSrv.service.attendantUser.username"></span>
 				    		</td> -->
 				    		<td>
 				    			<span data-ng-bind="controller.gamblermainSrv.service.type"></span>
@@ -80,7 +80,7 @@
 					<button class="btn btn-link btn-xs" data-ng-click="controller.fnDesistService()">Desist</button>
 				</div>
 				<div id="chatPanelService" class="panel-body" jm-autoscroll>
-					<div class="row" data-ng-repeat="message in controller.gamblermainSrv.servicesSocket.listMessages track by $index">
+					<div class="row" data-ng-repeat="message in controller.gamblermainSrv.service.listMessages track by $index">
 						<div class="col-md-12">
 							<small>
 								<mark data-ng-if="message.role === controller.gamblermainSrv.enumUserRole.TRADER">Trader</mark>
@@ -93,7 +93,7 @@
 				<div class="panel-footer">
 					<form class="form-horizontal" autocomplete="off" data-ng-submit="controller.fnSendMessage()">
 						<div class="input-group">
-							<input type="text" data-ng-model="controller.message" class="form-control" placeholder="Write to the trader...">
+							<input type="text" data-ng-model="controller.gamblermainSrv.service.message" class="form-control" placeholder="Write to the trader...">
 							<span class="input-group-btn">
 								<button class="btn btn-default" type="submit">Send</button>
 							</span>

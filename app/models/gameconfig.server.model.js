@@ -10,7 +10,13 @@ var mongoose = require('mongoose'),
  * GameConfig Schema
  */
 var GameConfigSchema = new Schema({
-	profitPercent:{
+	profitPercentInStakeForBank:{
+		type: Number
+	},
+	profitPercentInCashInForTrader:{
+		type: Number
+	},
+	profitPercentInCashOutForTrader:{
 		type: Number
 	},
 	updatedByUser:{

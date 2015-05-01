@@ -218,6 +218,7 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 				var service = _this.fnGetService(data.serviceId);
 				
 				_this.fnLoadListServices();
+				_this.fnLoadUser();
 	    		service.isCompleted	= true;
 	    		service.isDisabled	= true;
 				service.isOpen 		= false;

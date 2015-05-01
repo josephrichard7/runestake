@@ -60,8 +60,8 @@ ServicesSocketService.prototype.fnAddService = function(serviceVO, gamblerUserna
 	connectedGambler 	= this.fnGetConnectedGambler(gamblerUsername);
 
 	// Set gambler and trader id to the service
-	serviceVO.gambler 	= connectedGambler.user.id;
-	serviceVO.trader 	= connectedTrader.user.id;
+	serviceVO.requestingUser 	= connectedGambler.user.id;
+	serviceVO.attendantUser 	= connectedTrader.user.id;
 
 	// Create service in DB
 	return serviceService.fnCreate(serviceVO)

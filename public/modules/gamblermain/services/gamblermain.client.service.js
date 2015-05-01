@@ -74,7 +74,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 				role: 		role,
 				type:     	type
 			};
-			_this.servicesSocket.listMessages.push(objMessage);
+			_this.service.listMessages.push(objMessage);
 	    };
 
 		_this.fnCreateService = function (){
@@ -103,6 +103,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 	      		_this.fnOnServiceAbandonedByTrader();
 				_this.fnOnServiceCreated();
 				_this.fnOnServiceDesisted();
+				_this.fnOnServiceCompleted();
 				_this.fnOnTradersAvailable();
 			}
 		};
@@ -202,6 +203,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		_this.fnOnServiceCompleted = function (callback){
 			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.SERVICE_COMPLETED, function(data){
 				_this.fnLoadListServices();
+				_this.fnLoadUser();
 		        utilSrv.util.go('gamblermainState.cashier.srvstate',{
 		        	id: data.serviceId
 		        });
@@ -225,27 +227,23 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		_this.fnReadServiceById = function (id){
 			return serviceSrv.fnReadServiceById(id)
 			.then(function(service){
-				_this.service = service;
+				_this.service 				= service;
+				_this.service.listMessages 	= [];
 				return _this.service;
 			})
 			.catch(fnErrorHandling);
-		};
-
-		_this.fnRequestTrader = function (){
-			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.REQUEST_TRADER, {
-				serviceId: _this.service._id
-			});
 		};
 
 		_this.fnResetService = function (){
 			_this.service = {};
 		};
 
-		_this.fnSendMessage = function (message, callback){
+		_this.fnSendMessage = function (callback){
 			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.NEW_MESSAGE_SERVICE, {
 				serviceId: 	_this.service._id,
-				message: 	message
+				message: 	_this.service.message
 			});
+			_this.service.message = '';
 			if(callback){
 				callback();
 			}

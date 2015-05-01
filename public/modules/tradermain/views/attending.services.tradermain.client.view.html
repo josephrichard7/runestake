@@ -16,7 +16,7 @@
                   <i data-ng-if="controller.tradermainSrv.listServicesInAttention[serviceId].isDesisted" class="fa fa-user-times"></i>
                   <i data-ng-if="controller.tradermainSrv.listServicesInAttention[serviceId].isCompleted" class="fa fa-check-circle"></i>
                   Service (id:&nbsp;{{controller.tradermainSrv.listServicesInAttention[serviceId].service._id}},&nbsp;username:&nbsp;
-                  <mark data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.gambler.username"></mark>)&nbsp;
+                  <mark data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.requestingUser.username"></mark>)&nbsp;
                   <span data-ng-if="controller.tradermainSrv.listServicesInAttention[serviceId].isDesisted">
                     Service has been <b>desisted</b> by Gambler
                   </span>
@@ -43,7 +43,7 @@
                           <tbody>
                               <tr>
                                 <td>
-                                  <span data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.gambler.username"></span>
+                                  <span data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.requestingUser.username"></span>
                                 </td>
                                 <td>
                                   <span data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.type"></span>

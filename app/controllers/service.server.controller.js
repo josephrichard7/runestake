@@ -63,7 +63,7 @@ ServiceController.fnReadByID = function(req, res) {
 	if(req.user.role === enumUserRole.GAMBLER){
 		promise = serviceService.fnReadByIDByGambler(id);
 	}else{
-		serviceService.fnReadByID(id);
+		promise = serviceService.fnReadByID(id);
 	}
 
 	util.fnProcessServicePromiseInController(promise, res);

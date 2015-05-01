@@ -11,17 +11,17 @@ var mongoose = require('mongoose'),
  */
 var AccountSchema = new Schema({
 	user:{
-		type: Schema.Types.ObjectId,
-		ref: 'User',
-		required: 'User cannot be empty'
+		type: 		Schema.Types.ObjectId,
+		ref: 		'User',
+		required: 	'User cannot be empty'
 	},
 	balance:{
-		type: Number,
-		required: 'Balance cannot be empty'
+		type: 		Number,
+		required: 	'Balance cannot be empty'
 	},
 	createdDate:{
-		type: Date,
-		default: Date.now
+		type: 		Date,
+		default: 	Date.now
 	},
 	updatedDate:{
 		type: Date
