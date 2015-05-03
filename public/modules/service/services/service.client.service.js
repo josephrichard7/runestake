@@ -6,11 +6,11 @@ angular.module(ApplicationConfiguration.modules.service)
 	function($resource) {
 		var _this = this;
 
-		_this.serviceResource 		= $resource('service/:serviceId', {
+		var ServiceResource 		= $resource('service/:serviceId', {
 			serviceId: '@_id'
 		});
 
-		_this.serviceCancelResource = $resource('service/:serviceId/cancelar',{
+		var ServiceCancelResource = $resource('service/:serviceId/cancelar',{
 			serviceId: '@id'
 		},{
 			cancel:{
@@ -18,7 +18,7 @@ angular.module(ApplicationConfiguration.modules.service)
 			}
 		});
 
-		_this.serviceDesistResource = $resource('service/:serviceId/desist',{
+		var ServiceDesistResource = $resource('service/:serviceId/desist',{
 			serviceId: '@id'
 		},{
 			desist:{
@@ -27,7 +27,7 @@ angular.module(ApplicationConfiguration.modules.service)
 		});
 
 		_this.fnCancelService = function (id){
-			var serviceCancel = new _this.serviceCancelResource();
+			var serviceCancel = new ServiceCancelResource();
 			
 			serviceCancel.id = id;
 
@@ -37,7 +37,7 @@ angular.module(ApplicationConfiguration.modules.service)
 		};
 
 		_this.fnDesistService = function (id){
-			var serviceDesist = new _this.serviceDesistResource();
+			var serviceDesist = new ServiceDesistResource();
 			
 			serviceDesist.id = id;
 
@@ -47,17 +47,17 @@ angular.module(ApplicationConfiguration.modules.service)
 		};
 
 		_this.fnCreateService = function (serviceVO){
-			var service = new _this.serviceResource(serviceVO);
+			var service = new ServiceResource(serviceVO);
 			
 			return service.$save();
 		};
 
 		_this.fnLoadListServices = function (){
-			return _this.serviceResource.query().$promise;
+			return ServiceResource.query().$promise;
 		};
 
 		_this.fnReadServiceById = function (id){
-			return _this.serviceResource.get({
+			return ServiceResource.get({
 				serviceId: id
 			}).$promise;
 		};

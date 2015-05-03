@@ -1,31 +1,48 @@
 'use strict';
 
 angular.module(ApplicationConfiguration.modules.global)
-.service(ApplicationConfiguration.services.utilities, 
-	['$resource',
-	 '$location',
-	 '$state',
-	function($resource, $location, $state){
+.service(ApplicationConfiguration.services.utilities, [
+	'$resource',
+	'$state',
+	function($resource, $state){
+		var _this = this;
+		var enumResource = $resource('enum/:name/:type');
+		var enumType = {
+			ARRAY: 	'ARRAY',
+			OBJECT: 'OBJECT'
+		};
 		var defaultOptionsGoFunction = {
 			location: 	false,
 			inherit: 	false,
 			reload: 	true
 		};
-		this.util = {};
 
-		this.enumName = {
-			TRADERRANK: 'traderrank',
-			USERSTATE: 	'userstate',
-			CHATEVENT: 	'chatevent'
+		_this.util = {};
+
+		_this.enumName = {
+			CHATEVENT: 				'chatevent',
+			SERVICESSOCKETEVENT: 	'servicessocketevent',
+			SERVICESTATE: 			'servicestate',
+			TRADERRANK: 			'traderrank',
+			USERROLE: 				'userrole',
+			USERSTATE: 				'userstate'
 		};
-		this.enumType = {
-			ARRAY: 	'ARRAY',
-			OBJECT: 'OBJECT'
+
+		_this.util.fnLoadEnumArray = function(enumName){
+			return enumResource.get({
+				name: enumName, 
+				type: enumType.ARRAY
+			}).$promise;
 		};
 
-		this.enumResource = $resource('enum/:name/:type');
+		_this.util.fnLoadEnumObject = function(enumName){
+			return enumResource.get({
+				name: enumName, 
+				type: enumType.OBJECT
+			}).$promise;
+		};
 
-		this.util.go = function(state, params, options){
+		_this.util.go = function(state, params, options){
 			$state.go(state, params, options || defaultOptionsGoFunction);
 		};
 	}

@@ -94,7 +94,7 @@ ServicesSocketService.prototype.fnCompleteService = function (socket){
 
 		if(service && connectedTrader){
 			// Apply service to be completed
-			serviceService.fnComplete()
+			serviceService.fnComplete(service.id)
 			.then(function(){
 				// Service Completed
 				service.fnComplete();

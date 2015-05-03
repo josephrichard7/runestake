@@ -19,6 +19,10 @@ var GameConfigSchema = new Schema({
 	profitPercentInCashOutForTrader:{
 		type: Number
 	},
+	fromDate:{
+		type: Date,
+		required: 'FromDate is required.'
+	},
 	updatedByUser:{
 		type: Schema.Types.ObjectId,
 		ref: 'User'

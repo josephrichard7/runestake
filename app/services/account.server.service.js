@@ -62,3 +62,25 @@ AccountService.fnGetBalanceByUserId = function(userId){
 		return account.balance;
 	});
 };
+
+AccountService.fnWithdraw = function(id, amount){
+	// Get entity by Id
+	return AccountService.fnReadByID(id)
+	.then(function(accountEntity){
+		accountEntity.amount = accountEntity.amount - amount;
+
+		accountEntity.save();
+		return accountEntity;
+	});
+};
+
+AccountService.fnDeposit = function(id, amount){
+	// Get entity by Id
+	return AccountService.fnReadByID(id)
+	.then(function(accountEntity){
+		accountEntity.amount = accountEntity.amount + amount;
+
+		accountEntity.save();
+		return accountEntity;
+	});
+};

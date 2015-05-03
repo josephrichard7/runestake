@@ -10,16 +10,22 @@ var Promise				= require('bluebird'),
 	ServiceEntity 		= mongoose.model('Service'),
 	enumServiceState	= require('../utilities/enums/servicestate'),
 	enumServiceType		= require('../utilities/enums/servicetype'),
-	accountService 		= require('../services/account');
+	enumUserRole 		= require('../utilities/enums/userrole'),
+	accountService 		= require('../services/account'),
+	exchangeRateService = require('../services/exchangerate'),
+	transactionService 	= require('../services/transaction');
 
 module.exports = ServiceService;
 
 var stateMachine = {};
 stateMachine[enumServiceState.CREATED] = {};
 stateMachine[enumServiceState.CREATED][enumServiceState.DESISTED] 				= true;
-stateMachine[enumServiceState.CREATED][enumServiceState.COMPLETED] 				= true;
+stateMachine[enumServiceState.CREATED][enumServiceState.PROCESSING] 			= true;
 stateMachine[enumServiceState.CREATED][enumServiceState.ABANDONED_BY_GAMBLER] 	= true;
 stateMachine[enumServiceState.CREATED][enumServiceState.ABANDONED_BY_TRADER] 	= true;
+stateMachine[enumServiceState.PROCESSING] = {};
+stateMachine[enumServiceState.PROCESSING][enumServiceState.COMPLETED] 			= true;
+stateMachine[enumServiceState.PROCESSING][enumServiceState.ERROR]	 			= true;
 
 // ServiceService.fnAssignTrader = function(serviceId, traderId){
 // 	// Get entity by Id
@@ -67,8 +73,10 @@ ServiceService.fnCreate = function(serviceVO){
 		}
 	})
 	.then(function(){
-		// return ExchangeRateService.fnGetRate(serviceEntity.sourceCurrency, serviceEntity.destinationCurrency);
-		return serviceEntity.rate;
+		return exchangeRateService.fnRead(enumUserRole.TRADER, serviceEntity.sourceCurrency, serviceEntity.destinationCurrency)
+		.then(function(exchangeRate){
+			return exchangeRate.rate;
+		});
 	})
 	.then(function(rate){
 		// Add missing default fields
@@ -142,6 +150,7 @@ ServiceService.fnReadByID = function(id) {
 	    path: 'attendantUser',
 	   	select: 'username'
 	})
+	// .lean(true)
 	.exec();
 };
 

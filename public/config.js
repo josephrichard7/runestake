@@ -9,17 +9,21 @@ var ApplicationConfiguration = (function() {
 		articles: 		'articles',
 		chat: 			'chat',
 		core: 			'core',
+		exchangerate: 	'exchangerate',
+		gambler: 		'gambler',
 		gamblermain: 	'gamblermain',
 		global: 		'global',
 		service: 		'service',
 		trader: 		'trader',
 		tradermain: 	'tradermain',
-		user: 			'user'
+		user: 			'users'
 	};
 	var services = {
 		account: 		'AccountService',
 		authentication: 'Authentication',
 		chat: 			'ChatService',
+		exchangerate: 	'ExchangerateService',
+		gambler: 		'GamblerService',
 		gamblerchat: 	'GamblerChatService',
 		gamblermain: 	'GamblermainService',
 		service: 		'ServiceService',

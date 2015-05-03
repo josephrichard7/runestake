@@ -15,12 +15,14 @@ var mongoose 		 	= require('mongoose'),
  */
 var ServiceSchema = new Schema({
 	requestingUser:{
-		type: Schema.Types.ObjectId,
-		ref: 'User'
+		type: 		Schema.Types.ObjectId,
+		ref: 		'User',
+		required: 	'RequestingUser cannot be empty or is not valid'
 	},
 	attendantUser:{
-		type: Schema.Types.ObjectId,
-		ref: 'User'
+		type: 		Schema.Types.ObjectId,
+		ref: 		'User',
+		required: 	'AttendantUser cannot be empty or is not valid'
 	},
 	type:{
 		type: 		String,

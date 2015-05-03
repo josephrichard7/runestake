@@ -1,22 +1,15 @@
 'use strict';
 
 angular.module(ApplicationConfiguration.modules.account)
-.service(ApplicationConfiguration.services.account, 
-	['$resource',
+.service(ApplicationConfiguration.services.account, [
+	'$resource',
 	function($resource) {
 		var _this = this;
 
-		_this.accountResource = $resource('account/:id/user/:userId', {
-			id: '@_id',
-			userId: '@userId'
-		}, {
-			update: {
-				method: 'PUT'
-			}
-		});
+		var AccountResource = $resource('account/:id/user/:userId');
 
 		_this.fnReadAccountByUserId = function(userId){
-			return _this.accountResource.get({
+			return AccountResource.get({
 				userId: userId
 			}).$promise;
 		};

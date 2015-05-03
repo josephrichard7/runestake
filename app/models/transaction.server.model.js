@@ -25,8 +25,7 @@ var TransactionSchema = new Schema({
 	// },
 	game:{
 		type: Schema.Types.ObjectId,
-		ref: 'Game',
-		required: 'Game cannot be empty'
+		ref: 'Game'
 	},
 	service:{
 		type: Schema.Types.ObjectId,

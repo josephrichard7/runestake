@@ -4,7 +4,7 @@ var EnumTransactionType = {
 	START_GAME: 'START_GAME',
 	END_GAME: 	'END_GAME',
 	DEPOSIT: 	'DEPOSIT',
-	WITHDRAW: 	'WITHDRAWAL'
+	WITHDRAWAL: 'WITHDRAWAL'
 };
 
 module.exports = EnumTransactionType;

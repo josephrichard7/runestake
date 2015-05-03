@@ -1,11 +1,18 @@
 'use strict';
 
-angular.module('users').controller('AuthenticationController', ['$scope', '$http', '$location', 'Authentication',
-	function($scope, $http, $location, Authentication) {
+angular.module(ApplicationConfiguration.modules.user)
+.controller('AuthenticationController', [
+	'$scope', 
+	'$http', 
+	ApplicationConfiguration.services.authentication,
+	ApplicationConfiguration.services.utilities,
+	function($scope, $http, Authentication, utilSrv) {
 		$scope.authentication = Authentication;
 
 		// If user is signed in then redirect back home
-		if ($scope.authentication.user) $location.path('/');
+		if ($scope.authentication.user){
+			utilSrv.go('home');	
+		}
 
 		$scope.signup = function() {
 			$http.post('/auth/signup', $scope.credentials).success(function(response) {
@@ -14,13 +21,12 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
 
 				// And redirect to the index page
 				if($scope.authentication.user.role === 'GAMBLER'){
-					$location.path('/gamblermain/panel');
+					utilSrv.util.go('gamblermainState.panel');
 				}else if($scope.authentication.user.role === 'TRADER'){
-					$location.path('/tradermain/panel');
+					utilSrv.util.go('tradermainState.panel');
 				}else{
-					$location.path('/');
+					utilSrv.util.go('home');
 				}
-				// window.location.reload();
 			}).error(function(response) {
 				$scope.error = response.message;
 			});
@@ -33,13 +39,12 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
 
 				// And redirect to the index page
 				if($scope.authentication.user.role === 'GAMBLER'){
-					$location.path('/gamblermain/panel');
+					utilSrv.util.go('gamblermainState.panel');
 				}else if($scope.authentication.user.role === 'TRADER'){
-					$location.path('/tradermain/panel');
+					utilSrv.util.go('tradermainState.panel');
 				}else{
-					$location.path('/');
+					utilSrv.util.go('home');
 				}
-				// window.location.reload();
 			}).error(function(response) {
 				$scope.error = response.message;
 			});

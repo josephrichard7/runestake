@@ -11,12 +11,12 @@ module.exports = function(app) {
 	// Account Routes
 
 	// Get account by id
-	app.route('/account/:id')
-	.get(
-		userController.hasAuthorization([enumUserrole.ADMIN, enumUserrole.GAMBLER]),
-		accountController.hasAuthorization,
-		accountController.fnReadByID
-	);
+	// app.route('/account/:id')
+	// .get(
+	// 	userController.hasAuthorization([enumUserrole.ADMIN, enumUserrole.GAMBLER]),
+	// 	accountController.hasAuthorization,
+	// 	accountController.fnReadByID
+	// );
 
 	// Get account by userid
 	app.route('/account/user/:userId')

@@ -1,15 +1,13 @@
 'use strict';
 
 angular.module(ApplicationConfiguration.modules.gamblermain)
-.service(ApplicationConfiguration.services.gamblermain, 
-	['$resource',
-	 '$location',
+.service(ApplicationConfiguration.services.gamblermain, [
 	ApplicationConfiguration.services.authentication, 
-	ApplicationConfiguration.services.account,
+	ApplicationConfiguration.services.gambler,
 	ApplicationConfiguration.services.service,
 	ApplicationConfiguration.factories.chat,	 
   	ApplicationConfiguration.services.utilities,
-	function($resource, $location, Authentication, accountSrv, serviceSrv, ChatFactory, utilSrv) {
+	function(Authentication, gamblerSrv, serviceSrv, ChatFactory, utilSrv) {
 		var _this = this;
 
 		var enumServicesSocketEvent = {
@@ -38,10 +36,6 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 				TRADERS_AVAILABLE: 		'TRADERS_AVAILABLE'
 			}
 		};
-
-		_this.gamblerResource 		= $resource('gambler/:gamblerId', {
-			gamblerId: '@_id'
-		});
 		
 		_this.servicesSocket 		= undefined;
 		_this.authentication 		= Authentication;
@@ -118,19 +112,10 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		_this.fnLoadUser = function (){
-			return _this.gamblerResource.get({
-				gamblerId: _this.authentication.user._id
-			}).$promise
+			gamblerSrv.fnReadById(_this.authentication.user._id)
 			.then(function(gambler){
 				_this.gambler = gambler;
 				return _this.gambler;
-			})
-			.then(function(gambler){
-				return accountSrv.fnReadAccountByUserId(gambler._id)
-				.then(function(account){
-					_this.gambler.account = account;
-					return _this.gambler;
-				});
 			})
 			.catch(fnErrorHandling);
 		};

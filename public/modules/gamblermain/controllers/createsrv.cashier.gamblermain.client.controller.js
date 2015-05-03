@@ -5,7 +5,8 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
   ['$scope',
   '$location',
   ApplicationConfiguration.services.gamblermain,
-  function($scope, $location, gamblermainSrv) {
+  ApplicationConfiguration.services.exchangerate,
+  function($scope, $location, gamblermainSrv, exchangeRateSrv) {
     // Private variables
     var vm      = this;
     
@@ -23,19 +24,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
     vm.fnCreateService        = fnCreateService;
     vm.fnConvertAmountByRate  = fnConvertAmountByRate;
 
-    /*jshint latedef: false */
-    // function fnReadAllExchangeRate(sourceCurrency, destinationCurrency){
-    //   var size          = 0;
-    //   var exchangeRate  = {};
-
-    //   vm.exchangeRateTable  = ExchangeRateService.Query();
-    //   size                  = vm.exchangeRateList.length;
-    //   for(var i = 0; i < size; i++){
-    //     exchangeRate = vm.exchangeRateList[i];
-    //     vm.exchangeRateList[exchangeRate.sourceCurrency][exchangeRate.destinationCurrency] = exchangeRate.rate;
-    //   }
-    // }
-
+    /*jslint latedef: false*/
     function fnInit(){
       vm.gamblermainSrv           = gamblermainSrv;
       vm.serviceType              = vm.enumServiceType.CASHIN;
@@ -44,16 +33,6 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
       vm.destinationCurrency      = vm.enumCurrency.RSCHIP;
       vm.amount                   = 0;
       vm.amountConverted          = 0;
-      vm.exchangeRate             = {};
-      vm.exchangeRateList         = {};
-
-      vm.exchangeRateList[vm.enumCurrency.RS07]                         = {};
-      vm.exchangeRateList[vm.enumCurrency.RS07][vm.enumCurrency.RSCHIP] = 8.5;
-      vm.exchangeRateList[vm.enumCurrency.RSGP]                         = {};
-      vm.exchangeRateList[vm.enumCurrency.RSGP][vm.enumCurrency.RSCHIP] = 1;
-      vm.exchangeRateList[vm.enumCurrency.RSCHIP]                       = {};
-      vm.exchangeRateList[vm.enumCurrency.RSCHIP][vm.enumCurrency.RS07] = 0.12;
-      vm.exchangeRateList[vm.enumCurrency.RSCHIP][vm.enumCurrency.RSGP] = 1;
 
       gamblermainSrv.error  = undefined;
       gamblermainSrv.info   = undefined;
@@ -66,17 +45,14 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
     function fnConvertAmountByRate(callback){
       fnUpdateLabels();
 
-      // vm.exchangeRate = ExchangeRateService.get({
-      //   sourceCurrency:       vm.sourceCurrency,
-      //   destinationCurrency:  vm.destinationCurrency
-      // },function(exchangeRate){
-      //   vm.serviceRate = exchangeRate.rate;
-      // });
-      vm.serviceRate      = vm.exchangeRateList[vm.sourceCurrency][vm.destinationCurrency];
-      vm.amountConverted  = vm.amount * vm.serviceRate;
-      if(callback){
-        callback();
-      }
+      exchangeRateSrv.fnReadForSellerTrader(vm.sourceCurrency, vm.destinationCurrency)
+      .then(function(exchangeRate){
+        vm.serviceRate      = exchangeRate.rate;
+        vm.amountConverted  = vm.amount * vm.serviceRate;
+        if(callback){
+          callback();
+        }
+      });
     }
 
     function fnCreateService(){

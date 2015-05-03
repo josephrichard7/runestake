@@ -3,10 +3,13 @@
 /**
  * Module dependencies.
  */
-var _ 				  = require('lodash'),
-	enumUserstate 	  = require('../utilities/enums/userstate'),
-	enumTraderrank 	  = require('../utilities/enums/traderrank'),
-	enumChatevent 	  = require('../utilities/enums/chatevent');
+var _ 				  		= require('lodash'),
+	enumChatevent 	  		= require('../utilities/enums/chatevent'),
+	enumServicesSocketEvent = require('../utilities/enums/servicessocketevent'),
+	enumServiceState 	  	= require('../utilities/enums/servicestate'),
+	enumTraderrank 	  		= require('../utilities/enums/traderrank'),
+	enumUserRole 	  		= require('../utilities/enums/userrole'),
+	enumUserstate 	  		= require('../utilities/enums/userstate');
 
 module.exports.fnGetEnum = fnGetEnum;
 
@@ -35,15 +38,24 @@ function fnGetEnumByType(enumName, castFunction){
 	var enumObj 	= {};
 
 	switch(enumName){
-		case 'userstate': 
-			enumObj = enumUserstate;
+		case 'chatevent':
+			enumObj = enumChatevent;
+			break;
+		case 'servicessocketevent':
+			enumObj = enumServicesSocketEvent;
+			break;
+		case 'servicestate':
+			enumObj = enumServiceState;
 			break;
 		case 'traderrank':
 			enumObj = enumTraderrank;
 			break;
-		case 'chatevent':
-			enumObj = enumChatevent;
-			break;		
+		case 'userrole':
+			enumObj = enumUserRole;
+			break;
+		case 'userstate': 
+			enumObj = enumUserstate;
+			break;
 		default:
 			enumObj = {};
 	}

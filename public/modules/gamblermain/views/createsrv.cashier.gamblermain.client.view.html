@@ -36,7 +36,7 @@
 					</div>
 					<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.serviceAmount.$invalid}">
 						<div class="input-group">
-							<input type="text" class="form-control" name="serviceAmount" data-ng-model="controller.amount" data-ng-keyup="controller.fnConvertAmountByRate()" placeholder="Amount" required>
+							<input type="text" class="form-control" name="serviceAmount" data-ng-model="controller.amount" data-ng-blur="controller.fnConvertAmountByRate()" placeholder="Amount" required>
 							<span class="input-group-addon">
 								<span data-ng-bind="controller.sourceCurrency">
 								</span>

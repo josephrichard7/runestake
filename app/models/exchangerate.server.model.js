@@ -3,15 +3,21 @@
 /**
  * Module dependencies.
  */
-var mongoose 		= require('mongoose'),
+var _ 				= require('lodash'),
+	mongoose 		= require('mongoose'),
 	Schema 	 		= mongoose.Schema,
-	_ 				= require('lodash'),
-	enumCurrency  	= require('../utilities/enums/currency');
+	enumCurrency  	= require('../utilities/enums/currency'),
+	enumUserRole  	= require('../utilities/enums/userrole');
 
 /**
  * ExchangeRate Schema
  */
 var ExchangeRateSchema = new Schema({
+	sellerRole:{
+		type: 		String,
+		enum: 		[enumUserRole.BANK, enumUserRole.TRADER],
+		required: 	'Seller Role is required.'
+	},
 	sourceCurrency: {
 		type: 		String,
 		enum: 		_.values(enumCurrency),
@@ -23,20 +29,20 @@ var ExchangeRateSchema = new Schema({
 		required: 	'Destination currency is required.'
 	},
 	rate: {
-		type: Number,
-		required: 'Rate is required.'
+		type: 		Number,
+		required: 	'Rate is required.'
 	},
 	fromDate: {
-		type: Date,
-		required: 'Source currency is required.'	
+		type: 		Date,
+		required: 	'FromDate is required.'	
 	},
 	createdByUser:{
-		type: Schema.Types.ObjectId,
-		ref: 'User'
+		type: 	Schema.Types.ObjectId,
+		ref: 	'User'
 	},
 	createdDate:{
-		type: Date,
-		default: Date.now
+		type: 		Date,
+		default: 	Date.now
 	},
 	updatedDate:{
 		type: Date
