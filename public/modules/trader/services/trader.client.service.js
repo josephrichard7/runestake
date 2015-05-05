@@ -34,9 +34,9 @@ angular.module(ApplicationConfiguration.modules.trader)
 		};
 
 		_this.fnDelete = function(id) {
-			return TraderResource.$delete({
+			return TraderResource.delete({
 				id: id
-			});
+			}).$promise;
 		};
 
 		_this.fnUpdate = function(traderVO) {
@@ -45,7 +45,7 @@ angular.module(ApplicationConfiguration.modules.trader)
 		};
 
 		_this.fnList = function() {
-			return TraderResource.query();
+			return TraderResource.query().$promise;
 		};
 	}
 ]);

@@ -77,8 +77,8 @@ exports.signin = function(req, res, next) {
 			res.status(400).send(info);
 		} else {
 			// Remove sensitive data before login
-			user.password = undefined;
-			user.salt = undefined;
+			user.password 	= undefined;
+			user.salt 		= undefined;
 
 			req.login(user, function(err) {
 				if (err) {

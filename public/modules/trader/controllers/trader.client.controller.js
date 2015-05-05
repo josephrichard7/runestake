@@ -14,8 +14,8 @@ angular.module(ApplicationConfiguration.modules.trader)
 		vm.trader 			= {};
 		vm.trader.account 	= {};
 		vm.traders			= [];
-		vm.ranks 			= [];
-		vm.states 			= [];
+		vm.traderRanks 		= [];
+		vm.userStates 		= [];
 		vm.currentPage 		= 1;
   		vm.pageSize 		= 10;
 
@@ -26,14 +26,14 @@ angular.module(ApplicationConfiguration.modules.trader)
 		vm.fnUpdate    = fnUpdate;
 		vm.fnDelete    = fnDelete;
 		vm.fnList      = fnList;
-		vm.fnReadByID  = fnReadByID;
+		vm.fnReadById  = fnReadById;
 
 		/*jshint latedef: false */
 		function fnCreate() {
 			traderSrv.fnCreate(vm.trader)
 			.then(function(response) {
 				vm.trader  = {};
-				utilSrv.go('viewTrader',{
+				utilSrv.util.go('viewTrader',{
 					id: response._id
 				});
 			}, function(errorResponse) {
@@ -58,7 +58,7 @@ angular.module(ApplicationConfiguration.modules.trader)
 			} else {
 				traderSrv.fnDelete(vm.trader._id)
 				.then(function() {
-					utilSrv.go('listTrader');
+					utilSrv.util.go('listTrader');
 				}, function(errorResponse) {
 					vm.error = errorResponse.data.message;
 				});
@@ -68,7 +68,7 @@ angular.module(ApplicationConfiguration.modules.trader)
 		function fnUpdate() {
 			traderSrv.fnUpdate(vm.trader)
 			.then(function(response) {
-				utilSrv.go('viewTrader',{
+				utilSrv.util.go('viewTrader',{
 					id: response._id
 				});
 			}, function(errorResponse) {
@@ -85,8 +85,8 @@ angular.module(ApplicationConfiguration.modules.trader)
 			});
 		}
 
-		function fnReadByID() {
-			traderSrv.fnReadByID($stateParams.id)
+		function fnReadById() {
+			traderSrv.fnReadById($stateParams.id)
 			.then(function(result) {
 				vm.trader = result;
 			}, function(errorResponse) {
@@ -101,13 +101,19 @@ angular.module(ApplicationConfiguration.modules.trader)
   		function fnInitEdit(){
   			fnLoadEnums();
 			// Load object for editing
-			fnReadByID();
+			fnReadById();
   		}
 
   		function fnLoadEnums(){
 	  		// Load enums in edit view
-	  		utilSrv.util.fnLoadEnumArray(utilSrv.enumName.TRADERRANK);
-	  		utilSrv.util.fnLoadEnumArray(utilSrv.enumName.USERSTATE);
+	  		utilSrv.util.fnLoadEnumArray(utilSrv.enumName.TRADERRANK)
+	  		.then(function(result){
+	  			vm.traderRanks = result.data;
+	  		});
+	  		utilSrv.util.fnLoadEnumArray(utilSrv.enumName.USERSTATE)
+	  		.then(function(result){
+	  			vm.userStates = result.data;
+	  		});
   		}
 	}
 ]);

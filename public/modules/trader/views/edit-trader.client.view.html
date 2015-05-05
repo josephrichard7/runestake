@@ -8,7 +8,7 @@
 	</div>
 	<div class="row">
 		<div class="col-md-12">
-			<a class="btn btn-primary" href="/#!/traders">
+			<a class="btn btn-primary" data-ng-click="util.go('listTrader')">
 				<i class="glyphicon glyphicon-list-alt"></i>
 			</a>
 		</div>
@@ -47,7 +47,7 @@
 					<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.rank.$invalid}">
 						<label class="control-label" for="rank">Rank</label>
 						<div class="controls">
-							<select id="rank" name="rank" class="form-control" data-ng-model="controller.trader.rank" data-ng-options="obj as obj for obj in controller.ranks">
+							<select id="rank" name="rank" class="form-control" data-ng-model="controller.trader.rank" data-ng-options="obj as obj for obj in controller.traderRanks">
 								<option value="">Choose an option</option>
 							</select>
 						</div>
@@ -58,7 +58,7 @@
 					<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.state.$invalid}">
 						<label class="control-label" for="state">State</label>
 						<div class="controls">
-							<select id="state" name="state" class="form-control" data-ng-model="controller.trader.state" data-ng-options="obj as obj for obj in controller.states">
+							<select id="state" name="state" class="form-control" data-ng-model="controller.trader.state" data-ng-options="obj as obj for obj in controller.userStates">
 								<option value="">Choose an option</option>
 							</select>
 						</div>

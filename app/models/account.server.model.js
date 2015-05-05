@@ -17,7 +17,8 @@ var AccountSchema = new Schema({
 	},
 	balance:{
 		type: 		Number,
-		required: 	'Balance cannot be empty'
+		required: 	'Balance cannot be empty',
+		default: 	0
 	},
 	createdDate:{
 		type: 		Date,

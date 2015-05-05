@@ -8,7 +8,7 @@
 	</div>
 	<div class="row">
 		<div class="col-md-12">
-			<a class="btn btn-primary" href="/#!/traders">
+			<a class="btn btn-primary" data-ng-click="util.go('listTrader')">
 				<i class="glyphicon glyphicon-list-alt"></i>
 			</a>
 		</div>
@@ -31,7 +31,7 @@
 					</div>
 					<div class="form-group">
 						<label for="rank">Rank</label>
-						<select id="rank" name="rank" class="form-control" data-ng-model="controller.trader.rank" data-ng-options="obj as obj for obj in controller.ranks">
+						<select id="rank" name="rank" class="form-control" data-ng-model="controller.trader.rank" data-ng-options="obj as obj for obj in controller.traderRanks">
 							<option value="">Choose an option</option>
 						</select>
 					</div>

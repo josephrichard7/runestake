@@ -1,4 +1,4 @@
-<section data-ng-controller="TraderController as controller" data-ng-init="controller.fnReadByID()">
+<section data-ng-controller="TraderController as controller" data-ng-init="controller.fnReadById()">
 	<div class="row">
 		<div class="col-md-12">
 			<div class="page-header">
@@ -16,13 +16,13 @@
 	</div>
 	<div class="row">
 		<div class="col-md-8">
-			<a class="btn btn-primary" href="/#!/traders">
+			<a class="btn btn-primary" data-ng-click="util.go('listTrader')">
 				<i class="glyphicon glyphicon-list-alt"></i>
 			</a>
 		</div>
 		<div class="col-md-4">
 			<div class="text-right">
-				<a class="btn btn-primary" href="/#!/trader/{{controller.trader._id}}/edit">
+				<a class="btn btn-primary" data-ng-click="util.go('editTrader',{id: controller.trader._id})">
 					<i class="glyphicon glyphicon-edit"></i>
 				</a>
 				<a class="btn btn-danger" data-ng-click="controller.fnDelete();">

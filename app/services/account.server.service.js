@@ -19,12 +19,10 @@ AccountService.fnReadByID = function(id) {
 AccountService.fnCreate = function(accountVO){
 	var accountEntity = {};
 
-	Promise.resolve(0)
+	return Promise.resolve(0)
 	.then(function(){
 		//Initialize entity
 		accountEntity = new AccountEntity(accountVO);	
-	})
-	.then(function(){
 		// Save the entity 
 		accountEntity.save();
 		return accountEntity;
@@ -67,7 +65,7 @@ AccountService.fnWithdraw = function(id, amount){
 	// Get entity by Id
 	return AccountService.fnReadByID(id)
 	.then(function(accountEntity){
-		accountEntity.amount = accountEntity.amount - amount;
+		accountEntity.balance = accountEntity.balance - amount;
 
 		accountEntity.save();
 		return accountEntity;
@@ -78,7 +76,7 @@ AccountService.fnDeposit = function(id, amount){
 	// Get entity by Id
 	return AccountService.fnReadByID(id)
 	.then(function(accountEntity){
-		accountEntity.amount = accountEntity.amount + amount;
+		accountEntity.balance = accountEntity.balance + amount;
 
 		accountEntity.save();
 		return accountEntity;

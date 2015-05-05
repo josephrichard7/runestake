@@ -1,7 +1,9 @@
 'use strict';
 
 // Setting up route
-angular.module('trader').config(['$stateProvider',
+angular.module(ApplicationConfiguration.modules.trader)
+.config([
+	'$stateProvider',
 	function($stateProvider) {
 		// Trader state routing
 		$stateProvider.

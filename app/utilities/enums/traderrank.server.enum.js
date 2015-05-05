@@ -1,11 +1,9 @@
 'use strict';
 
 var EnumTraderRank = {
-	PLATA: 		'PLATA',
-	ORO: 		'ORO',
-	RUBY: 		'RUBY',
-	ESMERALDA: 	'ESMERALDA',
-	DIAMANTE: 	'DIAMANTE'
+	SILVER: 	'PLATA',
+	GOLD: 		'ORO',
+	DIAMOND: 	'DIAMANTE'
 };
 
 module.exports = EnumTraderRank;

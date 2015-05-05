@@ -69,7 +69,7 @@ ServiceService.fnCreate = function(serviceVO){
 			throw new Error('Amount must be specified.');
 		}
 		if(serviceEntity.type === enumServiceType.CASHOUT){
-			return fnVerifyBalanceForCashOut(serviceEntity.gambler, serviceEntity.amount);	
+			return fnVerifyBalanceForCashOut(serviceEntity.requestingUser, serviceEntity.amount);	
 		}
 	})
 	.then(function(){
@@ -82,6 +82,10 @@ ServiceService.fnCreate = function(serviceVO){
 		// Add missing default fields
 		serviceEntity.amountConverted 	= serviceEntity.amount * rate;
 		serviceEntity.state 			= enumServiceState.CREATED;
+
+		if(serviceEntity.type === enumServiceType.CASHIN){
+			return fnVerifyBalanceForCashIn(serviceEntity.attendantUser, serviceEntity.amountConverted);	
+		}
 
 		// Save the entity 
 		serviceEntity.save();
@@ -188,11 +192,20 @@ function fnValidateStateMachine(startState, endState){
 	return false;
 }
 
-function fnVerifyBalanceForCashOut(userId, chipAmount){
-	return accountService.fnGetBalanceByUserId(userId)
+function fnVerifyBalanceForCashOut(gamblerId, chipAmount){
+	return accountService.fnGetBalanceByUserId(gamblerId)
 	.then(function(accountBalance){
 		if(chipAmount > accountBalance){
 			throw new Error('Your account balance is not enough for cash out requested.');
+		}
+	});
+}
+
+function fnVerifyBalanceForCashIn(traderId, chipAmount){
+	return accountService.fnGetBalanceByUserId(traderId)
+	.then(function(accountBalance){
+		if(chipAmount > accountBalance){
+			throw new Error('Trader can not attend this service.');
 		}
 	});
 }

@@ -26,6 +26,7 @@ var ApplicationConfiguration = (function() {
 		gambler: 		'GamblerService',
 		gamblerchat: 	'GamblerChatService',
 		gamblermain: 	'GamblermainService',
+		menu: 			'Menus',
 		service: 		'ServiceService',
 		trader: 		'TraderService',
 		tradermain: 	'TradermainService',

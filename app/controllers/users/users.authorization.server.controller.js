@@ -58,7 +58,7 @@ exports.hasAuthorization = function(roles) {
 	var _this = this;
 
 	return function(req, res, next) {
-	    _this.userByID(req,res, function(){
+	    _this.userByID(req, res, function(){
 			_this.requiresLogin(req, res, function() {
 				if (_.intersection([req.profile.role], roles).length) {
 					return next();

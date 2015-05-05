@@ -9,7 +9,7 @@
 	<div data-ng-show="!controller.traders.$resolved || controller.traders.length">
 		<div class="row">
 			<div class="col-md-8">
-				<a class="btn btn-primary" href="/#!/trader/create">
+				<a class="btn btn-primary" data-ng-click="util.go('createTrader')">
 					<i class="glyphicon glyphicon-plus"></i>
 				</a>
 			</div>
@@ -45,10 +45,10 @@
 					    			{{obj.state}}
 					    		</td>
 					    		<td>
-					    			<a class="btn btn-primary btn-xs" href="/#!/trader/{{obj._id}}/edit">
+					    			<a class="btn btn-primary btn-xs" data-ng-click="util.go('editTrader',{id: obj._id})">
 										<i class="glyphicon glyphicon-edit"></i>
 									</a>
-									<a class="btn btn-info btn-xs" href="/#!/trader/{{obj._id}}">
+									<a class="btn btn-info btn-xs" data-ng-click="util.go('viewTrader',{id: obj._id})">
 										<i class="glyphicon glyphicon-search"></i>
 									</a>
 									<a class="btn btn-danger btn-xs" data-ng-click="controller.fnDelete(obj);">
@@ -68,7 +68,7 @@
 				<dir-pagination-controls boundary-links="true"></dir-pagination-controls>
 			</div>
 			<div class="alert alert-warning text-center" data-ng-if="controller.traders.$resolved && !controller.traders.length">
-				No traders yet, <a href="/#!/trader/create">create one</a>?
+				No traders yet, <a  data-ng-click="util.go('createTrader')">create one</a>?
 			</div>
 			<div data-ng-show="controller.error" class="text-danger">
 				<strong data-ng-bind="controller.error"></strong>

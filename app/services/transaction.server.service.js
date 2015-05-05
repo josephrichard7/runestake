@@ -11,8 +11,8 @@ var Promise					= require('bluebird'),
 	enumServiceType			= require('../utilities/enums/servicetype'),
 	enumTransactionType		= require('../utilities/enums/transactiontype'),
 	enumTransactionState	= require('../utilities/enums/transactionstate'),
-	accountService 			= require('../services/account'),
-	gameConfigService		= require('../services/gameconfig');
+	accountService 			= require('../services/account');
+	// gameConfigService		= require('../services/gameconfig');
 
 module.exports = TransactionService;
 
@@ -51,11 +51,12 @@ function fnCreate(transactionVO){
 TransactionService.fnProcessService = function(serviceEntity){
 	var accountEntityRequestingUser = {};
 	var accountEntityAttendantUser 	= {};
-	var gameConfigEntity 			= {};		
-	var listTransactionVO			= [];
+	// var gameConfigEntity 			= {};		
+	// var listTransactionVO			= [];
 	var transactionVO 				= {};
+	var promise 					= Promise.resolve(0);
 
-	return Promise.resolve(0)
+	return promise
 	.then(function(){
 		return accountService.fnReadByUserId(serviceEntity.requestingUser._id)
 		.then(function(accountEntity){
@@ -68,56 +69,59 @@ TransactionService.fnProcessService = function(serviceEntity){
 			accountEntityAttendantUser = accountEntity;
 		});
 	})
+	// .then(function(){
+	// 	gameConfigEntity = gameConfigService.fnRead();
+	// })
 	.then(function(){
-		gameConfigEntity = gameConfigService.fnRead();
-	})
-	.then(function(){
-		transactionVO.service		= serviceEntity._id;
-		transactionVO.state			= enumTransactionState.PENDING;
+		transactionVO.service 	= serviceEntity._id;
 
 		if(serviceEntity.type === enumServiceType.CASHIN){
-			transactionVO.type					= enumTransactionType.WITHDRAWAL;
-			transactionVO.account				= accountEntityAttendantUser._id; // Trader
-			// transactionVO.destinationAccount 	= accountEntityRequestingUser;// Gambler
-			// transactionVO.profitPercent			= gameConfigEntity.profitPercentInCashInForTrader;
-			transactionVO.amount				= serviceEntity.amountConverted;
-			listTransactionVO.push(transactionVO);
-
-			transactionVO.type					= enumTransactionType.DEPOSIT;
-			// transactionVO.originAccount			= accountEntityAttendantUser; // Trader
-			transactionVO.account 				= accountEntityRequestingUser._id;// Gambler
-			transactionVO.amount				= serviceEntity.amountConverted;
-			// transactionVO.profitPercent			= gameConfigEntity.profitPercentInCashInForTrader;
-			listTransactionVO.push(transactionVO);
-
+			return promise
+			.then(function(){
+				transactionVO.type					= enumTransactionType.WITHDRAWAL;
+				transactionVO.account				= accountEntityAttendantUser._id; // Trader
+				// transactionVO.destinationAccount 	= accountEntityRequestingUser;// Gambler
+				// transactionVO.profitPercent			= gameConfigEntity.profitPercentInCashInForTrader;
+				transactionVO.amount				= serviceEntity.amountConverted;
+				return TransactionService.fnProcess(transactionVO);
+			})
+			.then(function(){
+				transactionVO.type					= enumTransactionType.DEPOSIT;
+				// transactionVO.originAccount			= accountEntityAttendantUser; // Trader
+				transactionVO.account 				= accountEntityRequestingUser._id;// Gambler
+				transactionVO.amount				= serviceEntity.amountConverted;
+				// transactionVO.profitPercent			= gameConfigEntity.profitPercentInCashInForTrader;
+				return TransactionService.fnProcess(transactionVO);
+			});
 		}
 		else if(serviceEntity.type === enumServiceType.CASHOUT){
-			transactionVO.type					= enumTransactionType.WITHDRAWAL;
-			// transactionVO.originAccount			= accountEntityAttendantUser; // Trader
-			transactionVO.account 				= accountEntityRequestingUser;// Gambler
-			transactionVO.amount				= serviceEntity.amountConverted;
-			// transactionVO.profitPercent			= gameConfigEntity.profitPercentInCashInForTrader;
-			listTransactionVO.push(transactionVO);
-
-			transactionVO.type					= enumTransactionType.DEPOSIT;
-			transactionVO.account				= accountEntityAttendantUser; // Trader
-			// transactionVO.destinationAccount 	= accountEntityRequestingUser;// Gambler
-			// transactionVO.profitPercent			= gameConfigEntity.profitPercentInCashInForTrader;
-			transactionVO.amount				= serviceEntity.amountConverted;
-			listTransactionVO.push(transactionVO);
+			return promise
+			.then(function(){
+				transactionVO.type					= enumTransactionType.WITHDRAWAL;
+				// transactionVO.originAccount			= accountEntityAttendantUser; // Trader
+				transactionVO.account 				= accountEntityRequestingUser;// Gambler
+				transactionVO.amount				= serviceEntity.amount;
+				// transactionVO.profitPercent			= gameConfigEntity.profitPercentInCashInForTrader;
+				return TransactionService.fnProcess(transactionVO);
+			})
+			.then(function(){
+				transactionVO.type					= enumTransactionType.DEPOSIT;
+				transactionVO.account				= accountEntityAttendantUser; // Trader
+				// transactionVO.destinationAccount 	= accountEntityRequestingUser;// Gambler
+				// transactionVO.profitPercent			= gameConfigEntity.profitPercentInCashInForTrader;
+				transactionVO.amount				= serviceEntity.amount;
+				return TransactionService.fnProcess(transactionVO);
+			});
 		}
 
-		return TransactionService.fnProcessList(listTransactionVO)
-		.then(function(transactionEntity){
-			return fnUpdateState(transactionEntity._id, enumTransactionState.APPLIED);
-		});	
+		// return TransactionService.fnProcessList(listTransactionVO);
 	});	
 
 };
 
 TransactionService.fnProcess = function(transactionVO){
-	var promise = {};
-	
+	transactionVO.state	= enumTransactionState.PENDING;
+
 	// Create transaction in PENDING state.
 	return fnCreate(transactionVO)
 	.then(function(transactionEntity){
@@ -133,17 +137,23 @@ TransactionService.fnProcess = function(transactionVO){
 				return transactionEntity;
 			});
 		}
-	});
+	})
+	.then(function(transactionEntity){
+		return fnUpdateState(transactionEntity._id, enumTransactionState.APPLIED);
+	});	
 };
 
 TransactionService.fnProcessList = function(listTransactionVO){
 	var transactionVO 	= {};
 
-	for(var i in listTransactionVO){
-		transactionVO = listTransactionVO[i];
+	return Promise.resolve(0)
+	.then(function(){
+		for(var i in listTransactionVO){
+			transactionVO = listTransactionVO[i];
 
-		TransactionService.fnProcess(transactionVO);
-	}
+			TransactionService.fnProcess(transactionVO);
+		}
+	});
 };
 
 TransactionService.fnReadByID = function(id){

@@ -43,18 +43,15 @@ GamblerService.fnCreate = function(gamblerVO){
 
 		// Save the entity 
 		gamblerEntity.save();
-		return gamblerEntity;
-	})
-	.then(function(){
-		// Remove sensitive user data
-		gamblerEntity.password 	= undefined;
-		gamblerEntity.salt 		= undefined;
 
 		// Create Account
 		accountVO.user 	  = gamblerEntity;
 		accountVO.balance = 0;
-		
-		return accountService.fnCreate(accountVO);
+
+		return accountService.fnCreate(accountVO)
+		.then(function(){
+			return gamblerEntity;
+		});
 	});
 };
 

@@ -41,19 +41,17 @@ TraderService.fnCreate = function(traderVO){
 		traderEntity.state 		 = enumUserState.ACTIVE;
 		traderEntity.role 		 = enumUserRole.TRADER;
 
-		// Save the entity 
+		// Save the entity
 		traderEntity.save();
-		return traderEntity;
-	}).then(function(){
-		// Remove sensitive user data
-		traderEntity.password = undefined;
-		traderEntity.salt 	= undefined;
 
 		// Create Account
 		accountVO.user 	  = traderEntity;
 		accountVO.balance = 0;
 				
-		return accountService.fnCreate(accountVO);
+		return accountService.fnCreate(accountVO)
+		.then(function(){
+			return traderEntity;
+		});
 	});
 };
 
