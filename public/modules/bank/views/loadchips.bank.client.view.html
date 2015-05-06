@@ -1,0 +1,82 @@
+<section data-ng-controller="BankController as controller" data-ng-init="controller.fnInitLoadChips()">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="page-header">
+				<h1>Load Chips into Bank</h1>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-offset-4 col-md-4">
+			<fieldset>
+				<div class="form-group">
+					<label class="control-label" for="username">Username</label>
+					<div class="controls">
+						<input type="text" id="username" name="username" class="form-control" data-ng-model="controller.bank.username" placeholder="Username" disabled>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label" for="account_balance">Account balance</label>
+					<div class="controls">
+						<input type="text" id="account_balance" name="account_balance" class="form-control" data-ng-model="controller.bank.account.balance" placeholder="account_balance" disabled>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-offset-4 col-md-4">
+			<fieldset>
+				<div class="form-group">
+					<label class="control-label" for="chipsAmount">Chips Amount</label>
+					<div class="controls">
+						<input type="text" id="chipsAmount" name="chipsAmount" class="form-control" data-ng-model="controller.chipsAmount" placeholder="chipsAmount">
+					</div>
+				</div>				
+				<div class="form-group">
+					<input type="submit" value="Load Chips" data-ng-click="controller.fnLoadChips()" class="btn btn-default">
+				</div>
+				<div data-ng-show="controller.error" class="text-danger">
+					<strong data-ng-bind="controller.error"></strong>
+				</div>
+			</fieldset>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">Load chips transactions</div>
+				<table class="table table-striped">
+					<thead>
+				        <tr>
+				            <th>Type</th>
+				            <th>Amount</th>
+				            <th>State</th>
+				            <th>Created Date</th>
+				            <th>Updated Date</th>
+				        </tr>
+				    </thead>
+				    <tbody class="searchable">
+				    	<tr dir-paginate="obj in controller.listTransaction | filter:controller.filter | itemsPerPage: controller.pageSize" current-page="controller.currentPage">
+				    		<td>
+				    			<span data-ng-bind="obj.type"></span>
+				    		</td>
+				    		<td>
+				    			<span data-ng-bind="obj.amount"></span>
+				    		</td>
+				    		<td>
+				    			<span data-ng-bind="obj.state"></span>
+				    		</td>
+				    		<td>
+				    			<span data-ng-bind="obj.createdDate | date:'medium'"></span>
+				    		</td>
+				    		<td>
+				    			<span data-ng-bind="obj.updatedDate | date:'medium'"></span>
+				    		</td>
+				    	</tr>
+				    </tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</section>

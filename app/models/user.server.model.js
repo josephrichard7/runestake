@@ -3,10 +3,10 @@
 /**
  * Module dependencies.
  */
-var mongoose 	  	= require('mongoose'),
-	Schema 			= mongoose.Schema,
-	crypto 			= require('crypto'),
+var crypto 			= require('crypto'),
 	_ 				= require('lodash'),
+	mongoose 	  	= require('mongoose'),
+	Schema 			= mongoose.Schema,
 	enumUserRole 	= require('../utilities/enums/userrole'),
 	enumTraderRank 	= require('../utilities/enums/traderrank'),
 	enumUserState 	= require('../utilities/enums/userstate');
@@ -30,15 +30,15 @@ var validateLocalStrategyPassword = function(password) {
  */
 var UserSchema = new Schema({
 	firstName: {
-		type: String,
-		trim: true,
-		default: '',
+		type: 		String,
+		trim: 		true,
+		default: 	'',
 		// validate: [validateLocalStrategyProperty, 'Please fill in your first name']
 	},
 	lastName: {
-		type: String,
-		trim: true,
-		default: '',
+		type: 		String,
+		trim: 		true,
+		default: 	'',
 		// validate: [validateLocalStrategyProperty, 'Please fill in your last name']
 	},
 	displayName: {
@@ -46,29 +46,29 @@ var UserSchema = new Schema({
 		trim: true
 	},
 	email: {
-		type: String,
-		trim: true,
-		default: '',
-		validate: [validateLocalStrategyProperty, 'Please fill in your email'],
-		match: [/.+\@.+\..+/, 'Please fill a valid email address']
+		type: 		String,
+		trim: 		true,
+		default: 	'',
+		validate: 	[validateLocalStrategyProperty, 'Please fill in your email'],
+		match: 		[/.+\@.+\..+/, 'Please fill a valid email address']
 	},
 	username: {
-		type: String,
-		unique: 'testing error message',
-		required: 'Please fill in a username',
-		trim: true
+		type: 		String,
+		unique: 	'testing error message',
+		required: 	'Please fill in a username',
+		trim: 		true
 	},
 	password: {
-		type: String,
-		default: '',
-		validate: [validateLocalStrategyPassword, 'Password should be longer']
+		type: 		String,
+		default: 	'',
+		validate: 	[validateLocalStrategyPassword, 'Password should be longer']
 	},
 	salt: {
 		type: String
 	},
 	provider: {
-		type: String,
-		required: 'Provider is required'
+		type: 		String,
+		required: 	'Provider is required'
 	},
 	providerData: {},
 	additionalProvidersData: {},
@@ -85,12 +85,16 @@ var UserSchema = new Schema({
 		enum: 		_.values(enumUserState),
 		default: 	enumUserState.ACTIVE
 	},
+	defaultMessageForService:{
+		type: 		String,
+		default: 	''
+	},
 	updated: {
 		type: Date
 	},
 	created: {
-		type: Date,
-		default: Date.now
+		type: 		Date,
+		default: 	Date.now
 	},
 	/* For reset password */
 	resetPasswordToken: {

@@ -34,12 +34,13 @@ module.exports = function() {
 	/**
 	 * Add our server node extensions
 	 */
-	require.extensions['.server.enum.js'] 		= require.extensions['.js'];
-	require.extensions['.server.util.js'] 		= require.extensions['.js'];
-	require.extensions['.server.model.js'] 		= require.extensions['.js'];
-	require.extensions['.server.class.js'] 		= require.extensions['.js'];
-	require.extensions['.server.service.js'] 	= require.extensions['.js'];
-	require.extensions['.server.controller.js'] = require.extensions['.js'];
-	require.extensions['.server.routes.js'] 	= require.extensions['.js'];
-	require.extensions['.server.socket.js'] 	= require.extensions['.js'];
+	require.extensions['.server.enum.js'] 			= require.extensions['.js'];
+	require.extensions['.server.statemachine.js'] 	= require.extensions['.js'];
+	require.extensions['.server.util.js'] 			= require.extensions['.js'];
+	require.extensions['.server.model.js'] 			= require.extensions['.js'];
+	require.extensions['.server.class.js'] 			= require.extensions['.js'];
+	require.extensions['.server.service.js'] 		= require.extensions['.js'];
+	require.extensions['.server.controller.js'] 	= require.extensions['.js'];
+	require.extensions['.server.routes.js'] 		= require.extensions['.js'];
+	require.extensions['.server.socket.js'] 		= require.extensions['.js'];
 };

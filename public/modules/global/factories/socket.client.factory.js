@@ -35,6 +35,10 @@ angular.module(ApplicationConfiguration.modules.global)
             this.socket.disconnect();
         };
 
+        Socket.prototype.connect = function () {
+            this.socket.connect();
+        };
+
         Socket.prototype.removeAllListeners = function (eventName) {
             this.socket.removeAllListeners(eventName);
         };

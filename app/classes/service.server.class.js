@@ -84,12 +84,14 @@ Service.prototype.fnLeaveServiceRoom = function(){
  * @param {String} message
  */
 Service.prototype.fnNewMessage = function(socket, message){
-	this.fnSendEventToServiceRoom(enumServicesSocket.app.NEW_MESSAGE_SERVICE, {
-		serviceId: 	this.id,
-		username: 	socket.username,
-		role: 		socket.request.user.role,
-		message:  	message
-	});
+	if(message){		
+		this.fnSendEventToServiceRoom(enumServicesSocket.app.NEW_MESSAGE_SERVICE, {
+			serviceId: 	this.id,
+			username: 	socket.username,
+			role: 		socket.request.user.role,
+			message:  	message
+		});	
+	}
 };
 
 /** 
@@ -112,6 +114,12 @@ Service.prototype.fnNotifyServiceCreatedToGambler = function(){
 	this.gamblerSocket.emit(enumServicesSocket.app.SERVICE_CREATED,{
 		serviceId: this.id
 	});
+};
+
+// Send default messages to service room
+Service.prototype.fnSendDefaultMessageToServiceRoom = function(){
+	this.fnNewMessage(this.traderSocket, this.traderSocket.request.user.defaultMessageForService);
+	this.fnNewMessage(this.gamblerSocket, this.gamblerSocket.request.user.defaultMessageForService);
 };
 
 // Send event to service room

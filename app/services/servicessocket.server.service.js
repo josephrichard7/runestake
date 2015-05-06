@@ -446,7 +446,11 @@ ServicesSocketService.prototype.fnCreateService = function(socket){
 				serviceVO,
 				gamblerUsername,
 				traderUsername
-			);		
+			)
+			// Send default message to service room
+			.then(function(service){
+				service.fnSendDefaultMessageToServiceRoom();
+			});
 
 		}catch(err){
 			self.fnSendError(socket, 'Error creating the service. Please contact to administrator.');

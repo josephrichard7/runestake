@@ -1,0 +1,57 @@
+<section data-ng-controller="BankController as controller" data-ng-init="controller.fnRead()">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="page-header">
+				<h1>Edit Bank</h1>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<a class="btn btn-primary" data-ng-click="util.go('viewBank')">
+				<i class="glyphicon glyphicon-list-alt"></i>
+			</a>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-offset-4 col-md-4">
+			<form name="form" class="form-horizontal" data-ng-submit="controller.fnUpdate(form.$valid)" novalidate>
+				<fieldset>
+					<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.username.$invalid}">
+						<label class="control-label" for="username">Username</label>
+						<div class="controls">
+							<input type="text" id="username" name="username" class="form-control" data-ng-model="controller.bank.username" placeholder="Username" required disabled>
+						</div>
+						<div ng-show="controller.submitted && form.username.$invalid" class="help-block">
+							<p ng-show="form.username.$error.required" class="text-danger">Username is required</p>
+						</div>
+					</div>
+					<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.email.$invalid}">
+						<label class="control-label" for="email">Email</label>
+						<div class="controls">
+							<input type="email" id="email" name="email" class="form-control" data-ng-model="controller.bank.email" placeholder="Email" required>
+						</div>
+						<div ng-show="controller.submitted && form.email.$invalid" class="help-block">
+							<p ng-show="form.email.$error.required" class="text-danger">Email is required</p>
+						</div>
+					</div>
+					<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.account_balance.$invalid}">
+						<label class="control-label" for="account_balance">Account balance</label>
+						<div class="controls">
+							<input type="text" id="account_balance" name="account_balance" class="form-control" data-ng-model="controller.bank.account.balance" placeholder="account_balance" required disabled>
+						</div>
+						<div ng-show="controller.submitted && form.account_balance.$invalid" class="help-block">
+							<p ng-show="form.account_balance.$error.required" class="text-danger">Account balance is required</p>
+						</div>
+					</div>				
+					<div class="form-group">
+						<input type="submit" value="Update" class="btn btn-default">
+					</div>
+					<div data-ng-show="controller.error" class="text-danger">
+						<strong data-ng-bind="controller.error"></strong>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+</section>

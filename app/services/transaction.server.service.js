@@ -48,6 +48,55 @@ function fnCreate(transactionVO){
 	});
 }
 
+TransactionService.fnList = function(userId){
+	return accountService.fnReadByUserId(userId)
+	.then(function(accountEntity){
+		return TransactionEntity
+		.find()
+		.where('account').equals(accountEntity._id)
+		.sort('-createdDate')
+		.populate({
+		    path: 'service',
+		   	select: '-rate -attendantUser'
+		})
+		.populate({
+		    path: 'game'
+		})
+		// .lean(true) // return plain objects, not mongoose models.
+		.exec();
+	});
+};
+
+TransactionService.fnProcess = function(transactionVO){
+	transactionVO.state	= enumTransactionState.PENDING;
+
+	// Create transaction in PENDING state.
+	return fnCreate(transactionVO)
+	.then(function(transactionEntity){
+		if(transactionEntity.type === enumTransactionType.WITHDRAWAL){
+			return accountService.fnWithdraw(transactionEntity.account, transactionEntity.amount)
+			.then(function(){
+				return transactionEntity;
+			});
+		}
+		else if(transactionEntity.type === enumTransactionType.DEPOSIT){
+			return accountService.fnDeposit(transactionEntity.account, transactionEntity.amount)
+			.then(function(){
+				return transactionEntity;
+			});
+		}
+		else if(transactionEntity.type === enumTransactionType.LOADCHIPSBANK){
+			return accountService.fnDeposit(transactionEntity.account, transactionEntity.amount)
+			.then(function(){
+				return transactionEntity;
+			});
+		}
+	})
+	.then(function(transactionEntity){
+		return fnUpdateState(transactionEntity._id, enumTransactionState.APPLIED);
+	});	
+};
+
 TransactionService.fnProcessService = function(serviceEntity){
 	var accountEntityRequestingUser = {};
 	var accountEntityAttendantUser 	= {};
@@ -80,14 +129,12 @@ TransactionService.fnProcessService = function(serviceEntity){
 			.then(function(){
 				transactionVO.type					= enumTransactionType.WITHDRAWAL;
 				transactionVO.account				= accountEntityAttendantUser._id; // Trader
-				// transactionVO.destinationAccount 	= accountEntityRequestingUser;// Gambler
 				// transactionVO.profitPercent			= gameConfigEntity.profitPercentInCashInForTrader;
 				transactionVO.amount				= serviceEntity.amountConverted;
 				return TransactionService.fnProcess(transactionVO);
 			})
 			.then(function(){
 				transactionVO.type					= enumTransactionType.DEPOSIT;
-				// transactionVO.originAccount			= accountEntityAttendantUser; // Trader
 				transactionVO.account 				= accountEntityRequestingUser._id;// Gambler
 				transactionVO.amount				= serviceEntity.amountConverted;
 				// transactionVO.profitPercent			= gameConfigEntity.profitPercentInCashInForTrader;
@@ -98,7 +145,6 @@ TransactionService.fnProcessService = function(serviceEntity){
 			return promise
 			.then(function(){
 				transactionVO.type					= enumTransactionType.WITHDRAWAL;
-				// transactionVO.originAccount			= accountEntityAttendantUser; // Trader
 				transactionVO.account 				= accountEntityRequestingUser;// Gambler
 				transactionVO.amount				= serviceEntity.amount;
 				// transactionVO.profitPercent			= gameConfigEntity.profitPercentInCashInForTrader;
@@ -107,56 +153,16 @@ TransactionService.fnProcessService = function(serviceEntity){
 			.then(function(){
 				transactionVO.type					= enumTransactionType.DEPOSIT;
 				transactionVO.account				= accountEntityAttendantUser; // Trader
-				// transactionVO.destinationAccount 	= accountEntityRequestingUser;// Gambler
 				// transactionVO.profitPercent			= gameConfigEntity.profitPercentInCashInForTrader;
 				transactionVO.amount				= serviceEntity.amount;
 				return TransactionService.fnProcess(transactionVO);
 			});
 		}
-
-		// return TransactionService.fnProcessList(listTransactionVO);
 	});	
 
 };
 
-TransactionService.fnProcess = function(transactionVO){
-	transactionVO.state	= enumTransactionState.PENDING;
-
-	// Create transaction in PENDING state.
-	return fnCreate(transactionVO)
-	.then(function(transactionEntity){
-		if(transactionEntity.type === enumTransactionType.WITHDRAWAL){
-			return accountService.fnWithdraw(transactionEntity.account, transactionEntity.amount)
-			.then(function(){
-				return transactionEntity;
-			});
-		}
-		else if(transactionEntity.type === enumTransactionType.DEPOSIT){
-			return accountService.fnDeposit(transactionEntity.account, transactionEntity.amount)
-			.then(function(){
-				return transactionEntity;
-			});
-		}
-	})
-	.then(function(transactionEntity){
-		return fnUpdateState(transactionEntity._id, enumTransactionState.APPLIED);
-	});	
-};
-
-TransactionService.fnProcessList = function(listTransactionVO){
-	var transactionVO 	= {};
-
-	return Promise.resolve(0)
-	.then(function(){
-		for(var i in listTransactionVO){
-			transactionVO = listTransactionVO[i];
-
-			TransactionService.fnProcess(transactionVO);
-		}
-	});
-};
-
-TransactionService.fnReadByID = function(id){
+TransactionService.fnReadById = function(id){
 	return TransactionEntity
 	.findById(id)
 	.populate({
@@ -167,7 +173,7 @@ TransactionService.fnReadByID = function(id){
 };
 
 function fnUpdateState(id, state){
-	return TransactionService.fnReadByID(id)
+	return TransactionService.fnReadById(id)
 	.then(function(transactionEntity){
 		// if(!fnValidateStateMachine(transactionEntity.state, state)){
 		// 	throw new Error('State change invalid.');	

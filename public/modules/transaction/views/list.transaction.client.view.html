@@ -1,0 +1,76 @@
+<section data-ng-controller="TransactionController as controller" data-ng-init="controller.fnList()">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="page-header">
+				<h1>Transactions</h1>
+			</div>
+		</div>
+	</div>
+	<div data-ng-show="controller.listTransaction.length">
+		<div class="row">
+			<div class="col-md-4">
+			    <input id="filter" name="filter" type="text" data-ng-model="controller.filter"  class="form-control" placeholder="Filter here...">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+					<table class="table table-striped">
+						<thead>
+					        <tr>
+					            <th>Type</th>
+					            <th>Amount</th>
+					            <th>State</th>
+					        	<th data-ng-if="controller.authentication.user.role === 'TRADER'">
+					        		Service Type
+					        	</th>
+					            <th>Created Date</th>
+					            <th>Updated Date</th>
+					        </tr>
+					    </thead>
+					    <tbody class="searchable">
+					    	<tr dir-paginate="obj in controller.listTransaction | filter:controller.filter | itemsPerPage: controller.pageSize" current-page="controller.currentPage">
+					    		<td>
+					    			<span data-ng-bind="obj.type"></span>
+					    		</td>
+					    		<td>
+					    			<span data-ng-bind="obj.amount"></span>
+					    		</td>
+					    		<td>
+					    			<span data-ng-bind="obj.state"></span>
+					    		</td>
+					    		<td data-ng-if="controller.authentication.user.role === 'TRADER'">
+					    			<span data-ng-bind="obj.service.type"></span>
+					    		</td>
+					    		<td>
+					    			<span data-ng-bind="obj.createdDate | date:'medium'"></span>
+					    		</td>
+					    		<td>
+					    			<span data-ng-bind="obj.updatedDate | date:'medium'"></span>
+					    		</td>
+					    		<td>
+									<a class="btn btn-info btn-xs" data-ng-click="util.go('viewTransaction',{id: obj._id})">
+										<i class="glyphicon glyphicon-search"></i>
+									</a>
+					    		</td>
+					    	</tr>
+					    </tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="text-center">
+				<dir-pagination-controls boundary-links="true"></dir-pagination-controls>
+			</div>
+			<div class="alert alert-warning text-center" data-ng-if="!controller.listTransaction.length">
+				No transactions yet.
+			</div>
+			<div data-ng-show="controller.error" class="text-danger">
+				<strong data-ng-bind="controller.error"></strong>
+			</div>
+		</div>
+	</div>
+</section>

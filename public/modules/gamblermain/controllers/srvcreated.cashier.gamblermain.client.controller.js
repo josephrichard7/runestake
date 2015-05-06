@@ -31,5 +31,10 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
       gamblermainSrv.fnSendMessage();
     }
 
+    $scope.$on('$stateChangeStart', function(){
+      gamblermainSrv.servicesSocket.socket.disconnect();
+      gamblermainSrv.servicesSocket.socket.connect();
+    });
+
   }
 ]);

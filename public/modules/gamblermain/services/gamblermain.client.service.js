@@ -42,6 +42,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		_this.gambler 				= {};
 		_this.gambler.account 		= {};
 		_this.service 				= {};
+		_this.service.listMessages	= [];
 		_this.listServices 			= [];
 		_this.error 				= undefined;
 		_this.info 					= undefined;
@@ -212,8 +213,12 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		_this.fnReadServiceById = function (id){
 			return serviceSrv.fnReadServiceById(id)
 			.then(function(service){
-				_this.service 				= service;
-				_this.service.listMessages 	= [];
+				if(_this.service.listMessages){
+					service.listMessages = _this.service.listMessages;
+				}else{
+					service.listMessages = [];
+				}
+				_this.service = service;
 				return _this.service;
 			})
 			.catch(fnErrorHandling);
@@ -221,6 +226,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 
 		_this.fnResetService = function (){
 			_this.service = {};
+			_this.service.listMessages = [];
 		};
 
 		_this.fnSendMessage = function (callback){

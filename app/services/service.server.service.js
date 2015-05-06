@@ -11,39 +11,12 @@ var Promise				= require('bluebird'),
 	enumServiceState	= require('../utilities/enums/servicestate'),
 	enumServiceType		= require('../utilities/enums/servicetype'),
 	enumUserRole 		= require('../utilities/enums/userrole'),
+	stateMachineService = require('../utilities/statemachines/service'),
 	accountService 		= require('../services/account'),
 	exchangeRateService = require('../services/exchangerate'),
 	transactionService 	= require('../services/transaction');
 
 module.exports = ServiceService;
-
-var stateMachine = {};
-stateMachine[enumServiceState.CREATED] = {};
-stateMachine[enumServiceState.CREATED][enumServiceState.DESISTED] 				= true;
-stateMachine[enumServiceState.CREATED][enumServiceState.PROCESSING] 			= true;
-stateMachine[enumServiceState.CREATED][enumServiceState.ABANDONED_BY_GAMBLER] 	= true;
-stateMachine[enumServiceState.CREATED][enumServiceState.ABANDONED_BY_TRADER] 	= true;
-stateMachine[enumServiceState.PROCESSING] = {};
-stateMachine[enumServiceState.PROCESSING][enumServiceState.COMPLETED] 			= true;
-stateMachine[enumServiceState.PROCESSING][enumServiceState.ERROR]	 			= true;
-
-// ServiceService.fnAssignTrader = function(serviceId, traderId){
-// 	// Get entity by Id
-// 	return ServiceService.fnReadByID(serviceId)
-// 	.then(function(resultReadEntity){
-// 		resultReadEntity.trader = traderId;
-
-// 		resultReadEntity.save();
-// 		return resultReadEntity;
-// 	})
-// 	.then(function(){
-// 		return fnUpdateState(serviceId, enumServiceState.ASSIGNED);
-// 	});
-// };
-
-// ServiceService.fnCancelar = function(id){
-// 	return fnUpdateState(id, enumServiceState.CANCELED);
-// };
 
 ServiceService.fnAbandonedByGambler = function(id){
 	return fnUpdateState(id, enumServiceState.ABANDONED_BY_GAMBLER);
@@ -84,7 +57,7 @@ ServiceService.fnCreate = function(serviceVO){
 		serviceEntity.state 			= enumServiceState.CREATED;
 
 		if(serviceEntity.type === enumServiceType.CASHIN){
-			return fnVerifyBalanceForCashIn(serviceEntity.attendantUser, serviceEntity.amountConverted);	
+			fnVerifyBalanceForCashIn(serviceEntity.attendantUser, serviceEntity.amountConverted);	
 		}
 
 		// Save the entity 
@@ -186,7 +159,7 @@ function fnUpdateState(id, state){
 }
 
 function fnValidateStateMachine(startState, endState){
-	if(stateMachine[startState][endState]){
+	if(stateMachineService[startState][endState]){
 		return true;
 	}
 	return false;

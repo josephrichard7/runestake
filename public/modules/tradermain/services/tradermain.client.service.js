@@ -78,11 +78,11 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 			}
 	    };
 
-		_this.fnAddServiceInAttention = function(service) {
-			_this.arrayServicesInAttention.unshift(service._id);
+		_this.fnAddServiceInAttention = function(serviceId) {
+			_this.arrayServicesInAttention.unshift(serviceId);
 
-			_this.listServicesInAttention[service._id] = {
-				service: 			service,
+			_this.listServicesInAttention[serviceId] = {
+				service: 			undefined,
 				listChatMessages: 	[],
 				isAbandoned:		false,
 				isCompleted: 		false,
@@ -147,10 +147,12 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 		_this.fnOnServiceAbandonedByGambler = function (callback){
 			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.ABANDONED_BY_GAMBLER, function(data){
 	    		var service = _this.fnGetService(data.serviceId);
-	    		
+
 	    		service.isAbandoned	= true;
 	    		service.isDisabled	= true;
 	    		service.isOpen 		= false;
+
+	    		_this.fnLoadListServices();
 
 				if(callback){
 					callback();
@@ -190,11 +192,15 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 
 		_this.fnOnNewService = function (callback){
 			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.NEW_SERVICE, function(data){
+				var service;
+
 				_this.fnLoadListServices();
+				_this.fnAddServiceInAttention(data.serviceId);
 
 				serviceSrv.fnReadServiceById(data.serviceId)
-				.then(function(service){
-					_this.fnAddServiceInAttention(service);
+				.then(function(result){
+					service 		= _this.fnGetService(data.serviceId);
+					service.service = result;
 				})
 				.catch(fnErrorHandling);
 

@@ -7,6 +7,7 @@ var ApplicationConfiguration = (function() {
 	var modules = {
 		account: 		'account',
 		articles: 		'articles',
+		bank: 			'bank',
 		chat: 			'chat',
 		core: 			'core',
 		exchangerate: 	'exchangerate',
@@ -16,11 +17,13 @@ var ApplicationConfiguration = (function() {
 		service: 		'service',
 		trader: 		'trader',
 		tradermain: 	'tradermain',
+		transaction: 	'transaction',
 		user: 			'users'
 	};
 	var services = {
 		account: 		'AccountService',
 		authentication: 'Authentication',
+		bank: 			'BankService',
 		chat: 			'ChatService',
 		exchangerate: 	'ExchangerateService',
 		gambler: 		'GamblerService',
@@ -30,7 +33,8 @@ var ApplicationConfiguration = (function() {
 		service: 		'ServiceService',
 		trader: 		'TraderService',
 		tradermain: 	'TradermainService',
-		utilities: 		'UtilitiesService',
+		transaction: 	'TransactionService',
+		utilities: 		'UtilitiesService'
 	};
 	var factories = {
 		chat: 			'ChatFactory',

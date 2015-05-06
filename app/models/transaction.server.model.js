@@ -29,8 +29,7 @@ var TransactionSchema = new Schema({
 	},
 	service:{
 		type: Schema.Types.ObjectId,
-		ref: 'Service',
-		required: 'Service cannot be empty'
+		ref: 'Service'
 	},
 	type:{
 		type: 		String,
