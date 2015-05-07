@@ -75,9 +75,6 @@ ServicesSocketService.prototype.fnAddService = function(serviceVO, gamblerUserna
 		connectedTrader.listServices[service.id] 	= service;
 
 		return service;
-	})
-	.then(null, function (err) {
-		self.fnSendError(connectedGambler.socket, errorUtil.getErrorMessage(err));
 	});
 };
 
@@ -450,6 +447,9 @@ ServicesSocketService.prototype.fnCreateService = function(socket){
 			// Send default message to service room
 			.then(function(service){
 				service.fnSendDefaultMessageToServiceRoom();
+			})
+			.then(null, function (err) {
+				self.fnSendError(socket, errorUtil.getErrorMessage(err));
 			});
 
 		}catch(err){
@@ -490,13 +490,16 @@ ServicesSocketService.prototype.fnTradersAvailable = function(socket){
 	return function(){
 		var connectedGambler 	= self.fnGetConnectedGambler(socket.username);
 		var isTradersAvailable 	= false;
+		var message 			= 'Traders are NOT available.';
 		
 		if(self.queueTraders.length > 0 ){
-			isTradersAvailable = true;
+			isTradersAvailable 	= true;
+			message 			= 'Traders are available.';
 		}
 
 		connectedGambler.socket.emit(enumServicesSocket.app.TRADERS_AVAILABLE,{
-			isTradersAvailable: isTradersAvailable
+			isTradersAvailable: isTradersAvailable,
+			message: 			message
 		});
 	};
 };

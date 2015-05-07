@@ -15,9 +15,6 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
     /*jshint latedef: false*/
     function fnInit(){
       vm.gamblermainSrv = gamblermainSrv;
-      
-      gamblermainSrv.error  = undefined;
-      gamblermainSrv.info   = undefined;
 
       gamblermainSrv.fnReadServiceById($stateParams.id);
     } 

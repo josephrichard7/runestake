@@ -28,7 +28,8 @@ module.exports = {
 			css: [
 				'public/lib/bootstrap/dist/css/bootstrap.css',
 				'public/lib/bootstrap/dist/css/bootstrap-theme.css',
-				'public/lib/fontawesome/css/font-awesome.css'
+				'public/lib/fontawesome/css/font-awesome.css',
+				'public/lib/animate.css/animate.css'
 			],
 			js: [
 				'public/lib/angular/angular.js',
@@ -43,6 +44,7 @@ module.exports = {
 				'public/lib/jquery/dist/jquery.js',
 				'public/lib/angular-utils-pagination/dirPagination.js',
 				'public/lib/socket.io-client/socket.io.js',
+				'public/lib/noty/js/noty/packaged/jquery.noty.packaged.js',
 				'public/lib/bundle/bundle.js'
 			]
 		},

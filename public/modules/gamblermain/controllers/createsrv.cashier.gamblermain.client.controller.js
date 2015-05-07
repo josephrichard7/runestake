@@ -34,8 +34,6 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
       vm.amount                   = 0;
       vm.amountConverted          = 0;
 
-      gamblermainSrv.error  = undefined;
-      gamblermainSrv.info   = undefined;
       gamblermainSrv.fnResetService();
 
       fnUpdateLabels();
@@ -55,12 +53,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
       });
     }
 
-    function fnCreateService(){
-      if(!vm.amount || vm.amount === ''){
-        vm.gamblermainSrv.error = 'Amount must be specified.';
-        return;
-      }
-      
+    function fnCreateService(){      
       fnConvertAmountByRate(function(){
         gamblermainSrv.fnResetService();
 

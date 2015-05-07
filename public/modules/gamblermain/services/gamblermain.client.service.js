@@ -44,8 +44,6 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		_this.service 				= {};
 		_this.service.listMessages	= [];
 		_this.listServices 			= [];
-		_this.error 				= undefined;
-		_this.info 					= undefined;
 		_this.isTraderAssigned		= false;
 		_this.enumUserRole   		= {
 	      ADMIN:    'ADMIN',
@@ -85,7 +83,8 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		function fnErrorHandling(err) {
-			_this.error = err.data.message;
+			// _this.error = err.data.message;
+			utilSrv.util.notifyError(err.data.message);
 		}
 
 		_this.fnInitServicesSocket = function(){
@@ -130,8 +129,8 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		_this.fnOnError = function (){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.ERROR, function(error){
-				_this.error = error.error;
+			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.ERROR, function(data){
+				utilSrv.util.notifyError(data.error);
 			});
 		};
 
@@ -201,11 +200,11 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		_this.fnOnTradersAvailable = function (){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.TRADERS_AVAILABLE, function(obj){
-				if(obj.isTradersAvailable){
-					_this.info = 'Traders are available.';
+			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.TRADERS_AVAILABLE, function(data){
+				if(data.isTradersAvailable){
+					utilSrv.util.notify(data.message);
 				}else{
-					_this.error = 'Traders are NOT available.';
+					utilSrv.util.notifyError(data.message);
 				}
 			});
 		};
