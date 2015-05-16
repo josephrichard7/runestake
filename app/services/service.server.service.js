@@ -26,27 +26,36 @@ ServiceService.fnAbandonedByTrader = function(id){
 	return fnUpdateState(id, enumServiceState.ABANDONED_BY_TRADER);
 };
 
+ServiceService.fnAbandonedByBank = function(id){
+	return fnUpdateState(id, enumServiceState.ABANDONED_BY_BANK);
+};
+
 ServiceService.fnCreate = function(serviceVO){
 	var serviceEntity 	= {};
+	var seller;
+	var errMessage;
+	var userId;
+	var chipsAmount;
 
 	return Promise.resolve(0)
 	.then(function(){
 		//Initialize entity
 		serviceEntity = new ServiceEntity(serviceVO);
-	})
-	.then(function(){
+
 		if(serviceEntity.amount === 0){
 			throw new Error('Amount must be greater than 0.');
-		}
-		if(!serviceEntity.amount || serviceEntity.amount === ''){
+		}else if(!serviceEntity.amount || serviceEntity.amount === ''){
 			throw new Error('Amount must be specified.');
-		}
-		if(serviceEntity.type === enumServiceType.CASHOUT){
-			return fnVerifyBalanceForCashOut(serviceEntity.requestingUser, serviceEntity.amount);	
 		}
 	})
 	.then(function(){
-		return exchangeRateService.fnRead(enumUserRole.TRADER, serviceEntity.sourceCurrency, serviceEntity.destinationCurrency)
+		if(serviceEntity.type === enumServiceType.CASHIN || serviceEntity.type === enumServiceType.CASHOUT){
+			seller = enumUserRole.TRADER;
+		}else if(serviceEntity.type === enumServiceType.BUYCHIPSTOBANK){
+			seller = enumUserRole.BANK;
+		}
+
+		return exchangeRateService.fnRead(seller, serviceEntity.sourceCurrency, serviceEntity.destinationCurrency)
 		.then(function(exchangeRate){
 			return exchangeRate.rate;
 		});
@@ -56,10 +65,31 @@ ServiceService.fnCreate = function(serviceVO){
 		serviceEntity.amountConverted 	= serviceEntity.amount * rate;
 		serviceEntity.state 			= enumServiceState.CREATED;
 
-		if(serviceEntity.type === enumServiceType.CASHIN){
-			fnVerifyBalanceForCashIn(serviceEntity.attendantUser, serviceEntity.amountConverted);	
+		// Validate balance
+		if(serviceEntity.type === enumServiceType.CASHOUT){
+			errMessage 	= 'Your account balance is not enough for cash out requested.';
+			userId 		= serviceEntity.requestingUser;
+			chipsAmount	= serviceEntity.amount;
+		}
+		else if(serviceEntity.type === enumServiceType.CASHIN){
+			errMessage 	= 'Trader can not attend this service.';
+			userId 		= serviceEntity.attendantUser;
+			chipsAmount	= serviceEntity.amountConverted;
+		}		
+		else if(serviceEntity.type === enumServiceType.BUYCHIPSTOBANK){
+			errMessage 	= 'Bank can not attend this service.';
+			userId 		= serviceEntity.attendantUser;
+			chipsAmount	= serviceEntity.amountConverted;
 		}
 
+		return fnVerifyBalance(userId, chipsAmount)
+		.then(function(valid){
+			if(!valid){
+				throw new Error(errMessage);
+			}
+		});
+	})
+	.then(function(){
 		// Save the entity 
 		serviceEntity.save();
 		return serviceEntity;
@@ -91,12 +121,44 @@ ServiceService.fnDesist = function(id){
 	return fnUpdateState(id, enumServiceState.DESISTED);
 };
 
-ServiceService.fnListByGambler = function(id){
+ServiceService.fnListByBank = function(id){
+	return ServiceEntity
+	.find()
+	.sort('-createdDate')
+	.populate({
+	    path: 'requestingUser',
+	   	select: 'username'
+	})
+	.populate({
+	    path: 'attendantUser',
+	   	select: 'username'
+	})
+	.where('attendantUser').equals(id)
+	.exec();
+};
+
+ServiceService.fnRequestedList = function(id){
 	return ServiceEntity
 	.find()
 	.sort('-createdDate')
 	.select('-attendantUser')
 	.where('requestingUser').equals(id)
+	.exec();
+};
+
+ServiceService.fnAttendantList = function(id){
+	return ServiceEntity
+	.find()
+	.sort('-createdDate')
+	.populate({
+	    path: 'requestingUser',
+	   	select: 'username'
+	})
+	.populate({
+	    path: 'attendantUser',
+	   	select: 'username'
+	})
+	.where('attendantUser').equals(id)
 	.exec();
 };
 
@@ -165,20 +227,12 @@ function fnValidateStateMachine(startState, endState){
 	return false;
 }
 
-function fnVerifyBalanceForCashOut(gamblerId, chipAmount){
-	return accountService.fnGetBalanceByUserId(gamblerId)
+function fnVerifyBalance(userId, chipAmount){
+	return accountService.fnGetBalanceByUserId(userId)
 	.then(function(accountBalance){
 		if(chipAmount > accountBalance){
-			throw new Error('Your account balance is not enough for cash out requested.');
+			return false;
 		}
-	});
-}
-
-function fnVerifyBalanceForCashIn(traderId, chipAmount){
-	return accountService.fnGetBalanceByUserId(traderId)
-	.then(function(accountBalance){
-		if(chipAmount > accountBalance){
-			throw new Error('Trader can not attend this service.');
-		}
+		return true;
 	});
 }

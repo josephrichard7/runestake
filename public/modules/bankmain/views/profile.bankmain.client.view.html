@@ -1,0 +1,25 @@
+<div class="panel panel-primary text-center" data-ng-controller="ProfileBankmainController as profileController" data-ng-init="profileController.fnInit()">
+	<div class="panel-heading">
+		Profile
+	</div>	
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-md-12">
+				<i class="fa fa-money fa-5x"></i>
+			</div>
+			<div class="col-md-12">
+				<div class="form-group">
+					<span data-ng-bind="profileController.bankmainSrv.bank.username"></span>
+				</div>
+			</div>
+			<div class="col-md-12">
+				<div class="form-group">
+					<div class="input-group input-group-sm">
+						<span class="input-group-addon">Account balance</span>
+						<input type="text" class="form-control" data-ng-model="profileController.bankmainSrv.bank.account.balance" placeholder="Balance" disabled>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

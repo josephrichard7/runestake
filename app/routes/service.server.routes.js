@@ -11,14 +11,20 @@ module.exports = function(app) {
 	// Service Routes
 	app.route('/service')
 	.post(userController.hasAuthorization([enumUserrole.GAMBLER]), serviceController.fnCreate)
-	.get (userController.hasAuthorization([enumUserrole.GAMBLER, enumUserrole.TRADER]), serviceController.fnList);
+	.get (
+		userController.hasAuthorization([enumUserrole.GAMBLER, enumUserrole.TRADER, enumUserrole.BANK]), 
+		serviceController.fnList
+	);
 
 	app.route('/service/:id')
-	.get(userController.hasAuthorization([enumUserrole.GAMBLER, enumUserrole.TRADER]), serviceController.fnReadByID);
+	.get(
+		userController.hasAuthorization([enumUserrole.GAMBLER, enumUserrole.TRADER, enumUserrole.BANK]), 
+		serviceController.fnReadByID
+	);
 
 	// app.route('/service/:id/cancelar')
 	// .put(userController.hasAuthorization([enumUserrole.GAMBLER]), serviceController.fnCancelar);
 
 	app.route('/service/:id/desist')
-	.put(userController.hasAuthorization([enumUserrole.GAMBLER]), serviceController.fnDesist);
+	.put(userController.hasAuthorization([enumUserrole.GAMBLER, enumUserrole.TRADER]), serviceController.fnDesist);
 };

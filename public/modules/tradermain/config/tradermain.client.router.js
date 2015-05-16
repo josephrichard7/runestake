@@ -29,6 +29,39 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 				}
 		    }
 		})
+		.state('tradermainState.cashier', {
+			abstract: true,
+			url: '/panel/cashier',
+			views: {
+				'':{
+					templateUrl: 'modules/tradermain/views/cashier.tradermain.client.view.html'
+				}
+		    }
+		})
+		.state('tradermainState.cashier.createsrv', {
+			url: '/createsrv',
+			views: {
+				'@tradermainState.cashier': {
+					templateUrl: 'modules/tradermain/views/createsrv.cashier.tradermain.client.view.html'
+				}
+		    }
+		})
+		.state('tradermainState.cashier.srvcreated', {
+			url: '/srvcreated/:id',
+			views: {
+				'@tradermainState.cashier': {
+					templateUrl: 'modules/tradermain/views/srvcreated.cashier.tradermain.client.view.html'
+				}
+		    }
+		})
+		.state('tradermainState.cashier.srvstate', {
+			url: '/srvstate/:id',
+			views: {
+				'@tradermainState.cashier': {
+					templateUrl: 'modules/tradermain/views/srvstate.cashier.tradermain.client.view.html'
+				}
+		    }
+		})
 		;
 	}
 ]);

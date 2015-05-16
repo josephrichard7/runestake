@@ -51,6 +51,8 @@ ServiceController.fnList = function(req,res){
 		promise = serviceService.fnListByGambler(id);
 	}else if(req.user.role === enumUserRole.TRADER){
 		promise = serviceService.fnListByTrader(id);
+	}else if(req.user.role === enumUserRole.BANK){
+		promise = serviceService.fnListByBank(id);
 	}
 
 	util.fnProcessServicePromiseInController(promise, res);

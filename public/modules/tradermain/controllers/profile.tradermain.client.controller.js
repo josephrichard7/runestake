@@ -1,10 +1,9 @@
 'use strict';
 
 angular.module(ApplicationConfiguration.modules.tradermain)
-.controller('ProfileTradermainController', 
-	['$scope',
-	 ApplicationConfiguration.services.tradermain, 
-	function($scope, tradermainSrv) {
+.controller('ProfileTradermainController', [
+	ApplicationConfiguration.services.tradermain, 
+	function(tradermainSrv) {
 		var vm = this;
 
 		// Initialize

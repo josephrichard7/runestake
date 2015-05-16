@@ -158,6 +158,23 @@ TransactionService.fnProcessService = function(serviceEntity){
 				return TransactionService.fnProcess(transactionVO);
 			});
 		}
+		else if(serviceEntity.type === enumServiceType.BUYCHIPSTOBANK){
+			return promise
+			.then(function(){
+				transactionVO.type					= enumTransactionType.WITHDRAWAL;
+				transactionVO.account 				= accountEntityAttendantUser;// Bank
+				transactionVO.amount				= serviceEntity.amountConverted;
+				// transactionVO.profitPercent			= gameConfigEntity.profitPercentInCashInForTrader;
+				return TransactionService.fnProcess(transactionVO);
+			})
+			.then(function(){
+				transactionVO.type					= enumTransactionType.DEPOSIT;
+				transactionVO.account				= accountEntityRequestingUser; // Trader
+				// transactionVO.profitPercent			= gameConfigEntity.profitPercentInCashInForTrader;
+				transactionVO.amount				= serviceEntity.amountConverted;
+				return TransactionService.fnProcess(transactionVO);
+			});
+		}
 	});	
 
 };

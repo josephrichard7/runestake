@@ -28,7 +28,7 @@ function Service(id, gamblerSocket, traderSocket, nsp){
 Service.prototype.fnAbandonedByGambler = function(){
 	this.fnSendEventToServiceRoom(enumServicesSocket.app.ABANDONED_BY_GAMBLER, {
 		serviceId: 	this.id,
-		info: 		'Gmabler has abandoned the service.'
+		info: 		'Gambler has abandoned the service.'
 	});
 	// Gambler and trader must leave service room.
 	this.fnLeaveServiceRoom();

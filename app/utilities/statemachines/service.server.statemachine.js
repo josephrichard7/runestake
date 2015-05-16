@@ -6,6 +6,7 @@ var StateMachineService = {};
 StateMachineService[enumServiceState.CREATED] = {};
 StateMachineService[enumServiceState.CREATED][enumServiceState.DESISTED] 				= true;
 StateMachineService[enumServiceState.CREATED][enumServiceState.PROCESSING] 				= true;
+StateMachineService[enumServiceState.CREATED][enumServiceState.ABANDONED_BY_BANK]	 	= true;
 StateMachineService[enumServiceState.CREATED][enumServiceState.ABANDONED_BY_GAMBLER] 	= true;
 StateMachineService[enumServiceState.CREATED][enumServiceState.ABANDONED_BY_TRADER] 	= true;
 StateMachineService[enumServiceState.PROCESSING] = {};

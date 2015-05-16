@@ -8,6 +8,7 @@ var ApplicationConfiguration = (function() {
 		account: 		'account',
 		articles: 		'articles',
 		bank: 			'bank',
+		bankmain:		'bankmain',
 		chat: 			'chat',
 		core: 			'core',
 		exchangerate: 	'exchangerate',
@@ -21,27 +22,30 @@ var ApplicationConfiguration = (function() {
 		user: 			'users'
 	};
 	var services = {
-		account: 		'AccountService',
-		authentication: 'Authentication',
-		bank: 			'BankService',
-		chat: 			'ChatService',
-		exchangerate: 	'ExchangerateService',
-		gambler: 		'GamblerService',
-		gamblerchat: 	'GamblerChatService',
-		gamblermain: 	'GamblermainService',
-		menu: 			'Menus',
-		service: 		'ServiceService',
-		trader: 		'TraderService',
-		tradermain: 	'TradermainService',
-		transaction: 	'TransactionService',
-		utilities: 		'UtilitiesService'
+		account: 			'AccountService',
+		authentication: 	'Authentication',
+		bank: 				'BankService',
+		bankmain: 			'BankmainService',
+		cashiertradermain: 	'CashierTradermainService',
+		chat: 				'ChatService',
+		exchangerate: 		'ExchangerateService',
+		gambler: 			'GamblerService',
+		gamblerchat: 		'GamblerChatService',
+		gamblermain: 		'GamblermainService',
+		menu: 				'Menus',
+		service: 			'ServiceService',
+		trader: 			'TraderService',
+		tradermain: 		'TradermainService',
+		transaction: 		'TransactionService',
+		utilities: 			'UtilitiesService'
 	};
 	var factories = {
 		chat: 			'ChatFactory',
 		socket: 		'SocketFactory'
 	};
 	var sockets = {
-		services: 		'/services'
+		services: 		'/services',
+		bankservices: 	'/bankServices'
 	};
 	var chats 	= {
 		chat: 			'/chat'

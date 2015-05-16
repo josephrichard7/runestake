@@ -9,7 +9,7 @@ var userController  = require('../controllers/users'),
 
 module.exports = function(app) {
 	// Bank Routes
-	app.route('/bank').get(userController.hasAuthorization([enumUserrole.ADMIN]), bankController.fnRead)
+	app.route('/bank').get(userController.hasAuthorization([enumUserrole.ADMIN, enumUserrole.BANK]), bankController.fnRead)
 					  .put(userController.hasAuthorization([enumUserrole.ADMIN]), bankController.fnUpdate);
 
 	app.route('/bank/loadchips').post(

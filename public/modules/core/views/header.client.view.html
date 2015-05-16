@@ -59,6 +59,11 @@
 						data-ng-click="util.go('tradermainState.panel')">
 						<span class="glyphicon glyphicon-home"></span>
 					</a>
+					<a 	class="btn btn-primary navbar-btn btn-sm" 
+						data-ng-if="authentication.user.role === 'BANK'" 
+						data-ng-click="util.go('bankmainState.panel')">
+						<span class="glyphicon glyphicon-home"></span>
+					</a>
 				</div>
 			</li>
 			<li class="dropdown">

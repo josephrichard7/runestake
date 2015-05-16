@@ -13,16 +13,16 @@ angular.module(ApplicationConfiguration.modules.global)
             });
 
             function fnScroll(height){          
-              // Scroll when message overtakes the height panel
-              panel.stop().animate({
-                scrollTop: height
-              }, 500);
+                // Scroll when message overtakes the height panel
+                panel.stop().animate({
+                    scrollTop: height
+                }, 500);
             }
 
             scope.$watch(function(){
                 return panel[0].scrollHeight;
             }, function(newValue) {
-                    fnScroll(newValue);
+                fnScroll(newValue);
             });
         }
 

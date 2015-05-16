@@ -1,0 +1,18 @@
+<div class="panel panel-primary" data-ng-controller="CashierTradermainController as controller" data-ng-init="controller.fnInit()">	
+	<ol class="breadcrumb">
+		<li><a data-ng-click="util.go('tradermainState.panel')">Control panel</a></li>
+		<li class="active">Buy Chips</li>
+	</ol>
+	<div class="panel-body">
+		<tabset>
+			<tab heading="Trade">
+				<div data-ui-view>
+				</div>
+			</tab>
+			<tab heading="Services History">
+				<div data-ui-view="ServicesHistoryCashierTradermainView">
+				</div>
+			</tab>
+		</tabset>
+	</div>
+</div>

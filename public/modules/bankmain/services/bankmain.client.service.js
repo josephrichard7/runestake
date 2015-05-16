@@ -1,13 +1,13 @@
 'use strict';
 
-angular.module(ApplicationConfiguration.modules.tradermain)
-.service(ApplicationConfiguration.services.tradermain, [
+angular.module(ApplicationConfiguration.modules.bankmain)
+.service(ApplicationConfiguration.services.bankmain, [
 	ApplicationConfiguration.services.authentication, 
 	ApplicationConfiguration.services.account,
 	ApplicationConfiguration.services.service,
-	ApplicationConfiguration.services.trader,
+	ApplicationConfiguration.services.bank,
 	ApplicationConfiguration.factories.chat,	 
-	function(Authentication, accountSrv, serviceSrv, traderSrv, ChatFactory) {
+	function(Authentication, accountSrv, serviceSrv, bankSrv, ChatFactory) {
 		var _this = this;
 
 		var enumServicesSocketEvent = {
@@ -41,13 +41,12 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 		
 		_this.servicesSocket 			= undefined;
 		_this.authentication 			= Authentication;
-		_this.trader 					= {};
-		_this.trader.account 			= {};
+		_this.bank 						= {};
+		_this.bank.account 				= {};
 		_this.service 					= {};
 		_this.arrayServices 			= [];
 		_this.listServicesInAttention	= {};
 		_this.arrayServicesInAttention	= [];
-		_this.queueTraders 				= [];
 		_this.error 					= undefined;
 		_this.info 						= undefined;
 		_this.isWorking 				= false;
@@ -115,13 +114,13 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 
 		_this.fnInitServicesSocket = function(){
 			if(!_this.servicesSocket){
-				_this.servicesSocket =  new ChatFactory(ApplicationConfiguration.sockets.services);
+				_this.servicesSocket =  new ChatFactory(ApplicationConfiguration.sockets.bankservices);
 
 				_this.fnOnConnectedUser();
 				_this.fnOnError();
 				_this.fnOnNewMessage();
 				_this.fnOnNewService();
-				_this.fnOnServiceAbandonedByGambler();
+				_this.fnOnServiceAbandonedByTrader();
 				_this.fnOnServiceCompleted();
 				_this.fnOnServiceDesisted();
 				_this.fnOnShiftQueue();
@@ -139,16 +138,16 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 		};
 
 		_this.fnLoadUser = function (){
-			return traderSrv.fnReadById(_this.authentication.user._id)
-			.then(function(trader){
-				_this.trader = trader;
-				return _this.trader;
+			return bankSrv.fnRead()
+			.then(function(bank){
+				_this.bank = bank;
+				return _this.bank;
 			})
 			.catch(fnErrorHandling);
 		};
 
-		_this.fnOnServiceAbandonedByGambler = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.ABANDONED_BY_GAMBLER, function(data){
+		_this.fnOnServiceAbandonedByTrader = function (callback){
+			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.ABANDONED_BY_TRADER, function(data){
 	    		var service = _this.fnGetService(data.serviceId);
 
 	    		service.isAbandoned	= true;
@@ -246,7 +245,6 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 
 		_this.fnOnShiftQueue = function (callback){
 			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.SHIFT_QUEUE, function(data){
-				_this.queueTraders = data.queueTraders;
 				if(callback){
 					callback();
 				}
@@ -255,7 +253,6 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 
 		_this.fnOnStopWorking = function (callback){
 			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.STOP_WORKING, function(){
-				_this.queueTraders = [];
 				if(callback){
 					callback();
 				}

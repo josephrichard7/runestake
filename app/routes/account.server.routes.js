@@ -21,7 +21,7 @@ module.exports = function(app) {
 	// Get account by userid
 	app.route('/account/user/:userId')
 	.get(
-		userController.hasAuthorization([enumUserrole.ADMIN, enumUserrole.GAMBLER, enumUserrole.TRADER]),
+		userController.hasAuthorization([enumUserrole.ADMIN, enumUserrole.BANK, enumUserrole.GAMBLER, enumUserrole.TRADER]),
 		accountController.hasAuthorization,
 		accountController.fnReadByUserId
 	);				 

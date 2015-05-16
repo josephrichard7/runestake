@@ -1,9 +1,11 @@
 'use strict';
 
-angular.module(ApplicationConfiguration.modules.tradermain)
-.controller('ServicesTradermainController', [
-  ApplicationConfiguration.services.tradermain,
-  function(tradermainSrv) {
+angular.module(ApplicationConfiguration.modules.bankmain)
+.controller('ServicesBankmainController', 
+  ['$scope',
+  '$location',
+  ApplicationConfiguration.services.bankmain,
+  function($scope, $location, bankmainSrv) {
     // Private variables
     var vm = this;    
 
@@ -14,27 +16,27 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 
     /*jshint latedef: false*/
     function fnInit(){
-      vm.tradermainSrv  = tradermainSrv;
+      vm.bankmainSrv    = bankmainSrv;
       vm.currentPage    = 1;
       vm.pageSize       = 10;
-      tradermainSrv.fnLoadListServices();
+      bankmainSrv.fnLoadListServices();
     }
 
     function fnCompleteService(service){
-      tradermainSrv.fnCompleteService(service.service._id);
+      bankmainSrv.fnCompleteService(service.service._id);
     }
 
     function fnSendMessage(service) {
-      tradermainSrv.fnSendMessage(service.service._id, service.message, function(){
+      bankmainSrv.fnSendMessage(service.service._id, service.message, function(){
         service.message = '';
       });
     }
 
     function fnToggleWork(){
-      if(tradermainSrv.isWorking){
-        tradermainSrv.fnStopWorking();
+      if(bankmainSrv.isWorking){
+        bankmainSrv.fnStopWorking();
       }else{
-        tradermainSrv.fnStartWork();
+        bankmainSrv.fnStartWork();
       }
     }
 

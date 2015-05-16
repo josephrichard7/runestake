@@ -1,0 +1,24 @@
+<div class="panel panel-primary" data-ng-controller="ServicesBankmainController as controller" data-ng-init="controller.fnInit()">	
+	<ol class="breadcrumb">
+		<li><a data-ng-click="util.go('bankmainState.panel')">Control panel</a></li>
+		<li class="active">Services</li>
+	</ol>
+	<div class="panel-body">
+		<tabset>
+			<tab heading="Services">
+				<div data-ui-view="ServicesAttendingBankmainView">
+				</div>
+			</tab>
+			<tab heading="Services History">
+				<div data-ui-view="HistoryServicesBankmainView">
+				</div>
+			</tab>
+		</tabset>
+		<div data-ng-show="controller.bankmainSrv.error" class="text-danger text-center">
+			<strong data-ng-bind="controller.bankmainSrv.error"></strong>
+		</div>
+		<div data-ng-show="controller.bankmainSrv.info" class="text-success text-center">
+			<strong data-ng-bind="controller.bankmainSrv.info"></strong>
+		</div>
+	</div>
+</div>
