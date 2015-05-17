@@ -1,5 +1,5 @@
 <div>
-	<div data-ng-show="!controller.bankmainSrv.arrayServices.$resolved || controller.bankmainSrv.arrayServices.length">
+	<div data-ng-show="controller.bankmainSrv.arrayServices.length">
 		<div class="row">
 			<div class="col-md-4">
 			    <input id="filter" name="filter" type="text" data-ng-model="controller.filter"  class="form-control" placeholder="Filter here...">
@@ -28,11 +28,11 @@
 					    			<span data-ng-bind="service.type"></span>
 					    		</td>
 					    		<td>
-					    			<span data-ng-bind="service.amount"></span>
+					    			{{service.amount | jmRsNumberFormatFilter}}
 					    			&nbsp;
 					    			<span data-ng-bind="service.sourceCurrency"></span>
 					    			&nbsp;to&nbsp;
-					    			<span data-ng-bind="service.amountConverted"></span>
+					    			{{service.amountConverted | jmRsNumberFormatFilter}}
 					    			&nbsp;
 					    			<span data-ng-bind="service.destinationCurrency"></span>
 					    		</td>
@@ -85,7 +85,7 @@
 			</div>
 			<div 
 				class="alert alert-warning text-center" 
-				data-ng-if="controller.bankmainSrv.arrayServices.$resolved && !controller.bankmainSrv.arrayServices.length">
+				data-ng-if="!controller.bankmainSrv.arrayServices.length">
 				No services yet.
 			</div>
 		</div>

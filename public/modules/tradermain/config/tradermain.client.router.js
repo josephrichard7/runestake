@@ -35,6 +35,9 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 			views: {
 				'':{
 					templateUrl: 'modules/tradermain/views/cashier.tradermain.client.view.html'
+				},
+				'ServicesHistoryCashierTradermainView@tradermainState.cashier':{
+					templateUrl: 'modules/tradermain/views/serviceshistory.cashier.tradermain.client.view.html'	
 				}
 		    }
 		})

@@ -7,7 +7,8 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 	ApplicationConfiguration.services.service,
 	ApplicationConfiguration.services.bank,
 	ApplicationConfiguration.factories.chat,	 
-	function(Authentication, accountSrv, serviceSrv, bankSrv, ChatFactory) {
+  	ApplicationConfiguration.services.utilities, 
+	function(Authentication, accountSrv, serviceSrv, bankSrv, ChatFactory, utilSrv) {
 		var _this = this;
 
 		var enumServicesSocketEvent = {
@@ -47,8 +48,6 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 		_this.arrayServices 			= [];
 		_this.listServicesInAttention	= {};
 		_this.arrayServicesInAttention	= [];
-		_this.error 					= undefined;
-		_this.info 						= undefined;
 		_this.isWorking 				= false;
 		_this.enumUserRole = {
 	      ADMIN:    'ADMIN',
@@ -105,7 +104,7 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 		};
 
 		function fnErrorHandling(err) {
-			_this.error = err.data.message;
+			utilSrv.util.notifyError(err.data.message);
 		}
 
 		_this.fnGetService = function(serviceId){
@@ -129,7 +128,7 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 		};
 
 		_this.fnLoadListServices = function (){
-			return serviceSrv.fnLoadListServices()
+			return serviceSrv.fnLoadListServicesAttendantUser()
 			.then(function(arrayServices){
 				_this.arrayServices = arrayServices;
 				return _this.arrayServices;
@@ -173,7 +172,7 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 
 		_this.fnOnError = function (){
 			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.ERROR, function(error){
-				_this.error = error.error;
+				utilSrv.util.notifyError(err.data.message);
 			});
 		};
 

@@ -26,6 +26,9 @@ angular.module(ApplicationConfiguration.modules.service)
 			}
 		});
 
+		var ListServiceRequestingUserResource = $resource('service/listrequestinguser');
+		var ListServiceAttendantUserResource = $resource('service/listattendantuser');
+
 		_this.fnCancelService = function (id){
 			var serviceCancel = new ServiceCancelResource();
 			
@@ -46,14 +49,12 @@ angular.module(ApplicationConfiguration.modules.service)
 			});
 		};
 
-		_this.fnCreateService = function (serviceVO){
-			var service = new ServiceResource(serviceVO);
-			
-			return service.$save();
+		_this.fnLoadListServices = function (){
+			return ListServiceRequestingUserResource.query().$promise;
 		};
 
-		_this.fnLoadListServices = function (){
-			return ServiceResource.query().$promise;
+		_this.fnLoadListServicesAttendantUser = function (){
+			return ListServiceAttendantUserResource.query().$promise;
 		};
 
 		_this.fnReadServiceById = function (id){

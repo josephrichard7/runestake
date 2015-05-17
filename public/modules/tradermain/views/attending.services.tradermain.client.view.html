@@ -49,11 +49,11 @@
                                   <span data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.type"></span>
                                 </td>
                                 <td>
-                                  <span data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.amount"></span>
+                                  {{controller.tradermainSrv.listServicesInAttention[serviceId].service.amount | jmRsNumberFormatFilter}}
                                   &nbsp;
                                   <span data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.sourceCurrency"></span>
                                   &nbsp;to&nbsp;
-                                  <span data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.amountConverted"></span>
+                                  {{controller.tradermainSrv.listServicesInAttention[serviceId].service.amountConverted | jmRsNumberFormatFilter}}
                                   &nbsp;
                                   <span data-ng-bind="controller.tradermainSrv.listServicesInAttention[serviceId].service.destinationCurrency"></span>
                                 </td>

@@ -43,16 +43,27 @@ ServiceController.fnDesist = function(req, res) {
 	util.fnProcessServicePromiseInController(promise, res);
 };
 
-ServiceController.fnList = function(req,res){
+ServiceController.fnListRequestingUser = function(req,res){
 	var id 		= req.user.id || req.params.id || req.body.id;
 	var promise = {};
 
 	if(req.user.role === enumUserRole.GAMBLER){
-		promise = serviceService.fnListByGambler(id);
+		promise = serviceService.fnListByRequestingUser(id);
 	}else if(req.user.role === enumUserRole.TRADER){
-		promise = serviceService.fnListByTrader(id);
-	}else if(req.user.role === enumUserRole.BANK){
-		promise = serviceService.fnListByBank(id);
+		promise = serviceService.fnListByRequestingUser(id);
+	}
+
+	util.fnProcessServicePromiseInController(promise, res);
+};
+
+ServiceController.fnListAttendantUser = function(req,res){
+	var id 		= req.user.id || req.params.id || req.body.id;
+	var promise = {};
+
+	if(req.user.role === enumUserRole.BANK){
+		promise = serviceService.fnListByAttendantUser(id);
+	}else if(req.user.role === enumUserRole.TRADER){
+		promise = serviceService.fnListByAttendantUser(id);
 	}
 
 	util.fnProcessServicePromiseInController(promise, res);

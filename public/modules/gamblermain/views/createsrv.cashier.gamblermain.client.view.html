@@ -45,6 +45,7 @@
 							type="text" 								
 							data-ng-model="controller.amount" 
 							data-ng-blur="controller.fnConvertAmountByRate()"
+							jm-rs-number-format
 							placeholder="Amount" required>
 						<span class="input-group-addon">
 							<span data-ng-bind="controller.sourceCurrency">
@@ -52,7 +53,8 @@
 						</span>
 						<input class="form-control"
 							type="text"
-							data-ng-model="controller.amountConverted" readonly>
+							data-ng-model="controller.amountConverted"
+							jm-rs-number-format readonly>
 						<span class="input-group-addon">
 							<span data-ng-bind="controller.destinationCurrency">
 							</span>

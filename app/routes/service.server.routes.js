@@ -9,11 +9,16 @@ var userController   	= require('../controllers/users'),
 
 module.exports = function(app) {
 	// Service Routes
-	app.route('/service')
-	.post(userController.hasAuthorization([enumUserrole.GAMBLER]), serviceController.fnCreate)
+	app.route('/service/listrequestinguser')
 	.get (
-		userController.hasAuthorization([enumUserrole.GAMBLER, enumUserrole.TRADER, enumUserrole.BANK]), 
-		serviceController.fnList
+		userController.hasAuthorization([enumUserrole.GAMBLER, enumUserrole.TRADER]), 
+		serviceController.fnListRequestingUser
+	);
+
+	app.route('/service/listattendantuser')
+	.get (
+		userController.hasAuthorization([enumUserrole.TRADER, enumUserrole.BANK]),
+		serviceController.fnListAttendantUser
 	);
 
 	app.route('/service/:id')
@@ -21,10 +26,7 @@ module.exports = function(app) {
 		userController.hasAuthorization([enumUserrole.GAMBLER, enumUserrole.TRADER, enumUserrole.BANK]), 
 		serviceController.fnReadByID
 	);
-
-	// app.route('/service/:id/cancelar')
-	// .put(userController.hasAuthorization([enumUserrole.GAMBLER]), serviceController.fnCancelar);
-
+	
 	app.route('/service/:id/desist')
 	.put(userController.hasAuthorization([enumUserrole.GAMBLER, enumUserrole.TRADER]), serviceController.fnDesist);
 };

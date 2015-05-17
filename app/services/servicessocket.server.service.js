@@ -434,7 +434,7 @@ ServicesSocketService.prototype.fnCreateService = function(socket){
 
 			// If there is not a trader available, send error.
 			if(!traderUsername){
-				self.fnSendError(socket, 'Traders not available.');
+				self.fnSendError(socket, 'Traders are NOT available.');
 				return;
 			}
 

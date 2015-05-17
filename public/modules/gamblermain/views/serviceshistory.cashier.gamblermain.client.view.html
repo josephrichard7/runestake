@@ -28,11 +28,11 @@
 					    			<span data-ng-bind="service.type"></span>
 					    		</td>
 					    		<td>
-					    			<span data-ng-bind="service.amount"></span>
+					    			{{service.amount | jmRsNumberFormatFilter}}
 					    			&nbsp;
 					    			<span data-ng-bind="service.sourceCurrency"></span>
 					    			&nbsp;to&nbsp;
-					    			<span data-ng-bind="service.amountConverted"></span>
+					    			{{service.amountConverted | jmRsNumberFormatFilter}}
 					    			&nbsp;
 					    			<span data-ng-bind="service.destinationCurrency"></span>
 					    		</td>
@@ -83,8 +83,8 @@
 			<div class="text-center">
 				<dir-pagination-controls boundary-links="true"></dir-pagination-controls>
 			</div>
-			<div class="alert alert-warning text-center" data-ng-if="controller.gamblermainSrv.listServices.$resolved && !controller.gamblermainSrv.listServices.length">
-				No services yet. <!-- <a href="/#!/gamblermain/panel/cashier">create one</a>? -->
+			<div class="alert alert-warning text-center" data-ng-if="!controller.gamblermainSrv.listServices.length">
+				No services yet.
 			</div>
 		</div>
 	</div>

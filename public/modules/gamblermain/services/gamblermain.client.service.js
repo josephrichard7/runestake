@@ -83,7 +83,6 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		function fnErrorHandling(err) {
-			// _this.error = err.data.message;
 			utilSrv.util.notifyError(err.data.message);
 		}
 

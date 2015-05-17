@@ -103,7 +103,7 @@ BankServicesSocketService.prototype.fnCreateService = function(socket){
 
 			// If there is not a bank available, send error.
 			if(!bankUsername){
-				self.fnSendError(socket, 'Banks not available.');
+				self.fnSendError(socket, 'Bank is not available.');
 				return;
 			}
 

@@ -121,23 +121,7 @@ ServiceService.fnDesist = function(id){
 	return fnUpdateState(id, enumServiceState.DESISTED);
 };
 
-ServiceService.fnListByBank = function(id){
-	return ServiceEntity
-	.find()
-	.sort('-createdDate')
-	.populate({
-	    path: 'requestingUser',
-	   	select: 'username'
-	})
-	.populate({
-	    path: 'attendantUser',
-	   	select: 'username'
-	})
-	.where('attendantUser').equals(id)
-	.exec();
-};
-
-ServiceService.fnRequestedList = function(id){
+ServiceService.fnListByRequestingUser = function(id){
 	return ServiceEntity
 	.find()
 	.sort('-createdDate')
@@ -146,23 +130,7 @@ ServiceService.fnRequestedList = function(id){
 	.exec();
 };
 
-ServiceService.fnAttendantList = function(id){
-	return ServiceEntity
-	.find()
-	.sort('-createdDate')
-	.populate({
-	    path: 'requestingUser',
-	   	select: 'username'
-	})
-	.populate({
-	    path: 'attendantUser',
-	   	select: 'username'
-	})
-	.where('attendantUser').equals(id)
-	.exec();
-};
-
-ServiceService.fnListByTrader = function(id){
+ServiceService.fnListByAttendantUser = function(id){
 	return ServiceEntity
 	.find()
 	.sort('-createdDate')

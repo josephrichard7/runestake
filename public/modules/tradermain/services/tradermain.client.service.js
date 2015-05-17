@@ -130,7 +130,7 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 		};
 
 		_this.fnLoadListServices = function (){
-			return serviceSrv.fnLoadListServices()
+			return serviceSrv.fnLoadListServicesAttendantUser()
 			.then(function(arrayServices){
 				_this.arrayServices = arrayServices;
 				return _this.arrayServices;

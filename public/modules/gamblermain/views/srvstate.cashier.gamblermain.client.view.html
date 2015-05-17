@@ -22,11 +22,11 @@
 				    			<span data-ng-bind="controller.gamblermainSrv.service.type"></span>
 				    		</td>
 				    		<td>
-				    			<span data-ng-bind="controller.gamblermainSrv.service.amount"></span>
+				    			{{controller.gamblermainSrv.service.amount | jmRsNumberFormatFilter}}
 				    			&nbsp;
 				    			<span data-ng-bind="controller.gamblermainSrv.service.sourceCurrency"></span>
 				    			&nbsp;to&nbsp;
-				    			<span data-ng-bind="controller.gamblermainSrv.service.amountConverted"></span>
+				    			{{controller.gamblermainSrv.service.amountConverted | jmRsNumberFormatFilter}}
 				    			&nbsp;
 				    			<span data-ng-bind="controller.gamblermainSrv.service.destinationCurrency"></span>
 				    		</td>

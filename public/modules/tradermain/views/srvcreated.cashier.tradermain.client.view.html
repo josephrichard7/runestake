@@ -22,11 +22,11 @@
 				    			<span data-ng-bind="controller.cashierTradermainSrv.service.type"></span>
 				    		</td>
 				    		<td>
-				    			<span data-ng-bind="controller.cashierTradermainSrv.service.amount"></span>
+				    			{{controller.cashierTradermainSrv.service.amount | jmRsNumberFormatFilter}}
 				    			&nbsp;
 				    			<span data-ng-bind="controller.cashierTradermainSrv.service.sourceCurrency"></span>
 				    			&nbsp;to&nbsp;
-				    			<span data-ng-bind="controller.cashierTradermainSrv.service.amountConverted"></span>
+				    			{{controller.cashierTradermainSrv.service.amountConverted | jmRsNumberFormatFilter}}
 				    			&nbsp;
 				    			<span data-ng-bind="controller.cashierTradermainSrv.service.destinationCurrency"></span>
 				    		</td>
