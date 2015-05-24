@@ -111,11 +111,11 @@ angular.module(ApplicationConfiguration.modules.global)
 
 		_this.util.toRsFormat = function(num){
 			if(num >= 10000000){
-				return (+Math.round(num / 10000) / 100) + 'M';
-			}else if(num >= 100000){
-				return (+Math.round(num / 10) / 100) + 'K';
+				return +(Math.round(num / 10000) / 100) + 'M';
+			}else if(num >= 10000){
+				return +(Math.round(num / 10) / 100) + 'K';
 			}else{
-				return Math.round(num * 100) / 100;
+				return +(Math.round(num * 100) / 100);
 			}
 		};
 

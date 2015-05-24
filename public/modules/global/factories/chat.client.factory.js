@@ -2,10 +2,11 @@
 
 //Service for chat
 angular.module(ApplicationConfiguration.modules.global)
-.factory(ApplicationConfiguration.factories.chat, 
-	[ApplicationConfiguration.factories.socket, 
-	 'Authentication',
-	function(SocketFactory, Authentication) {
+.factory(ApplicationConfiguration.factories.chat, [
+	'$window',
+	ApplicationConfiguration.factories.socket, 
+	ApplicationConfiguration.services.authentication,
+	function($window, SocketFactory, Authentication) {
 
 		function Chat(namespace){
 			this.enumChatEvent = {
@@ -32,14 +33,40 @@ angular.module(ApplicationConfiguration.modules.global)
 		      USER:   'USER',
 		      INFO:   'INFO'
 		    };
+		    this.enumUserRole   = {
+		      ADMIN:    'ADMIN',
+		      BANK:     'BANK',
+		      TRADER:   'TRADER',
+		      GAMBLER:  'GAMBLER'
+		    };
 
+		    this.nsp 				= namespace;
 	    	this.username        	= Authentication.user.username;
-			this.socket 			= new SocketFactory(namespace);
-			this.numConnectedUsers	= 0;
 		    this.listConnectedUsers = [];
 		    this.listMessages       = [];
 	    	this.chatState         	= this.enumUserChatState.DISCONNECTED;
+			this.numConnectedUsers	= 0;
+			this.socket 			= undefined;
+			this.message 			= '';
 	    }
+
+	    Chat.prototype.fnInitSocket = function(){	    	
+	    	var _this = this;
+	    	if(!_this.socket){
+				_this.socket = new SocketFactory(this.nsp);	    	
+
+				_this.onConnect();
+				_this.onDisconnect();
+				_this.onLogin();
+				_this.onNewMessage();
+				_this.onUserJoined();
+				_this.onUserLeft(function(data){
+					if(data.username === _this.username){
+						$window.location.reload();
+					}
+				});	
+	    	}
+	    };
 
 	    // Add chat message to list
 	    Chat.prototype.fnAddChatMessage = function(username, message, type) {
@@ -56,8 +83,9 @@ angular.module(ApplicationConfiguration.modules.global)
 	    Chat.prototype.fnSendMessage = function (message, callback) {
 	    	var self = this;
 	      	// if there is a non-empty message and a socket connection, send 'new message' to server
-			if (message && self.chatState === self.enumUserChatState.CONNECTED) {        
-				self.socket.emit(self.enumChatEvent.app.NEW_MESSAGE, message);	      
+			if (self.message && self.chatState === self.enumUserChatState.CONNECTED) {        
+				self.socket.emit(self.enumChatEvent.app.NEW_MESSAGE, self.message);
+				self.message = '';
 				if(callback){
 					callback();
 				}

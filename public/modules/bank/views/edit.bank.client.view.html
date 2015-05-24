@@ -38,7 +38,7 @@
 					<div class="form-group" ng-class="{ 'has-error' : controller.submitted && form.account_balance.$invalid}">
 						<label class="control-label" for="account_balance">Account balance</label>
 						<div class="controls">
-							<input type="text" id="account_balance" name="account_balance" class="form-control" data-ng-model="controller.bank.account.balance" placeholder="account_balance" required disabled>
+							<input type="text" id="account_balance" name="account_balance" class="form-control" data-ng-model="controller.bank.account.balance" jm-rs-number-format placeholder="account_balance" required disabled>
 						</div>
 						<div ng-show="controller.submitted && form.account_balance.$invalid" class="help-block">
 							<p ng-show="form.account_balance.$error.required" class="text-danger">Account balance is required</p>

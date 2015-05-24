@@ -1,7 +1,9 @@
 'use strict';
 
 // Setting up route
-angular.module('users').config(['$stateProvider',
+angular.module(ApplicationConfiguration.modules.user)
+.config([
+	'$stateProvider',
 	function($stateProvider) {
 		// Users state routing
 		$stateProvider.

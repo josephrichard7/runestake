@@ -6,9 +6,9 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 	ApplicationConfiguration.services.account,
 	ApplicationConfiguration.services.service,
 	ApplicationConfiguration.services.bank,
-	ApplicationConfiguration.factories.chat,	 
+	ApplicationConfiguration.factories.socket,	 
   	ApplicationConfiguration.services.utilities, 
-	function(Authentication, accountSrv, serviceSrv, bankSrv, ChatFactory, utilSrv) {
+	function(Authentication, accountSrv, serviceSrv, bankSrv, SocketFactory, utilSrv) {
 		var _this = this;
 
 		var enumServicesSocketEvent = {
@@ -94,7 +94,7 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 		};
 
 		_this.fnCompleteService = function (serviceId){
-			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.COMPLETE_SERVICE,{
+			_this.servicesSocket.emit(enumServicesSocketEvent.app.COMPLETE_SERVICE,{
 				serviceId: serviceId
 			});
 		};
@@ -113,7 +113,7 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 
 		_this.fnInitServicesSocket = function(){
 			if(!_this.servicesSocket){
-				_this.servicesSocket =  new ChatFactory(ApplicationConfiguration.sockets.bankservices);
+				_this.servicesSocket =  new SocketFactory(ApplicationConfiguration.sockets.bankservices);
 
 				_this.fnOnConnectedUser();
 				_this.fnOnError();
@@ -146,7 +146,7 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 		};
 
 		_this.fnOnServiceAbandonedByTrader = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.ABANDONED_BY_TRADER, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.ABANDONED_BY_TRADER, function(data){
 	    		var service = _this.fnGetService(data.serviceId);
 
 	    		service.isAbandoned	= true;
@@ -162,7 +162,7 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 		};
 
 		_this.fnOnConnectedUser = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.CONNECTED_USER, function(){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.CONNECTED_USER, function(){
 				_this.isWorking = false;
 				if(callback){
 					callback();
@@ -171,13 +171,13 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 		};
 
 		_this.fnOnError = function (){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.ERROR, function(error){
-				utilSrv.util.notifyError(err.data.message);
+			_this.servicesSocket.on(enumServicesSocketEvent.app.ERROR, function(data){
+				utilSrv.util.notifyError(data.error);
 			});
 		};
 
 		_this.fnOnNewMessage = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.NEW_MESSAGE_SERVICE, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.NEW_MESSAGE_SERVICE, function(data){
 				_this.fnAddChatMessage(
 					data.serviceId,
 					data.username, 
@@ -192,7 +192,7 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 		};
 
 		_this.fnOnNewService = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.NEW_SERVICE, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.NEW_SERVICE, function(data){
 				var service;
 
 				_this.fnLoadListServices();
@@ -212,7 +212,7 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 		};
 
 		_this.fnOnServiceCompleted = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.SERVICE_COMPLETED, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.SERVICE_COMPLETED, function(data){
 				var service = _this.fnGetService(data.serviceId);
 				
 				_this.fnLoadListServices();
@@ -228,7 +228,7 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 		};
 
 		_this.fnOnServiceDesisted = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.SERVICE_DESISTED, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.SERVICE_DESISTED, function(data){
 				var service = _this.fnGetService(data.serviceId);
 
 				_this.fnLoadListServices();
@@ -243,7 +243,7 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 		};
 
 		_this.fnOnShiftQueue = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.SHIFT_QUEUE, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.SHIFT_QUEUE, function(data){
 				if(callback){
 					callback();
 				}
@@ -251,7 +251,7 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 		};
 
 		_this.fnOnStopWorking = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.STOP_WORKING, function(){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.STOP_WORKING, function(){
 				if(callback){
 					callback();
 				}
@@ -281,7 +281,7 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 		};
 
 		_this.fnSendMessage = function (serviceId, message, callback){
-			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.NEW_MESSAGE_SERVICE, {
+			_this.servicesSocket.emit(enumServicesSocketEvent.app.NEW_MESSAGE_SERVICE, {
 				serviceId: 	serviceId,
 				message: 	message
 			});
@@ -292,12 +292,12 @@ angular.module(ApplicationConfiguration.modules.bankmain)
 		};
 
 		_this.fnStartWork = function (){
-			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.START_WORK);
+			_this.servicesSocket.emit(enumServicesSocketEvent.app.START_WORK);
 			_this.isWorking = true;
 		};
 
 		_this.fnStopWorking = function (){
-			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.STOP_WORKING);
+			_this.servicesSocket.emit(enumServicesSocketEvent.app.STOP_WORKING);
 			_this.isWorking = false;
 		};
 

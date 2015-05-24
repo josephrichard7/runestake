@@ -24,6 +24,8 @@ angular.module(ApplicationConfiguration.modules.user)
 					utilSrv.util.go('gamblermainState.panel');
 				}else if($scope.authentication.user.role === 'TRADER'){
 					utilSrv.util.go('tradermainState.panel');
+				}else if($scope.authentication.user.role === 'BANK'){
+					utilSrv.util.go('bankmainState.panel');
 				}else{
 					utilSrv.util.go('home');
 				}
@@ -42,6 +44,8 @@ angular.module(ApplicationConfiguration.modules.user)
 					utilSrv.util.go('gamblermainState.panel');
 				}else if($scope.authentication.user.role === 'TRADER'){
 					utilSrv.util.go('tradermainState.panel');
+				}else if($scope.authentication.user.role === 'BANK'){
+					utilSrv.util.go('bankmainState.panel');
 				}else{
 					utilSrv.util.go('home');
 				}

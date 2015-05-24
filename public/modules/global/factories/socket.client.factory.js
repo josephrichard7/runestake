@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module(ApplicationConfiguration.modules.global)
-.factory('SocketFactory', ['$rootScope',
+.factory('SocketFactory', [
+    '$rootScope',
     function ($rootScope) {
         var URL    = window.location.protocol + '//' + window.location.host;
 

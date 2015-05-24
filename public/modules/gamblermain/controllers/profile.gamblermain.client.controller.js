@@ -1,10 +1,9 @@
 'use strict';
 
 angular.module(ApplicationConfiguration.modules.gamblermain)
-.controller('ProfileGamblermainController', 
-	['$scope',
-	 ApplicationConfiguration.services.gamblermain, 
-	function($scope, gamblermainSrv) {
+.controller('ProfileGamblermainController', [
+	ApplicationConfiguration.services.gamblermain, 
+	function(gamblermainSrv) {
 		var vm = this;
 
 		// Initialize

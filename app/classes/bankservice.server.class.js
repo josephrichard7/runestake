@@ -1,6 +1,7 @@
 'use strict';
 
-var enumServicesSocket 	= require('../utilities/enums/servicessocketevent');
+var enumServicesSocket 	= require('../utilities/enums/servicessocketevent'),
+	socketService 		= require('../services/socket');
 
 module.exports = BankService;
 
@@ -100,7 +101,7 @@ BankService.prototype.fnNewMessage = function(socket, message){
  * @param {String} message
  */
 BankService.prototype.fnNotifyNewServiceToBank = function(){
-	this.bankSocket.emit(enumServicesSocket.app.NEW_SERVICE,{
+	socketService.fnEmitToMe(this.bankSocket, enumServicesSocket.app.NEW_SERVICE, {
 		serviceId: this.id
 	});
 };
@@ -111,7 +112,7 @@ BankService.prototype.fnNotifyNewServiceToBank = function(){
  * @param {String} message
  */
 BankService.prototype.fnNotifyServiceCreatedToTrader = function(){
-	this.traderSocket.emit(enumServicesSocket.app.SERVICE_CREATED,{
+	socketService.fnEmitToMe(this.traderSocket, enumServicesSocket.app.SERVICE_CREATED, {
 		serviceId: this.id
 	});
 };
@@ -124,5 +125,5 @@ BankService.prototype.fnSendDefaultMessageToServiceRoom = function(){
 
 // Send event to service room
 BankService.prototype.fnSendEventToServiceRoom = function(event, object){
-	this.nsp.to(this.roomName).emit(event, object);	
+	socketService.fnEmitToRoom(this.nsp, this.roomName, event, object);
 };

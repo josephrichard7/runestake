@@ -5,9 +5,9 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 	ApplicationConfiguration.services.authentication, 
 	ApplicationConfiguration.services.trader,
 	ApplicationConfiguration.services.service,
-	ApplicationConfiguration.factories.chat,	 
+	ApplicationConfiguration.factories.socket,
   	ApplicationConfiguration.services.utilities,
-	function(Authentication, traderSrv, serviceSrv, ChatFactory, utilSrv) {
+	function(Authentication, traderSrv, serviceSrv, SocketFactory, utilSrv) {
 		var _this = this;
 
 		var enumServicesSocketEvent = {
@@ -73,25 +73,24 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 	    };
 
 		_this.fnCreateService = function (){
-			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.CREATE_SERVICE, {
+			_this.servicesSocket.emit(enumServicesSocketEvent.app.CREATE_SERVICE, {
 				service: _this.service
 			});
 		};
 
 		_this.fnDesistService = function (){
-			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.DESIST_SERVICE, {
+			_this.servicesSocket.emit(enumServicesSocketEvent.app.DESIST_SERVICE, {
 				serviceId: _this.service._id
 			});
 		};
 
 		function fnErrorHandling(err) {
-			// _this.error = err.data.message;
 			utilSrv.util.notifyError(err.data.message);
 		}
 
 		_this.fnInitServicesSocket = function(){
 			if(!_this.servicesSocket){
-				_this.servicesSocket =  new ChatFactory(ApplicationConfiguration.sockets.bankservices);
+				_this.servicesSocket =  new SocketFactory(ApplicationConfiguration.sockets.bankservices);
 
 				_this.fnOnConnectedUser();
 				_this.fnOnError();
@@ -123,7 +122,7 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 		};
 
 		_this.fnOnBanksAvailable = function (){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.BANKS_AVAILABLE, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.BANKS_AVAILABLE, function(data){
 				if(data.isBanksAvailable){
 					utilSrv.util.notify(data.message);
 				}else{
@@ -133,7 +132,7 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 		};
 
 		_this.fnOnConnectedUser = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.CONNECTED_USER, function(){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.CONNECTED_USER, function(){
 				if(callback){
 					callback();
 				}
@@ -141,13 +140,13 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 		};
 
 		_this.fnOnError = function (){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.ERROR, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.ERROR, function(data){
 				utilSrv.util.notifyError(data.error);
 			});
 		};
 
 		_this.fnOnNewMessage = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.NEW_MESSAGE_SERVICE, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.NEW_MESSAGE_SERVICE, function(data){
 				_this.fnAddChatMessage(
 					data.username,
 					data.role,
@@ -161,7 +160,7 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 		};
 
 		_this.fnOnServiceAbandonedByBank = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.ABANDONED_BY_BANK, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.ABANDONED_BY_BANK, function(data){
 				utilSrv.util.go('tradermainState.cashier.srvstate',{
 		        	id: data.serviceId
 		        });
@@ -172,7 +171,7 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 		};
 
 		_this.fnOnServiceCreated = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.SERVICE_CREATED, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.SERVICE_CREATED, function(data){
 				_this.fnLoadListServices();
 				utilSrv.util.go('tradermainState.cashier.srvcreated',{
 					id: data.serviceId
@@ -185,7 +184,7 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 		};
 
 		_this.fnOnServiceDesisted = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.SERVICE_DESISTED, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.SERVICE_DESISTED, function(data){
 				_this.fnLoadListServices();
 		        utilSrv.util.go('tradermainState.cashier.srvstate',{
 		        	id: data.serviceId
@@ -198,7 +197,7 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 		};
 
 		_this.fnOnServiceCompleted = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.SERVICE_COMPLETED, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.SERVICE_COMPLETED, function(data){
 				_this.fnLoadListServices();
 				_this.fnLoadUser();
 		        utilSrv.util.go('tradermainState.cashier.srvstate',{
@@ -231,7 +230,7 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 		};
 
 		_this.fnSendMessage = function (callback){
-			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.NEW_MESSAGE_SERVICE, {
+			_this.servicesSocket.emit(enumServicesSocketEvent.app.NEW_MESSAGE_SERVICE, {
 				serviceId: 	_this.service._id,
 				message: 	_this.service.message
 			});
@@ -242,7 +241,7 @@ angular.module(ApplicationConfiguration.modules.tradermain)
 		};
 
 		_this.fnBanksAvailable = function (){
-			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.BANKS_AVAILABLE);
+			_this.servicesSocket.emit(enumServicesSocketEvent.app.BANKS_AVAILABLE);
 		};
 	}
 ]);

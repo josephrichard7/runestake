@@ -2,7 +2,8 @@
 
 // Setting up route
 angular.module(ApplicationConfiguration.modules.bankmain)
-.config(['$stateProvider',
+.config([
+	'$stateProvider',
 	function($stateProvider) {
 		// State routing
 		$stateProvider

@@ -4,6 +4,7 @@ var enumUserrole		= require('../utilities/enums/userrole'),
 	enumServicesSocket 	= require('../utilities/enums/servicessocketevent'),
 	serviceService 		= require('../services/service'),
 	Service 			= require('../classes/service'),
+	socketService 		= require('../services/socket'),
 	errorUtil 			= require('../utilities/error');
 
 module.exports = ServicesSocketService;
@@ -121,7 +122,7 @@ ServicesSocketService.prototype.fnConnectUser = function(socket){
 		this.fnConnectGambler(socket);
 	}
 
-	socket.emit(enumServicesSocket.app.CONNECTED_USER);
+	socketService.fnEmitToMe(socket, enumServicesSocket.app.CONNECTED_USER);
 };
 
 /** 
@@ -465,7 +466,7 @@ ServicesSocketService.prototype.fnCreateService = function(socket){
  * @param error
  */
 ServicesSocketService.prototype.fnSendError = function(socket, error){
-	socket.emit(enumServicesSocket.app.ERROR,{
+	socketService.fnEmitToMe(socket, enumServicesSocket.app.ERROR,{
 		error: error
 	});
 };
@@ -475,7 +476,7 @@ ServicesSocketService.prototype.fnSendError = function(socket, error){
  *
  */
 ServicesSocketService.prototype.fnSendQueueTradersToTradersRoom = function(){
-	this.nsp.to(this.TRADER_ROOM).emit(enumServicesSocket.app.SHIFT_QUEUE,{
+	socketService.fnEmitToRoom(this.nsp, this.TRADER_ROOM, enumServicesSocket.app.SHIFT_QUEUE, {
 		queueTraders: this.queueTraders
 	});
 };
@@ -497,7 +498,7 @@ ServicesSocketService.prototype.fnTradersAvailable = function(socket){
 			message 			= 'Traders are available.';
 		}
 
-		connectedGambler.socket.emit(enumServicesSocket.app.TRADERS_AVAILABLE,{
+		socketService.fnEmitToMe(connectedGambler.socket, enumServicesSocket.app.TRADERS_AVAILABLE, {
 			isTradersAvailable: isTradersAvailable,
 			message: 			message
 		});
@@ -515,7 +516,7 @@ ServicesSocketService.prototype.fnTraderStopWorking = function(socket){
 		self.fnDeleteTraderFromQueue(socket.username);
 		self.fnLeaveTraderRoom(socket);
 		self.fnSendQueueTradersToTradersRoom();
-		socket.emit(enumServicesSocket.app.STOP_WORKING);
+		socketService.fnEmitToMe(socket, enumServicesSocket.app.STOP_WORKING);
 	};
 };
 

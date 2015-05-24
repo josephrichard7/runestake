@@ -1,8 +1,9 @@
 'use strict';
 
 angular.module(ApplicationConfiguration.modules.gamblermain)
-.controller('CashierController', [
+.controller('StakeGamblermainController', [
   ApplicationConfiguration.services.gamblermain,
+  // ApplicationConfiguration.services.stake,
   function(gamblermainSrv) {
     // Private variables
     var vm = this;    
@@ -12,10 +13,6 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
     /*jshint latedef: false*/
     function fnInit(){
       vm.gamblermainSrv       = gamblermainSrv;
-      vm.currentPage          = 1;
-      vm.pageSize             = 10;
-      gamblermainSrv.fnInitServicesSocket();
-      gamblermainSrv.fnLoadListServices();
     }
 
   }

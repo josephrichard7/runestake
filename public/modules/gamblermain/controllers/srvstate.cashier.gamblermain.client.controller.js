@@ -1,12 +1,10 @@
 'use strict';
 
 angular.module(ApplicationConfiguration.modules.gamblermain)
-.controller('SrvStateCashierController',
-  ['$scope',
+.controller('SrvStateCashierController', [
   '$stateParams',
-  '$location',
   ApplicationConfiguration.services.gamblermain,
-  function($scope, $stateParams, $location, gamblermainSrv) {
+  function($stateParams, gamblermainSrv) {
     // Private variables
     var vm = this;
 

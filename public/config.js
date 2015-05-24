@@ -6,7 +6,6 @@ var ApplicationConfiguration = (function() {
 	var applicationModuleName 	= 'runestake';
 	var modules = {
 		account: 		'account',
-		articles: 		'articles',
 		bank: 			'bank',
 		bankmain:		'bankmain',
 		chat: 			'chat',
@@ -19,11 +18,11 @@ var ApplicationConfiguration = (function() {
 		trader: 		'trader',
 		tradermain: 	'tradermain',
 		transaction: 	'transaction',
-		user: 			'users'
+		user: 			'user'
 	};
 	var services = {
 		account: 			'AccountService',
-		authentication: 	'Authentication',
+		authentication: 	'AuthenticationService',
 		bank: 				'BankService',
 		bankmain: 			'BankmainService',
 		cashiertradermain: 	'CashierTradermainService',
@@ -32,12 +31,13 @@ var ApplicationConfiguration = (function() {
 		gambler: 			'GamblerService',
 		gamblerchat: 		'GamblerChatService',
 		gamblermain: 		'GamblermainService',
-		menu: 				'Menus',
+		menu: 				'MenuService',
 		service: 			'ServiceService',
 		trader: 			'TraderService',
 		tradermain: 		'TradermainService',
 		transaction: 		'TransactionService',
-		utilities: 			'UtilitiesService'
+		utilities: 			'UtilitiesService',
+		user: 				'UserService'
 	};
 	var factories = {
 		chat: 			'ChatFactory',

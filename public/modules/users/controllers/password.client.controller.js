@@ -1,6 +1,12 @@
 'use strict';
 
-angular.module('users').controller('PasswordController', ['$scope', '$stateParams', '$http', '$location', 'Authentication',
+angular.module(ApplicationConfiguration.modules.user)
+.controller('PasswordController', [
+	'$scope', 
+	'$stateParams', 
+	'$http', 
+	'$location', 
+	ApplicationConfiguration.services.authentication,
 	function($scope, $stateParams, $http, $location, Authentication) {
 		$scope.authentication = Authentication;
 

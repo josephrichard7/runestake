@@ -5,9 +5,9 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 	ApplicationConfiguration.services.authentication, 
 	ApplicationConfiguration.services.gambler,
 	ApplicationConfiguration.services.service,
-	ApplicationConfiguration.factories.chat,	 
+	ApplicationConfiguration.factories.socket,
   	ApplicationConfiguration.services.utilities,
-	function(Authentication, gamblerSrv, serviceSrv, ChatFactory, utilSrv) {
+	function(Authentication, gamblerSrv, serviceSrv, SocketFactory, utilSrv) {
 		var _this = this;
 
 		var enumServicesSocketEvent = {
@@ -71,13 +71,13 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 	    };
 
 		_this.fnCreateService = function (){
-			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.CREATE_SERVICE, {
+			_this.servicesSocket.emit(enumServicesSocketEvent.app.CREATE_SERVICE, {
 				service: _this.service
 			});
 		};
 
 		_this.fnDesistService = function (){
-			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.DESIST_SERVICE, {
+			_this.servicesSocket.emit(enumServicesSocketEvent.app.DESIST_SERVICE, {
 				serviceId: _this.service._id
 			});
 		};
@@ -88,7 +88,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 
 		_this.fnInitServicesSocket = function(){
 			if(!_this.servicesSocket){
-				_this.servicesSocket =  new ChatFactory(ApplicationConfiguration.sockets.services);
+				_this.servicesSocket =  new SocketFactory(ApplicationConfiguration.sockets.services);
 
 				_this.fnOnConnectedUser();
 				_this.fnOnError();
@@ -120,7 +120,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		_this.fnOnConnectedUser = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.CONNECTED_USER, function(){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.CONNECTED_USER, function(){
 				if(callback){
 					callback();
 				}
@@ -128,13 +128,13 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		_this.fnOnError = function (){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.ERROR, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.ERROR, function(data){
 				utilSrv.util.notifyError(data.error);
 			});
 		};
 
 		_this.fnOnNewMessage = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.NEW_MESSAGE_SERVICE, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.NEW_MESSAGE_SERVICE, function(data){
 				_this.fnAddChatMessage(
 					data.username,
 					data.role,
@@ -148,7 +148,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		_this.fnOnServiceAbandonedByTrader = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.ABANDONED_BY_TRADER, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.ABANDONED_BY_TRADER, function(data){
 				utilSrv.util.go('gamblermainState.cashier.srvstate',{
 		        	id: data.serviceId
 		        });
@@ -159,7 +159,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		_this.fnOnServiceCreated = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.SERVICE_CREATED, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.SERVICE_CREATED, function(data){
 				_this.fnLoadListServices();
 				utilSrv.util.go('gamblermainState.cashier.srvcreated',{
 					id: data.serviceId
@@ -172,7 +172,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		_this.fnOnServiceDesisted = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.SERVICE_DESISTED, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.SERVICE_DESISTED, function(data){
 				_this.fnLoadListServices();
 		        utilSrv.util.go('gamblermainState.cashier.srvstate',{
 		        	id: data.serviceId
@@ -185,7 +185,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		_this.fnOnServiceCompleted = function (callback){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.SERVICE_COMPLETED, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.SERVICE_COMPLETED, function(data){
 				_this.fnLoadListServices();
 				_this.fnLoadUser();
 		        utilSrv.util.go('gamblermainState.cashier.srvstate',{
@@ -199,7 +199,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		_this.fnOnTradersAvailable = function (){
-			_this.servicesSocket.socket.on(enumServicesSocketEvent.app.TRADERS_AVAILABLE, function(data){
+			_this.servicesSocket.on(enumServicesSocketEvent.app.TRADERS_AVAILABLE, function(data){
 				if(data.isTradersAvailable){
 					utilSrv.util.notify(data.message);
 				}else{
@@ -228,7 +228,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		_this.fnSendMessage = function (callback){
-			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.NEW_MESSAGE_SERVICE, {
+			_this.servicesSocket.emit(enumServicesSocketEvent.app.NEW_MESSAGE_SERVICE, {
 				serviceId: 	_this.service._id,
 				message: 	_this.service.message
 			});
@@ -239,7 +239,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		_this.fnTradersAvailable = function (){
-			_this.servicesSocket.socket.emit(enumServicesSocketEvent.app.TRADERS_AVAILABLE);
+			_this.servicesSocket.emit(enumServicesSocketEvent.app.TRADERS_AVAILABLE);
 		};
 	}
 ]);

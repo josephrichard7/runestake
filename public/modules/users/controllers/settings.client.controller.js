@@ -1,6 +1,12 @@
 'use strict';
 
-angular.module('users').controller('SettingsController', ['$scope', '$http', '$location', 'Users', 'Authentication',
+angular.module(ApplicationConfiguration.modules.user)
+.controller('SettingsController', [
+	'$scope', 
+	'$http', 
+	'$location', 
+	ApplicationConfiguration.services.user, 
+	ApplicationConfiguration.services.authentication,
 	function($scope, $http, $location, Users, Authentication) {
 		$scope.user = Authentication.user;
 

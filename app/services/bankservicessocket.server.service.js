@@ -4,6 +4,7 @@ var enumUserrole			= require('../utilities/enums/userrole'),
 	enumServicesSocketEvent = require('../utilities/enums/servicessocketevent'),
 	enumServiceType			= require('../utilities/enums/servicetype'),
 	serviceService 			= require('../services/service'),
+	socketService 			= require('../services/socket'),
 	BankService 			= require('../classes/bankservice'),
 	errorUtil 				= require('../utilities/error');
 
@@ -170,7 +171,7 @@ BankServicesSocketService.prototype.fnConnectUser = function(socket){
 		this.fnConnectTrader(socket);
 	}
 
-	socket.emit(enumServicesSocketEvent.app.CONNECTED_USER);
+	socketService.fnEmitToMe(socket, enumServicesSocketEvent.app.CONNECTED_USER);
 };
 
 /** 
@@ -209,7 +210,7 @@ BankServicesSocketService.prototype.fnConnectBank = function(socket){
 
 	// Event handlers
 	socket.on(enumServicesSocketEvent.app.START_WORK, 			this.fnBankStartWork(socket));
-	socket.on(enumServicesSocketEvent.app.STOP_WORKING, 			this.fnBankStopWorking(socket));
+	socket.on(enumServicesSocketEvent.app.STOP_WORKING, 		this.fnBankStopWorking(socket));
 	socket.on(enumServicesSocketEvent.app.NEW_MESSAGE_SERVICE, 	this.fnNewMessage(socket));
 	socket.on(enumServicesSocketEvent.app.COMPLETE_SERVICE,		this.fnCompleteService(socket));
 	socket.on(enumServicesSocketEvent.natives.DISCONNECT, 		this.fnDisconnection(socket));
@@ -466,7 +467,7 @@ BankServicesSocketService.prototype.fnQueueBank = function(bankUsername){
  * @param error
  */
 BankServicesSocketService.prototype.fnSendError = function(socket, error){
-	socket.emit(enumServicesSocketEvent.app.ERROR,{
+	socketService.fnEmitToMe(socket, enumServicesSocketEvent.app.ERROR, {
 		error: error
 	});
 };
@@ -476,7 +477,7 @@ BankServicesSocketService.prototype.fnSendError = function(socket, error){
  *
  */
 BankServicesSocketService.prototype.fnSendQueueBanksToBanksRoom = function(){
-	this.nsp.to(this.BANK_ROOM).emit(enumServicesSocketEvent.app.SHIFT_QUEUE,{
+	socketService.fnEmitToRoom(this.nsp, this.BANK_ROOM, enumServicesSocketEvent.app.SHIFT_QUEUE, {
 		queueBanks: this.queueBanks
 	});
 };
@@ -498,7 +499,7 @@ BankServicesSocketService.prototype.fnBanksAvailable = function(socket){
 			message 			= 'Banks are available.';
 		}
 
-		connectedTrader.socket.emit(enumServicesSocketEvent.app.BANKS_AVAILABLE,{
+		socketService.fnEmitToMe(connectedTrader.socket, enumServicesSocketEvent.app.BANKS_AVAILABLE, {
 			isBanksAvailable: 	isBanksAvailable,
 			message: 			message
 		});
@@ -516,7 +517,7 @@ BankServicesSocketService.prototype.fnBankStopWorking = function(socket){
 		self.fnDeleteBankFromQueue(socket.username);
 		self.fnLeaveBankRoom(socket);
 		self.fnSendQueueBanksToBanksRoom();
-		socket.emit(enumServicesSocketEvent.app.STOP_WORKING);
+		socketService.fnEmitToMe(socket, enumServicesSocketEvent.app.STOP_WORKING);
 	};
 };
 

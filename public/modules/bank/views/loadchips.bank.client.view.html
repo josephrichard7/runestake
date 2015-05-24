@@ -18,7 +18,7 @@
 				<div class="form-group">
 					<label class="control-label" for="account_balance">Account balance</label>
 					<div class="controls">
-						<input type="text" id="account_balance" name="account_balance" class="form-control" data-ng-model="controller.bank.account.balance" placeholder="account_balance" disabled>
+						<input type="text" id="account_balance" name="account_balance" class="form-control" data-ng-model="controller.bank.account.balance" jm-rs-number-format placeholder="account_balance" disabled>
 					</div>
 				</div>
 			</fieldset>
@@ -30,7 +30,7 @@
 				<div class="form-group">
 					<label class="control-label" for="chipsAmount">Chips Amount</label>
 					<div class="controls">
-						<input type="text" id="chipsAmount" name="chipsAmount" class="form-control" data-ng-model="controller.chipsAmount" placeholder="chipsAmount">
+						<input type="text" id="chipsAmount" name="chipsAmount" class="form-control" data-ng-model="controller.chipsAmount" jm-rs-number-format placeholder="chipsAmount">
 					</div>
 				</div>				
 				<div class="form-group">
@@ -62,7 +62,7 @@
 				    			<span data-ng-bind="obj.type"></span>
 				    		</td>
 				    		<td>
-				    			<span data-ng-bind="obj.amount"></span>
+				    			{{obj.amount | jmRsNumberFormatFilter}}
 				    		</td>
 				    		<td>
 				    			<span data-ng-bind="obj.state"></span>

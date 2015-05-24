@@ -1,6 +1,10 @@
 'use strict';
 
-angular.module('core').controller('HeaderController', ['$scope', 'Authentication', 'Menus',
+angular.module(ApplicationConfiguration.modules.core)
+.controller('HeaderController', [
+	'$scope', 
+	ApplicationConfiguration.services.authentication, 
+	ApplicationConfiguration.services.menu,
 	function($scope, Authentication, Menus) {
 		$scope.authentication = Authentication;
 		$scope.isCollapsed = false;
