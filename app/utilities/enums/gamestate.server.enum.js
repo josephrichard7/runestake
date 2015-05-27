@@ -1,8 +1,8 @@
 'use strict';
 
 var EnumGameState = {
-	PENDING: 	'PENDING',
-	APPLIED: 	'APPLIED'
+	STARTED: 	'STARTED',
+	FINISHED: 	'FINISHED'
 };
 
 module.exports = EnumGameState;

@@ -5,6 +5,6 @@ angular.module(ApplicationConfiguration.modules.global)
 	ApplicationConfiguration.factories.chat,
 	function(ChatFactory) {
 		var _this = this;
-		_this.__proto__ = Object.create(new ChatFactory(ApplicationConfiguration.chats.chat));	
+		_this.__proto__ = Object.create(new ChatFactory(ApplicationConfiguration.sockets.chat));	
 	}
 ]);

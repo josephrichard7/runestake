@@ -3,7 +3,7 @@
 var enumUserrole		= require('../utilities/enums/userrole'),
 	enumServicesSocket 	= require('../utilities/enums/servicessocketevent'),
 	serviceService 		= require('../services/service'),
-	Service 			= require('../classes/service'),
+	ServiceClass		= require('../classes/service'),
 	socketService 		= require('../services/socket'),
 	errorUtil 			= require('../utilities/error');
 
@@ -67,7 +67,7 @@ ServicesSocketService.prototype.fnAddService = function(serviceVO, gamblerUserna
 	// Create service in DB
 	return serviceService.fnCreate(serviceVO)
 	.then(function(serviceEntity){
-		service = new Service(serviceEntity._id, connectedGambler.socket, connectedTrader.socket, self.nsp);
+		service = new ServiceClass(serviceEntity._id, connectedGambler.socket, connectedTrader.socket, self.nsp);
 
 		self.listServices[service.id] = service;
 		self.numberServices++;

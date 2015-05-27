@@ -3,9 +3,9 @@
 /**
  * Module dependencies.
  */
-var mongoose 	  	= require('mongoose'),
+var _ 				= require('lodash'),
+	mongoose 	  	= require('mongoose'),
 	Schema 		  	= mongoose.Schema,
-	_ 				= require('lodash'),
 	enumGameState 	= require('../utilities/enums/gamestate');
 
 /**
@@ -32,9 +32,13 @@ var GameSchema = new Schema({
 		type: Number,
 		required: 'TotalAmount cannot be empty'
 	},
-	profitPercent:{
+	profitPercentForBank:{
 		type: Number,
 		required: 'ProfitPercent cannot be empty'
+	},
+	totalAmountForWinner:{
+		type: Number,
+		required: 'TotalAmount cannot be empty'
 	},
 	state:{
 		type: String,

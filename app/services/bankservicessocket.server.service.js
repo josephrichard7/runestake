@@ -5,7 +5,7 @@ var enumUserrole			= require('../utilities/enums/userrole'),
 	enumServiceType			= require('../utilities/enums/servicetype'),
 	serviceService 			= require('../services/service'),
 	socketService 			= require('../services/socket'),
-	BankService 			= require('../classes/bankservice'),
+	BankServiceClass		= require('../classes/bankservice'),
 	errorUtil 				= require('../utilities/error');
 
 module.exports = BankServicesSocketService;
@@ -68,7 +68,7 @@ BankServicesSocketService.prototype.fnAddService = function(serviceVO, traderUse
 	// Create service in DB
 	return serviceService.fnCreate(serviceVO)
 	.then(function(serviceEntity){
-		service = new BankService(serviceEntity._id, connectedTrader.socket, connectedBank.socket, self.nsp);
+		service = new BankServiceClass(serviceEntity._id, connectedTrader.socket, connectedBank.socket, self.nsp);
 
 		self.listServices[service.id] = service;
 		self.numberServices++;

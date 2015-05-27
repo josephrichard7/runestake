@@ -53,8 +53,45 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		    }
 		})
 		.state('gamblermainState.stake', {
+			abstract: true,
 			url: '/stake',
-			templateUrl: 'modules/gamblermain/views/stake.gamblermain.client.view.html'
+			views: {
+				'':{
+					templateUrl: 'modules/gamblermain/views/stake.gamblermain.client.view.html'
+				}
+			}
+		})
+		.state('gamblermainState.stake.bet', {
+			url: '/bet',
+			views: {
+				'@gamblermainState.stake': {
+					templateUrl: 'modules/gamblermain/views/bet.stake.gamblermain.client.view.html'
+				}
+			}
+		})
+		.state('gamblermainState.stake.match', {
+			url: '/match',
+			views: {
+				'@gamblermainState.stake': {
+					templateUrl: 'modules/gamblermain/views/match.stake.gamblermain.client.view.html'
+				}
+			}
+		})
+		.state('gamblermainState.stake.play', {
+			url: '/play',
+			views: {
+				'@gamblermainState.stake': {
+					templateUrl: 'modules/gamblermain/views/play.stake.gamblermain.client.view.html'
+				}
+			}
+		})
+		.state('gamblermainState.stake.finish', {
+			url: '/finish',
+			views: {
+				'@gamblermainState.stake': {
+					templateUrl: 'modules/gamblermain/views/finish.stake.gamblermain.client.view.html'
+				}
+			}
 		})
 		// .state('gamblermainState.game', {
 		// 	url: '/game',

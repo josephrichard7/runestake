@@ -31,6 +31,7 @@ var ApplicationConfiguration = (function() {
 		gambler: 			'GamblerService',
 		gamblerchat: 		'GamblerChatService',
 		gamblermain: 		'GamblermainService',
+		game: 				'GameService',
 		menu: 				'MenuService',
 		service: 			'ServiceService',
 		trader: 			'TraderService',
@@ -44,11 +45,11 @@ var ApplicationConfiguration = (function() {
 		socket: 		'SocketFactory'
 	};
 	var sockets = {
-		services: 		'/services',
-		bankservices: 	'/bankServices'
-	};
-	var chats 	= {
-		chat: 			'/chat'
+		app: 			'/app',
+		bankservices: 	'/bankServices',
+		chat: 			'/chat',
+		bankservices: 	'/game',
+		services: 		'/services'
 	};
 	var applicationModuleVendorDependencies = [
 		'ngResource', 
@@ -74,7 +75,6 @@ var ApplicationConfiguration = (function() {
 	return {
 		applicationModuleName: 					applicationModuleName,
 		applicationModuleVendorDependencies: 	applicationModuleVendorDependencies,
-		chats: 									chats,
 		factories: 								factories,
 		modules: 								modules,
 		services: 								services,

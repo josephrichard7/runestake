@@ -1,9 +1,10 @@
 'use strict';
 
 angular.module(ApplicationConfiguration.modules.gamblermain)
-.controller('StakeGamblermainController', [
+.controller('BetStakeGamblermainController', [
   ApplicationConfiguration.services.gamblermain,
-  function(gamblermainSrv) {
+  ApplicationConfiguration.services.stake,
+  function(gamblermainSrv, stakeSrv) {
     // Private variables
     var vm = this;    
 
@@ -11,7 +12,8 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 
     /*jshint latedef: false*/
     function fnInit(){
-      vm.gamblermainSrv       = gamblermainSrv;
+      vm.gamblermainSrv = gamblermainSrv;
+      vm.stakeSrv       = stakeSrv;    
     }
 
   }
