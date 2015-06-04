@@ -6,12 +6,12 @@
 var _ 				= require('lodash'),
 	mongoose 	  	= require('mongoose'),
 	Schema 		  	= mongoose.Schema,
-	enumGameState 	= require('../utilities/enums/gamestate');
+	enumGameState 	= require('../utilities/enums/stakestate');
 
 /**
- * Game Schema
+ * Stake Schema
  */
-var GameSchema = new Schema({
+var StakeSchema = new Schema({
 	leftGambler:{
 		type: Schema.Types.ObjectId,
 		ref: 'User'
@@ -67,6 +67,6 @@ function fnSetUpdatedDate(next){
 }
 
 /*Middleware functions*/
-GameSchema.pre('save', fnSetUpdatedDate);
+StakeSchema.pre('save', fnSetUpdatedDate);
 
-mongoose.model('Game', GameSchema);
+mongoose.model('Stake', StakeSchema);

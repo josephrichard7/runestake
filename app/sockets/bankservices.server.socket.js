@@ -2,7 +2,7 @@
 
 var enumServicesSocket			= require('../utilities/enums/servicessocketevent'),
 	enumUserrole				= require('../utilities/enums/userrole'),
-	BankServicesSocketService	= require('../services/bankservicessocket'),
+	BankServicesSocketService	= require('../services/sockets/bankservicessocket'),
 	userController  			= require('../controllers/users'),
 	passport					= require('passport');
 

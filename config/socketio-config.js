@@ -2,7 +2,8 @@
 
 var chatSocket			= require('../app/sockets/chat'),
 	servicesSocket		= require('../app/sockets/services'),
-	bankServicesSocket	= require('../app/sockets/bankservices');
+	bankServicesSocket	= require('../app/sockets/bankservices'),
+	stakeSocket			= require('../app/sockets/stake');
 	// appSocket			= require('../app/sockets/app');
 
 function ConfigSocket(io, expressSession){	
@@ -10,6 +11,7 @@ function ConfigSocket(io, expressSession){
 	chatSocket(io, expressSession);
 	servicesSocket(io, expressSession);
 	bankServicesSocket(io, expressSession);
+	stakeSocket(io, expressSession);
 	// appSocket(io, expressSession);
 }
 

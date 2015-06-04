@@ -3,7 +3,7 @@
 var enumChatEvent 		= require('../utilities/enums/chatevent'),
 	enumUserrole		= require('../utilities/enums/userrole'),
 	userController  	= require('../controllers/users'),
-	ChatSocketService	= require('../services/chatsocket'),
+	ChatSocketService	= require('../services/sockets/chatsocket'),
 	passport			= require('passport'),
 	chatSocketNsp		= {};
 

@@ -1,8 +1,8 @@
 'use strict';
 
-var EnumGameState = {
+var EnumStakeState = {
 	STARTED: 	'STARTED',
 	FINISHED: 	'FINISHED'
 };
 
-module.exports = EnumGameState;
+module.exports = EnumStakeState;

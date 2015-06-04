@@ -82,7 +82,7 @@ ServiceService.fnCreate = function(serviceVO){
 			chipsAmount	= serviceEntity.amountConverted;
 		}
 
-		return fnVerifyBalance(userId, chipsAmount)
+		return accountService.fnVerifyBalance(userId, chipsAmount)
 		.then(function(valid){
 			if(!valid){
 				throw new Error(errMessage);
@@ -193,14 +193,4 @@ function fnValidateStateMachine(startState, endState){
 		return true;
 	}
 	return false;
-}
-
-function fnVerifyBalance(userId, chipAmount){
-	return accountService.fnGetBalanceByUserId(userId)
-	.then(function(accountBalance){
-		if(chipAmount > accountBalance){
-			return false;
-		}
-		return true;
-	});
 }

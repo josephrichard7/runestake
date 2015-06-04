@@ -1,8 +1,8 @@
 'use strict';
 
 var _ 						= require('lodash'),
-	enumAppSocketEvent 		= require('../utilities/enums/appsocketevent'),
-	socketService 			= require('../services/socket');
+	enumAppSocketEvent 		= require('../../utilities/enums/appsocketevent'),
+	socketService 			= require('../../services/sockets/socket');
 
 module.exports = AppSocketService;
 

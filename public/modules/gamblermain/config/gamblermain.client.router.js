@@ -69,11 +69,11 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 				}
 			}
 		})
-		.state('gamblermainState.stake.match', {
-			url: '/match',
+		.state('gamblermainState.stake.lobby', {
+			url: '/lobby',
 			views: {
 				'@gamblermainState.stake': {
-					templateUrl: 'modules/gamblermain/views/match.stake.gamblermain.client.view.html'
+					templateUrl: 'modules/gamblermain/views/lobby.stake.gamblermain.client.view.html'
 				}
 			}
 		})

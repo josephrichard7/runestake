@@ -1,12 +1,12 @@
 'use strict';
 
-var enumGamesSocket 	= require('../utilities/enums/servicessocketevent'),
-	socketGame 		= require('../services/socket');
+var enumStakesSocket 	= require('../utilities/enums/stakesocketevent'),
+	socketStake 		= require('../services/sockets/socket');
 
-module.exports = Game;
+module.exports = Stake;
 
 /*jshint latedef: false */
-function Game(id, leftGamblerSocket, rightGamblerSocket, nsp){
+function Stake(id, leftGamblerSocket, rightGamblerSocket, nsp){
 	this.id 				= id;
 	this.roomName			= 'room-' + id;
 	this.leftGamblerSocket 	= leftGamblerSocket;
@@ -15,66 +15,66 @@ function Game(id, leftGamblerSocket, rightGamblerSocket, nsp){
 	this.order 				= this.order ? ++this.order : 0;
 
 	// Joing gambler and trader to service room.
-	this.fnJoinToGameRoom();
+	this.fnJoinToStakeRoom();
 
 	// Notify to trader of the new requested service
-	this.fnNotifyNewGameToTrader();
+	this.fnNotifyNewStakeToTrader();
 
 	// Notify to glamber that trader has been assigne
-	this.fnNotifyGameCreatedToGambler();
+	this.fnNotifyStakeCreatedToGambler();
 }
 
 
 // Notify to service room that service was abandoned by gambler
-Game.prototype.fnAbandonedByGambler = function(){
-	this.fnSendEventToGameRoom(enumGamesSocket.app.ABANDONED_BY_GAMBLER, {
+Stake.prototype.fnAbandonedByGambler = function(){
+	this.fnSendEventToStakeRoom(enumStakesSocket.app.ABANDONED_BY_GAMBLER, {
 		serviceId: 	this.id,
 		info: 		'Gambler has abandoned the service.'
 	});
 	// Gambler and trader must leave service room.
-	this.fnLeaveGameRoom();
+	this.fnLeaveStakeRoom();
 };
 
 // Notify to service room that service was abandoned by trader
-Game.prototype.fnAbandonedByTrader = function(){
-	this.fnSendEventToGameRoom(enumGamesSocket.app.ABANDONED_BY_TRADER, {
+Stake.prototype.fnAbandonedByTrader = function(){
+	this.fnSendEventToStakeRoom(enumStakesSocket.app.ABANDONED_BY_TRADER, {
 		serviceId: 	this.id,
-		info: 		'Sorry, our trader is experimenting technical problems. Game has been abandoned.'
+		info: 		'Sorry, our trader is experimenting technical problems. Stake has been abandoned.'
 	});
 	// Gambler and trader must leave service room.
-	this.fnLeaveGameRoom();
+	this.fnLeaveStakeRoom();
 };
 
 // Trader decides to complete the service. Gambler and trader must leave service room. Notify to service room.
-Game.prototype.fnComplete = function(){
+Stake.prototype.fnComplete = function(){
 	// Notify to service room that service has beed completed		
-	this.fnSendEventToGameRoom(enumGamesSocket.app.SERVICE_COMPLETED, {
+	this.fnSendEventToStakeRoom(enumStakesSocket.app.SERVICE_COMPLETED, {
 		serviceId: 	this.id
 	});
 
 	// Gambler and trader must leave service room.
-	this.fnLeaveGameRoom();
+	this.fnLeaveStakeRoom();
 };
 
 // Trader decides to desist the service. Gambler and trader must leave service room. Notify to service room.
-Game.prototype.fnDesist = function(){
+Stake.prototype.fnDesist = function(){
 	// Notify to service room that service has been desisted		
-	this.fnSendEventToGameRoom(enumGamesSocket.app.SERVICE_DESISTED, {
+	this.fnSendEventToStakeRoom(enumStakesSocket.app.SERVICE_DESISTED, {
 		serviceId: 	this.id
 	});
 
 	// Gambler and trader must leave service room.
-	this.fnLeaveGameRoom();
+	this.fnLeaveStakeRoom();
 };
 
 // Join gambler or trader to service room.
-Game.prototype.fnJoinToGameRoom = function(){
+Stake.prototype.fnJoinToStakeRoom = function(){
 	this.leftGamblerSocket.join(this.roomName);
 	this.rightGamblerSocket.join(this.roomName);
 };
 
 // Gambler and trader leaves the service room.
-Game.prototype.fnLeaveGameRoom = function(){
+Stake.prototype.fnLeaveStakeRoom = function(){
 	this.leftGamblerSocket.leave(this.roomName);
 	this.rightGamblerSocket.leave(this.roomName);
 };
@@ -84,9 +84,9 @@ Game.prototype.fnLeaveGameRoom = function(){
  *
  * @param {String} message
  */
-Game.prototype.fnNewMessage = function(socket, message){
+Stake.prototype.fnNewMessage = function(socket, message){
 	if(message){		
-		this.fnSendEventToGameRoom(enumGamesSocket.app.NEW_MESSAGE_SERVICE, {
+		this.fnSendEventToStakeRoom(enumStakesSocket.app.NEW_MESSAGE_SERVICE, {
 			serviceId: 	this.id,
 			username: 	socket.username,
 			role: 		socket.request.user.role,
@@ -100,8 +100,8 @@ Game.prototype.fnNewMessage = function(socket, message){
  *
  * @param {String} message
  */
-Game.prototype.fnNotifyNewGameToTrader = function(){
-	socketGame.fnEmitToMe(this.rightGamblerSocket, enumGamesSocket.app.NEW_SERVICE, {
+Stake.prototype.fnNotifyNewStakeToTrader = function(){
+	socketStake.fnEmitToMe(this.rightGamblerSocket, enumStakesSocket.app.NEW_SERVICE, {
 		serviceId: this.id
 	});
 };
@@ -111,19 +111,19 @@ Game.prototype.fnNotifyNewGameToTrader = function(){
  *
  * @param {String} message
  */
-Game.prototype.fnNotifyGameCreatedToGambler = function(){
-	socketGame.fnEmitToMe(this.leftGamblerSocket, enumGamesSocket.app.SERVICE_CREATED, {
+Stake.prototype.fnNotifyStakeCreatedToGambler = function(){
+	socketStake.fnEmitToMe(this.leftGamblerSocket, enumStakesSocket.app.SERVICE_CREATED, {
 		serviceId: this.id
 	});
 };
 
 // Send default messages to service room
-Game.prototype.fnSendDefaultMessageToGameRoom = function(){
-	this.fnNewMessage(this.rightGamblerSocket, this.rightGamblerSocket.request.user.defaultMessageForGame);
-	this.fnNewMessage(this.leftGamblerSocket, this.leftGamblerSocket.request.user.defaultMessageForGame);
+Stake.prototype.fnSendDefaultMessageToStakeRoom = function(){
+	this.fnNewMessage(this.rightGamblerSocket, this.rightGamblerSocket.request.user.defaultMessageForStake);
+	this.fnNewMessage(this.leftGamblerSocket, this.leftGamblerSocket.request.user.defaultMessageForStake);
 };
 
 // Send event to service room
-Game.prototype.fnSendEventToGameRoom = function(event, object){
-	socketGame.fnEmitToRoom(this.nsp, this.roomName, event, object);
+Stake.prototype.fnSendEventToStakeRoom = function(event, object){
+	socketStake.fnEmitToRoom(this.nsp, this.roomName, event, object);
 };

@@ -15,6 +15,7 @@ var ApplicationConfiguration = (function() {
 		gamblermain: 	'gamblermain',
 		global: 		'global',
 		service: 		'service',
+		stake: 			'stake',
 		trader: 		'trader',
 		tradermain: 	'tradermain',
 		transaction: 	'transaction',
@@ -31,9 +32,10 @@ var ApplicationConfiguration = (function() {
 		gambler: 			'GamblerService',
 		gamblerchat: 		'GamblerChatService',
 		gamblermain: 		'GamblermainService',
-		game: 				'GameService',
 		menu: 				'MenuService',
 		service: 			'ServiceService',
+		stake: 				'StakeService',
+		stakemain: 			'StakemainService',
 		trader: 			'TraderService',
 		tradermain: 		'TradermainService',
 		transaction: 		'TransactionService',
@@ -48,7 +50,7 @@ var ApplicationConfiguration = (function() {
 		app: 			'/app',
 		bankservices: 	'/bankServices',
 		chat: 			'/chat',
-		bankservices: 	'/game',
+		stake: 			'/stake',
 		services: 		'/services'
 	};
 	var applicationModuleVendorDependencies = [

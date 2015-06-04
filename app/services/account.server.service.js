@@ -82,3 +82,13 @@ AccountService.fnDeposit = function(id, amount){
 		return accountEntity;
 	});
 };
+
+AccountService.fnVerifyBalance = function (userId, chipAmount){
+	return AccountService.fnGetBalanceByUserId(userId)
+	.then(function(accountBalance){
+		if(chipAmount > accountBalance){
+			return false;
+		}
+		return true;
+	});
+}

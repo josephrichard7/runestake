@@ -1,11 +1,11 @@
 'use strict';
 
-var enumUserrole		= require('../utilities/enums/userrole'),
-	enumServicesSocket 	= require('../utilities/enums/servicessocketevent'),
-	serviceService 		= require('../services/service'),
-	ServiceClass		= require('../classes/service'),
-	socketService 		= require('../services/socket'),
-	errorUtil 			= require('../utilities/error');
+var enumUserrole		= require('../../utilities/enums/userrole'),
+	enumServicesSocket 	= require('../../utilities/enums/servicessocketevent'),
+	serviceService 		= require('../../services/service'),
+	ServiceClass		= require('../../classes/service'),
+	socketService 		= require('../../services/sockets/socket'),
+	errorUtil 			= require('../../utilities/error');
 
 module.exports = ServicesSocketService;
 

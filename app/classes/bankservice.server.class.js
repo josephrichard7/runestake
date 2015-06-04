@@ -1,7 +1,7 @@
 'use strict';
 
 var enumServicesSocket 	= require('../utilities/enums/servicessocketevent'),
-	socketService 		= require('../services/socket');
+	socketService 		= require('../services/sockets/socket');
 
 module.exports = BankService;
 

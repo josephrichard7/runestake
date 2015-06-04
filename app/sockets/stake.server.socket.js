@@ -1,26 +1,26 @@
 'use strict';
 
-var enumGameSocket		= require('../utilities/enums/gammesocketevent'),
+var enumStakeSocket		= require('../utilities/enums/stakesocketevent'),
 	enumUserrole		= require('../utilities/enums/userrole'),
-	GameSocketService	= require('../services/gamesocket'),
+	StakeSocketService	= require('../services/sockets/stakesocket'),
 	userController  	= require('../controllers/users'),
 	passport			= require('passport');
 
-module.exports = GameSocket;
+module.exports = StakeSocket;
 
 /*jshint latedef: false */
-function GameSocket(io, expressSession){
-	// Create 'appSocket' namespace 
-	var gameSocketNsp 	= io.of('/game');
+function StakeSocket(io, expressSession){
+	// Create 'stakeSocket' namespace 
+	var stakeSocketNsp 	= io.of('/stake');
 
-	gameSocketNsp.gameSocketService = new GameSocketService(gameSocketNsp);
+	stakeSocketNsp.stakeSocketService = new StakeSocketService(stakeSocketNsp);
 	
 	// Bind middleware functions to namespace
-	fnLoadMiddlewareFunctions(gameSocketNsp, expressSession);
+	fnLoadMiddlewareFunctions(stakeSocketNsp, expressSession);
 	
 	// Bind Event handler when client connects
-	gameSocketNsp.on(enumGameSocket.natives.CONNECTION, function (socket){
-		gameSocketNsp.gameSocketService.fnConnectUser(socket);
+	stakeSocketNsp.on(enumStakeSocket.natives.CONNECTION, function (socket){
+		stakeSocketNsp.stakeSocketService.fnOnConnectGambler(socket);
 	});
 }
 
@@ -29,22 +29,22 @@ function GameSocket(io, expressSession){
  *
  */
 
-function fnLoadMiddlewareFunctions(gameSocketNsp, expressSession){
+function fnLoadMiddlewareFunctions(stakeSocketNsp, expressSession){
 	// Extends express session to socket requests
-	gameSocketNsp.use(function(socket, next){
+	stakeSocketNsp.use(function(socket, next){
         expressSession(socket.request, {}, next);
     });
 
 	// Use passport function to load user authenticated in the object request
-	gameSocketNsp.use(function(socket, next){
+	stakeSocketNsp.use(function(socket, next){
     	passport.initialize()(socket.request, socket.res, next);
     });
-    gameSocketNsp.use(function(socket, next){
+    stakeSocketNsp.use(function(socket, next){
     	passport.session()(socket.request, socket.res, next);
     });
 
 	// User Authentication for client connections.
-	gameSocketNsp.use(function(socket, next){
+	stakeSocketNsp.use(function(socket, next){
 		userController.hasAuthorization(
 			[enumUserrole.GAMBLER]
 		)(socket.request, socket.res, next);
