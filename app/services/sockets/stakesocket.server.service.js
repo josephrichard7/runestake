@@ -237,6 +237,11 @@ StakeSocketService.prototype.fnOnPostStake = function(socket){
 	return function(data){
 		var connectedGambler 	= self.fnGetConnectedGambler(socket.username);
 	
+		if(!data.stakeAmount || data.stakeAmount <= 0){
+			self.fnSendError(socket, 'Stake amount must be greater than 0.');
+			return;
+		}
+
 		accountService.fnVerifyBalance(connectedGambler.user.id, data.stakeAmount)
 		.then(function(valid){
 			if(valid){

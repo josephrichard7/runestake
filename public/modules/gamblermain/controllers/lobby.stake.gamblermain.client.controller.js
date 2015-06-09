@@ -11,13 +11,14 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
     vm.fnInit               = fnInit;
     vm.fnPostStake          = fnPostStake;
     vm.fnRemovePostedStake  = fnRemovePostedStake;
+    vm.fnAcceptStake        = fnAcceptStake;
     vm.currentPage  = 1;
     vm.pageSize     = 20;
 
     /*jshint latedef: false*/
     function fnInit(){
       vm.gamblermainSrv = gamblermainSrv;
-      vm.stakemainSrv   = stakemainSrv;        
+      vm.stakemainSrv   = stakemainSrv;
 
       stakemainSrv.fnInitStakeSocket();
     }
@@ -28,6 +29,10 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 
     function fnRemovePostedStake(){
       stakemainSrv.fnRemovePostedStake();
+    }
+
+    function fnAcceptStake(stake){
+      stakemainSrv.fnAcceptStake(stake);
     }
 
   }

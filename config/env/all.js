@@ -45,6 +45,7 @@ module.exports = {
 				'public/lib/angular-utils-pagination/dirPagination.js',
 				'public/lib/socket.io-client/socket.io.js',
 				'public/lib/noty/js/noty/packaged/jquery.noty.packaged.js',
+				'public/lib/phaser/build/phaser.min.js',
 				'public/lib/bundle/bundle.js'
 			]
 		},

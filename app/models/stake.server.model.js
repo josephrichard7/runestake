@@ -38,7 +38,7 @@ var StakeSchema = new Schema({
 	},
 	totalAmountForWinner:{
 		type: Number,
-		required: 'TotalAmount cannot be empty'
+		required: 'totalAmountForWinner cannot be empty'
 	},
 	state:{
 		type: String,

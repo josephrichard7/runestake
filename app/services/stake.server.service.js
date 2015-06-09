@@ -11,7 +11,8 @@ var _ 					= require('lodash'),
 	StakeEntity 		= mongoose.model('Stake'),
 	accountService 		= require('../services/account'),
 	transactionService 	= require('../services/transaction'),
-	enumTransactionType	= require('../utilities/enums/transactiontype');
+	enumTransactionType	= require('../utilities/enums/transactiontype'),
+	enumStakeState 		= require('../utilities/enums/stakestate');
 
 module.exports = StakeService;
 
@@ -27,6 +28,13 @@ StakeService.fnCreate = function(stakeVO){
 	return Promise.resolve(0)
 	.then(function(){
 		stakeEntity = new StakeEntity(stakeVO);
+
+		stakeEntity.state 		= enumStakeState.STARTED;
+		stakeEntity.startTime 	= Date.now();
+
+		stakeEntity.profitPercentForBank = 0;
+		stakeEntity.totalAmountForWinner = stakeEntity.totalAmount - (stakeEntity.totalAmount * stakeEntity.profitPercentForBank);
+
 	})
 	.then(function(){
 

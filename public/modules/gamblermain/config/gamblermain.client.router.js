@@ -78,7 +78,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 			}
 		})
 		.state('gamblermainState.stake.play', {
-			url: '/play',
+			url: '/play/:id',
 			views: {
 				'@gamblermainState.stake': {
 					templateUrl: 'modules/gamblermain/views/play.stake.gamblermain.client.view.html'
@@ -86,25 +86,13 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 			}
 		})
 		.state('gamblermainState.stake.finish', {
-			url: '/finish',
+			url: '/finish/:id',
 			views: {
 				'@gamblermainState.stake': {
 					templateUrl: 'modules/gamblermain/views/finish.stake.gamblermain.client.view.html'
 				}
 			}
 		})
-		// .state('gamblermainState.game', {
-		// 	url: '/game',
-		// 	templateUrl: 'modules/gamblermain/views/game.gamblermain.client.view.html'
-		// })
-		// .state('gamblermainState.game.playing', {
-		// 	url: '/playing',
-		// 	templateUrl: 'modules/gamblermain/views/game.playing.gamblermain.client.view.html'
-		// })
-		// .state('gamblermainState.game.finish', {
-		// 	url: '/finish',
-		// 	templateUrl: 'modules/gamblermain/views/game.finish.gamblermain.client.view.html'
-		// })
 		;
 	}
 ]);

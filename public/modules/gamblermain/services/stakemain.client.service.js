@@ -6,8 +6,9 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 	ApplicationConfiguration.services.gambler,
 	ApplicationConfiguration.services.stake,
 	ApplicationConfiguration.factories.socket,
+  	ApplicationConfiguration.factories.stakegame,
   	ApplicationConfiguration.services.utilities,
-	function(Authentication, gamblerSrv, stakeSrv, SocketFactory, utilSrv) {
+	function(Authentication, gamblerSrv, stakeSrv, SocketFactory, StakegameFactory, utilSrv) {
 		var _this = this;
 
 		var enumStakeSocketEvent = {
@@ -41,10 +42,11 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		_this.arrayPostedStake 		= [];
 		_this.stake 				= {};
 		_this.stake.arrayMessages	= undefined;
+		_this.stateGame 			= undefined;
 
 		_this.fnAcceptStake = function(stake) {
 			_this.stakeSocket.emit(enumStakeSocketEvent.app.ACCEPT_STAKE, {
-				username: 		stake.leftGambler.username,
+				username: 		stake.username,
 				stakeAmount: 	stake.stakeAmount
 			});
 	    };
@@ -83,8 +85,8 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 			_this.stakeSocket.emit(enumStakeSocketEvent.app.GAMBLER_CLICKED);
 		};
 
-		_this.fnGamblerHit = function (){
-			
+		_this.fnGamblerHit = function (stakeHit){
+			stakeGame.fnHit(stakeHit);
 		};
 
 		_this.fnGamblerReady = function (){
@@ -93,7 +95,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 
 		_this.fnInitStakeSocket = function(){
 			if(!_this.stakeSocket){
-				_this.stakeSocket =  new SocketFactory(ApplicationConfiguration.sockets.stake);
+				_this.stakeSocket 	= new SocketFactory(ApplicationConfiguration.sockets.stake);
 
 				_this.fnOnConnectedUser();
 				_this.fnOnGamblerHit();
@@ -136,7 +138,9 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 
 		_this.fnOnStakeCreated = function (){
 			_this.stakeSocket.on(enumStakeSocketEvent.app.STAKE_CREATED, function(data){
-				_this.fnStartStake(data);
+				utilSrv.util.go('gamblermainState.stake.play', {
+					id: data.stakeId
+				});
 			});
 		};
 
@@ -224,11 +228,13 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 			}
 		};
 
-		_this.fnStartStake = function (stake){
-			return _this.fnReadStakeById(stake.id)
-			.then(function(){
+		_this.fnStartStake = function (stakeId){
 
-			});
+			_this.stakeGame 	= new StakegameFactory();
+			// return _this.fnReadStakeById(stakeId)
+			// .then(function(stake){
+			// 	_this.stakeGame.fnInit();
+			// });
 		};
 
 	}
