@@ -42,7 +42,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		_this.arrayPostedStake 		= [];
 		_this.stake 				= {};
 		_this.stake.arrayMessages	= undefined;
-		_this.stateGame 			= undefined;
+		_this.stakeGame 			= undefined;
 
 		_this.fnAcceptStake = function(stake) {
 			_this.stakeSocket.emit(enumStakeSocketEvent.app.ACCEPT_STAKE, {
@@ -81,12 +81,18 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 			utilSrv.util.notifyError(err.data.message);
 		}
 
+		_this.fnFinishStake = function (stake) {
+			utilSrv.util.go('gamblermainState.stake.finish',{
+				id: stake.id
+			});
+		};
+
 		_this.fnGamblerClicked = function (){
 			_this.stakeSocket.emit(enumStakeSocketEvent.app.GAMBLER_CLICKED);
 		};
 
 		_this.fnGamblerHit = function (stakeHit){
-			stakeGame.fnHit(stakeHit);
+			_this.stakeGame.fnHit(stakeHit);
 		};
 
 		_this.fnGamblerReady = function (){
@@ -109,12 +115,6 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 			}
 		};
 
-		_this.fnPostStake = function (stakeAmount){
-			_this.stakeSocket.emit(enumStakeSocketEvent.app.POST_STAKE, {
-				stakeAmount: stakeAmount
-			});
-		};
-
 		_this.fnOnConnectedUser = function (callback){
 			_this.stakeSocket.on(enumStakeSocketEvent.app.CONNECTED_USER, function(data){
 				_this.listPostedStake = data.listPostedStake;
@@ -126,7 +126,7 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 
 		_this.fnOnGamblerHit = function (){
 			_this.stakeSocket.on(enumStakeSocketEvent.app.GAMBLER_HIT, function(data){
-				_this.fnGamblerHit(data);
+				_this.fnGamblerHit(data.stakeHit);
 			});
 		};
 
@@ -194,8 +194,14 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 			});
 		};
 
+		_this.fnPostStake = function (stakeAmount){
+			_this.stakeSocket.emit(enumStakeSocketEvent.app.POST_STAKE, {
+				stakeAmount: stakeAmount
+			});
+		};
+
 		_this.fnReadStakeById = function (id){
-			return stakeSrv.fnReadStakeById(id)
+			return stakeSrv.fnReadById(id)
 			.then(function(stake){
 				if(_this.stake.arrayMessages){
 					stake.arrayMessages = _this.stake.arrayMessages;
@@ -229,12 +235,10 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		_this.fnStartStake = function (stakeId){
-
-			_this.stakeGame 	= new StakegameFactory();
-			// return _this.fnReadStakeById(stakeId)
-			// .then(function(stake){
-			// 	_this.stakeGame.fnInit();
-			// });
+			return _this.fnReadStakeById(stakeId)
+			.then(function(stake){
+				_this.stakeGame = new StakegameFactory(_this);
+			});
 		};
 
 	}

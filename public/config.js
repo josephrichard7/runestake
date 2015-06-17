@@ -44,7 +44,7 @@ var ApplicationConfiguration = (function() {
 	};
 	var factories = {
 		chat: 			'ChatFactory',
-		gamblergame: 	'GamblerFactory',
+		stakegambler: 	'StakeGamblerFactory',
 		socket: 		'SocketFactory',
 		stakegame: 		'StakeFactory'
 	};

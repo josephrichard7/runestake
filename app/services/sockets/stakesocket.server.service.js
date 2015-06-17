@@ -76,6 +76,8 @@ StakeSocketService.prototype.fnAddStake = function(leftGamblerUsername, rightGam
 	.then(function(stakeEntity){
 		stake = new StakeClass(stakeEntity._id, connectedLeftGambler.socket, connectedRightGambler.socket, self.nsp);
 
+		stake.fnGenerateStake();
+		
 		self.listCreatedStake[stake.id] = stake;
 		self.numberStakes++;
 
@@ -83,36 +85,6 @@ StakeSocketService.prototype.fnAddStake = function(leftGamblerUsername, rightGam
 		connectedRightGambler.stake = stake;
 
 		return stake;
-	});
-};
-
-/** 
- * Connects a new gambler.
- *
- */
-StakeSocketService.prototype.fnOnConnectGambler = function(socket){
-	var connectedGambler;
-
-	socket.username  = socket.request.user.username;
-	connectedGambler = this.fnGetConnectedGambler(socket.username);
-
-	if(connectedGambler){
-		connectedGambler.socket = socket;
-	}else{
-		this.fnAddConnectedGambler(socket);
-	}
-
-	// Event handlers
-	socket.on(enumStakeSocketEvent.app.ACCEPT_STAKE,		this.fnOnAcceptStake(socket));
-	socket.on(enumStakeSocketEvent.app.GAMBLER_CLICKED,		this.fnOnGamblerClicked(socket));
-	socket.on(enumStakeSocketEvent.app.GAMBLER_READY, 		this.fnOnGamblerReady(socket));
-	socket.on(enumStakeSocketEvent.app.NEW_CHAT_MESSAGE, 	this.fnOnNewChatMessage(socket));
-	socket.on(enumStakeSocketEvent.app.POST_STAKE, 			this.fnOnPostStake(socket));
-	socket.on(enumStakeSocketEvent.app.REMOVE_POSTED_STAKE, this.fnOnRemovePostedStake(socket));
-	socket.on(enumStakeSocketEvent.natives.DISCONNECT, 		this.fnOnDisconnectGambler(socket));
-
-	socketService.fnEmitToMe(socket, enumStakeSocketEvent.app.CONNECTED_USER, {
-		listPostedStake: this.listPostedStake
 	});
 };
 
@@ -147,6 +119,15 @@ StakeSocketService.prototype.fnGetPostedStake = function (gamblerUsername){
 };
 
 /** 
+ * Get created stake
+ *
+ * @param {String} id
+ */
+StakeSocketService.prototype.fnGetCreatedStake = function (id){
+	return this.listCreatedStake[id];
+};
+
+/** 
  * Called when gambler Accept a posted stake.
  *
  * @param socket
@@ -155,8 +136,43 @@ StakeSocketService.prototype.fnOnAcceptStake = function (socket){
 	var self = this;
 
 	return function(data){
-		self.fnAddStake(data.username, socket.username, data.stakeAmount);
+		self.fnVerifyAccountBalance(socket.username, data.stakeAmount)
+		.then(function(valid){
+			if(valid){
+				self.fnAddStake(data.username, socket.username, data.stakeAmount);
+			}
+		});
 	};
+};
+
+/** 
+ * Connects a new gambler.
+ *
+ */
+StakeSocketService.prototype.fnOnConnectGambler = function(socket){
+	var connectedGambler;
+
+	socket.username  = socket.request.user.username;
+	connectedGambler = this.fnGetConnectedGambler(socket.username);
+
+	if(connectedGambler){
+		connectedGambler.socket = socket;
+	}else{
+		this.fnAddConnectedGambler(socket);
+	}
+
+	// Event handlers
+	socket.on(enumStakeSocketEvent.app.ACCEPT_STAKE,		this.fnOnAcceptStake(socket));
+	socket.on(enumStakeSocketEvent.app.GAMBLER_CLICKED,		this.fnOnGamblerClicked(socket));
+	socket.on(enumStakeSocketEvent.app.GAMBLER_READY, 		this.fnOnGamblerReady(socket));
+	socket.on(enumStakeSocketEvent.app.NEW_CHAT_MESSAGE, 	this.fnOnNewChatMessage(socket));
+	socket.on(enumStakeSocketEvent.app.POST_STAKE, 			this.fnOnPostStake(socket));
+	socket.on(enumStakeSocketEvent.app.REMOVE_POSTED_STAKE, this.fnOnRemovePostedStake(socket));
+	socket.on(enumStakeSocketEvent.natives.DISCONNECT, 		this.fnOnDisconnectGambler(socket));
+
+	socketService.fnEmitToMe(socket, enumStakeSocketEvent.app.CONNECTED_USER, {
+		listPostedStake: this.listPostedStake
+	});
 };
 
 /** 
@@ -183,13 +199,13 @@ StakeSocketService.prototype.fnOnDisconnectGambler = function (socket){
  */
 StakeSocketService.prototype.fnOnGamblerClicked = function(socket){
 	var self = this;
-	return function (data){
+	return function (){
 		var connectedGambler 	= self.fnGetConnectedGambler(socket.username);
-		var stake 				= self.fnGetStake(connectedGambler.stake.id);
+		var stake 				= self.fnGetCreatedStake(connectedGambler.stake.id);
 
-		if(connectedGambler.user.username === stake.leftGambler.username){
+		if(connectedGambler.user.username === stake.leftGamblerSocket.username){
 			stake.fnLeftGamblerClicked();
-		}else if(connectedGambler.user.username === stake.rightGambler.username){
+		}else if(connectedGambler.user.username === stake.rightGamblerSocket.username){
 			stake.fnRightGamblerClicked();
 		}
 	};
@@ -202,13 +218,13 @@ StakeSocketService.prototype.fnOnGamblerClicked = function(socket){
  */
 StakeSocketService.prototype.fnOnGamblerReady = function(socket){
 	var self = this;
-	return function (data){
-		var stake 				= self.fnGetStake(data.stakeId);
+	return function (){
 		var connectedGambler 	= self.fnGetConnectedGambler(socket.username);
+		var stake 				= self.fnGetCreatedStake(connectedGambler.stake.id);
 
-		if(connectedGambler.user.username === stake.leftGambler.username){
+		if(connectedGambler.user.username === stake.leftGamblerSocket.username){
 			stake.fnLeftGamblerReady();
-		}else if(connectedGambler.user.username === stake.rightGambler.username){
+		}else if(connectedGambler.user.username === stake.rightGamblerSocket.username){
 			stake.fnRightGamblerReady();
 		}
 	};
@@ -222,7 +238,7 @@ StakeSocketService.prototype.fnOnGamblerReady = function(socket){
 StakeSocketService.prototype.fnOnNewChatMessage = function(socket){
 	var self = this;
 	return function (data){
-		var stake = self.fnGetStake(data.stakeId);
+		var stake = self.fnGetCreatedStake(data.stakeId);
 
 		stake.fnNewChatMessage(socket, data.message);
 	};
@@ -242,12 +258,10 @@ StakeSocketService.prototype.fnOnPostStake = function(socket){
 			return;
 		}
 
-		accountService.fnVerifyBalance(connectedGambler.user.id, data.stakeAmount)
+		self.fnVerifyAccountBalance(connectedGambler.user.username, data.stakeAmount)
 		.then(function(valid){
 			if(valid){
 				self.fnAddPostedStake(connectedGambler, data.stakeAmount);
-			}else{
-				self.fnSendError(socket, 'Your account balance is not enough.');
 			}
 		});
 	};
@@ -259,7 +273,7 @@ StakeSocketService.prototype.fnOnPostStake = function(socket){
  */
 StakeSocketService.prototype.fnOnRemovePostedStake = function(socket){
 	var self = this;
-	return function(data){
+	return function(){
 		var connectedGambler 	= self.fnGetConnectedGambler(socket.username);
 		var postedStake 		= self.fnGetPostedStake(socket.username);
 	
@@ -307,3 +321,16 @@ StakeSocketService.prototype.fnSendError = function(socket, error){
 // 		message: message
 // 	});
 // };
+
+StakeSocketService.prototype.fnVerifyAccountBalance = function(username, stakeAmount){
+	var self 				= this;
+	var connectedGambler 	= self.fnGetConnectedGambler(username);
+	
+	return accountService.fnVerifyBalance(connectedGambler.user.id, stakeAmount)
+	.then(function(valid){
+		if(!valid){
+			self.fnSendError(connectedGambler.socket, 'Your account balance is not enough.');
+		}
+		return valid;
+	});
+};

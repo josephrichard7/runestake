@@ -71,6 +71,7 @@
 									type="button" 
 									class="btn btn-success btn-xs"
 									aria-label="Left Align"
+									data-ng-if="controller.stakemainSrv.authentication.user.username !== postedStake.username"
 									data-ng-click="controller.fnAcceptStake(postedStake)">
 									<span class="glyphicon glyphicon-play" aria-hidden="true"></span>Stake
 								</button>

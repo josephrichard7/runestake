@@ -2,7 +2,9 @@
 
 var EnumStakeState = {
 	STARTED: 	'STARTED',
-	FINISHED: 	'FINISHED'
+	PROCESSING: 'PROCESSING',
+	FINISHED: 	'FINISHED',
+	ERROR: 		'ERROR'
 };
 
 module.exports = EnumStakeState;
