@@ -23,9 +23,9 @@ var TransactionSchema = new Schema({
 	// 	ref: 'Account',
 	// 	required: 'DestinationAccount cannot be empty'
 	// },
-	game:{
+	stake:{
 		type: Schema.Types.ObjectId,
-		ref: 'Game'
+		ref: 'Stake'
 	},
 	service:{
 		type: Schema.Types.ObjectId,

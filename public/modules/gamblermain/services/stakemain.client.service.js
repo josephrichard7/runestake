@@ -77,13 +77,17 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 			}
 		};
 
+		_this.fnDestroyStake = function (){
+			_this.stakeGame.fnDestroy();
+		};
+
 		function fnErrorHandling(err) {
 			utilSrv.util.notifyError(err.data.message);
 		}
 
 		_this.fnFinishStake = function (stake) {
 			utilSrv.util.go('gamblermainState.stake.finish',{
-				id: stake.id
+				id: stake.stakeId
 			});
 		};
 

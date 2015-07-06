@@ -11,17 +11,11 @@ var _ 					= require('lodash'),
 	StakeEntity 		= mongoose.model('Stake'),
 	accountService 		= require('../services/account'),
 	transactionService 	= require('../services/transaction'),
-	hitService 			= require('../services/hit'),
+	// hitService 			= require('../services/hit'),
 	stateMachineService = require('../utilities/statemachines/stake'),
 	enumStakeState 		= require('../utilities/enums/stakestate');
 
 module.exports = StakeService;
-
-StakeService.fnReadById = function(id) {
-	return StakeEntity
-	.findById(id)
-	.exec();
-};
 
 StakeService.fnCreate = function(stakeVO){
 	var stakeEntity;
@@ -30,7 +24,7 @@ StakeService.fnCreate = function(stakeVO){
 	.then(function(){
 		stakeEntity = new StakeEntity(stakeVO);
 
-		stakeEntity.state 		= enumStakeState.STARTED;
+		stakeEntity.state 		= enumStakeState.CREATED;
 		stakeEntity.startTime 	= Date.now();
 
 		stakeEntity.profitPercentForBank = 0;
@@ -47,42 +41,45 @@ StakeService.fnCreate = function(stakeVO){
 StakeService.fnFinish = function(id, winnerGambler, listHit){
 	var stakeEntity;
 
-	return StakeService.fnReadById(id)
-	.then(function(resultEntity){
-		stakeEntity = resultEntity;
+	return Promise.resolve(0)
+	.then(function(){
+		return StakeService.fnReadById(id)
+		.then(function(resultReadEntity){
+			stakeEntity = resultReadEntity;
 
-		// Update stake to PROCESSING
-		return fnUpdateState(id, enumStakeState.PROCESSING)
-		// Update winner and loser
-		.then(function(){
-			stakeEntity.winnerGambler = winnerGambler;
+			// Update stake to PROCESSING
+			return fnUpdateState(id, enumStakeState.PROCESSING)
+			// Update winner and loser
+			.then(function(){
+				if(stakeEntity.leftGambler.username === winnerGambler){
+					stakeEntity.loserGambler  = stakeEntity.rightGambler;
+					stakeEntity.winnerGambler = stakeEntity.leftGambler;
+				}else{
+					stakeEntity.loserGambler  = stakeEntity.leftGambler;
+					stakeEntity.winnerGambler = stakeEntity.rightGambler;
+				}
 
-			if(stakeEntity.leftGambler.username === winnerGambler){
-				stakeEntity.loserGambler = stakeEntity.rightGambler;
-			}else{
-				stakeEntity.loserGambler = stakeEntity.leftGambler;
-			}
+				stakeEntity.finishTime 	= Date.now();
 
-			stakeEntity.finishTime 	= Date.now();
-
-			stakeEntity.save();
-			return stakeEntity;
-		})
-		// Save the hits of the stake
-		.then(function(){
-			return hitService.fnSaveHits(id, listHit);
-		})
-		// Generate transactions for the stake
-		.then(function(){
-			return transactionService.fnProcessStake(stakeEntity);
-		})
-		// If an error ocurrs while generate transactions, update stake state to ERROR
-		.then(null, function(err){
-			return fnUpdateState(id, enumStakeState.ERROR);
-		})
-		// If generate transactions successfully, update stake state to FINISHED
-		.then(function(){
-			return fnUpdateState(id, enumStakeState.FINISHED);
+				stakeEntity.save();
+				return stakeEntity;
+			})
+			// Save the hits of the stake
+			.then(function(){
+				// return hitService.fnSaveHits(id, listHit);
+			})
+			// Generate transactions for the stake
+			.then(function(){
+				return transactionService.fnProcessStake(stakeEntity);
+			})
+			// If generate transactions successfully, update stake state to FINISHED
+			.then(function(){
+				return fnUpdateState(id, enumStakeState.FINISHED);
+			})
+			// If an error ocurrs while generate transactions, update stake state to ERROR
+			.then(null, function(err){
+				return fnUpdateState(id, enumStakeState.ERROR);
+			});
 		});
 	});
 };
@@ -112,7 +109,7 @@ StakeService.fnReadById = function(id){
 /*jshint latedef: false*/
 function fnUpdateState(id, state){
 	// Get entity by Id
-	return StakeService.fnReadByID(id)
+	return StakeService.fnReadById(id)
 	.then(function(resultReadEntity){
 		if(!fnValidateStateMachine(resultReadEntity.state, state)){
 			throw new Error('State change invalid.');	

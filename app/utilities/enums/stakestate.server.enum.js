@@ -1,7 +1,7 @@
 'use strict';
 
 var EnumStakeState = {
-	STARTED: 	'STARTED',
+	CREATED: 	'CREATED',
 	PROCESSING: 'PROCESSING',
 	FINISHED: 	'FINISHED',
 	ERROR: 		'ERROR'

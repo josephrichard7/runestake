@@ -1,12 +1,11 @@
 'use strict';
 
 angular.module(ApplicationConfiguration.modules.gamblermain)
-.controller('PlayStakeGamblermainController', [
-  '$scope',
+.controller('FinishStakeGamblermainController', [
   '$stateParams',
   ApplicationConfiguration.services.gamblermain,
   ApplicationConfiguration.services.stakemain,
-  function($scope, $stateParams, gamblermainSrv, stakemainSrv) {
+  function($stateParams, gamblermainSrv, stakemainSrv) {
     // Private variables
     var vm = this;    
 
@@ -17,11 +16,8 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
       vm.gamblermainSrv = gamblermainSrv;
       vm.stakemainSrv   = stakemainSrv;
 
-      stakemainSrv.fnStartStake($stateParams.id);
+      vm.stakemainSrv.fnReadStakeById($stateParams.id);
     }
 
-    $scope.$on('$stateChangeStart', function(){
-      stakemainSrv.fnDestroyStake();
-    });
   }
 ]);

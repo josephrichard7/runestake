@@ -31,20 +31,26 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 		};
 
 		StakeGame.prototype.create = function() {
-			var background 	= this.game.add.sprite(0, 0, 'background');
-			var _this 		= this;
-			background.scale.setTo(0.5, 0.5);
-
-			this.game.leftGambler.fnCreate();
-			this.game.rightGambler.fnCreate();
-			this.game.leftGambler.fnStartStandby();
-			this.game.rightGambler.fnStartStandby();
-			this.game.leftGambler.fnStartCountDown();
-			this.game.rightGambler.fnStartCountDown();
-			
+			var _this = this;
 			setTimeout(function(){
-				_this.game.stakemainSrv.fnGamblerReady();
-			}, 7000);
+				var background 	= _this.game.add.sprite(0, 0, 'background');
+				background.scale.setTo(0.5, 0.5);
+
+				_this.game.scale.pageAlignHorizontally 	= true;
+				_this.game.scale.pageAlignVertically 	= true;
+				_this.game.scale.refresh();
+
+				_this.game.leftGambler.fnCreate();
+				_this.game.rightGambler.fnCreate();
+				_this.game.leftGambler.fnStartStandby();
+				_this.game.rightGambler.fnStartStandby();
+				_this.game.leftGambler.fnStartCountDown();
+				_this.game.rightGambler.fnStartCountDown();
+				
+				setTimeout(function(){
+					_this.game.stakemainSrv.fnGamblerReady();
+				}, 7000);
+			}, 0);
 		};
 
 		StakeGame.prototype.fnHit = function(stakeHit){
@@ -90,6 +96,11 @@ angular.module(ApplicationConfiguration.modules.gamblermain)
 					}
 				}, 500);
 			}
+		};
+
+		StakeGame.prototype.fnDestroy = function(){
+			this.game.destroy();
+			this.game = null;
 		};
 
 		return StakeGame;

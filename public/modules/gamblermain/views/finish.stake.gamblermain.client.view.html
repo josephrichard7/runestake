@@ -1,0 +1,22 @@
+<div data-ng-controller="FinishStakeGamblermainController as controller" data-ng-init="controller.fnInit()">
+	<div class="row">
+		<div class="col-md-12 text-center">
+			<h3>Finish Stake</h3>
+		</div>
+	</div>
+	<div class="row" data-ng-if="controller.stakemainSrv.authentication.user.username === controller.stakemainSrv.stake.winnerGambler.username">
+		<div class="col-md-12">
+			<h3>You are victorious !</h3>
+			<h4>The spoils: </h4>{{controller.stakemainSrv.stake.totalAmountForWinner | jmRsNumberFormatFilter}}
+			<h4>The Defeated: </h4>{{controller.stakemainSrv.stake.loserGambler.username}}
+			<a class="btn btn-success btn-lg" 
+				ng-click="util.go('gamblermainState.stake.lobby')">GO LOBBY</a>
+		</div>
+	</div>
+	<!-- <div class="row" data-ng-if="controller.stakeService.authentication.user.username === controller.stakeService.stake.loserGambler.username">
+		<div class="col-md-12">
+			<h3>You have been defeated !</h3>
+			<h4>The spoils: </h4>{{controller.stakeService.stake.totalAmountForWinner | jmRsNumberFormatFilter}}
+		</div>
+	</div> -->
+</div>

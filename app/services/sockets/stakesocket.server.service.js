@@ -69,7 +69,7 @@ StakeSocketService.prototype.fnAddStake = function(leftGamblerUsername, rightGam
 	// Set trader and bank id to the stake
 	stakeVO.leftGambler 	= connectedLeftGambler.user.id;
 	stakeVO.rightGambler 	= connectedRightGambler.user.id;
-	stakeVO.totalAmount		= amount;
+	stakeVO.totalAmount		= amount * 2;
 
 	// Create stake in DB
 	return stakeService.fnCreate(stakeVO)
@@ -77,8 +77,10 @@ StakeSocketService.prototype.fnAddStake = function(leftGamblerUsername, rightGam
 		stake = new StakeClass(stakeEntity._id, connectedLeftGambler.socket, connectedRightGambler.socket, self.nsp);
 
 		stake.fnGenerateStake();
+
+		stakeService.fnFinish(stakeEntity.id, stake.winnerGambler);
 		
-		self.listCreatedStake[stake.id] = stake;
+		self.listCreatedStake[stakeEntity.id] = stake;
 		self.numberStakes++;
 
 		connectedLeftGambler.stake 	= stake;

@@ -19,7 +19,7 @@ function Stake(id, leftGamblerSocket, rightGamblerSocket, nsp){
 	this.leftGamblerReady		= false;
 	this.rightGamblerReady		= false;
 	this.stakeStarted 			= false;
-	this.gamblerWinner  		= undefined;
+	this.winnerGambler  		= undefined;
 
 	// Constants
 	this.TIME_INTERVAL 			= 2400;
@@ -30,6 +30,16 @@ function Stake(id, leftGamblerSocket, rightGamblerSocket, nsp){
 	// Notify to stake room that stake has been create
 	this.fnNotifyStakeCreated();
 }
+
+Stake.prototype.fnFinishStake = function(){
+	var self = this;
+
+	setTimeout(function(){
+		self.fnSendEventToStakeRoom(enumStakeSocket.app.STAKE_FINISHED, {
+			stakeId: 		self.id
+		});
+	}, self.TIME_INTERVAL * (self.listHit.length + 1));
+};
 
 Stake.prototype.fnGenerateStake = function(){
 	var hit;
@@ -54,11 +64,11 @@ Stake.prototype.fnGenerateStake = function(){
 		if(this.leftGamblerHealth === 0 && this.rightGamblerHealth === 0){
 			if(hit.leftGamblerHitFirst){
 				this.leftGamblerHealth 			= oldHealthLeftGambler;
-				// this.gamblerWinner 				= this.leftGamblerSocket.username;
+				// this.winnerGambler 				= this.leftGamblerSocket.username;
 				amountHitReceivedRightGambler 	= -1;
 			}else{
 				this.rightGamblerHealth 		= oldHealthRightGambler;
-				// this.gamblerWinner 				= this.rightGamblerSocket.username;
+				// this.winnerGambler 				= this.rightGamblerSocket.username;
 				amountHitReceivedLeftGambler	= -1;
 			}
 		}
@@ -73,9 +83,9 @@ Stake.prototype.fnGenerateStake = function(){
 	}
 
 	if(this.leftGamblerHealth === 0){
-		this.gamblerWinner = this.rightGamblerSocket.username;
+		this.winnerGambler = this.rightGamblerSocket.username;
 	}else{
-		this.gamblerWinner = this.leftGamblerSocket.username;
+		this.winnerGambler = this.leftGamblerSocket.username;
 	}
 };
 
@@ -159,14 +169,4 @@ Stake.prototype.fnStartStake = function(){
 	});
 
 	this.fnFinishStake();
-};
-
-Stake.prototype.fnFinishStake = function(){
-	var self = this;
-
-	setTimeout(function(){
-		self.fnSendEventToStakeRoom(enumStakeSocket.app.STAKE_FINISHED, {
-			stakeId: 		self.id
-		});
-	}, self.TIME_INTERVAL * (self.listHit.length + 1));
 };

@@ -179,6 +179,52 @@ TransactionService.fnProcessService = function(serviceEntity){
 
 };
 
+TransactionService.fnProcessStake = function(stakeEntity){
+	var accountEntityLoserGambler 	= {};
+	var accountEntityWinnerGambler 	= {};
+	var transactionVO 				= {};
+	var promise 					= Promise.resolve(0);
+
+	return promise
+	.then(function(){
+		return accountService.fnReadByUserId(stakeEntity.loserGambler._id)
+		.then(function(accountEntity){
+			accountEntityLoserGambler = accountEntity;
+		});
+	})
+	.then(function(){
+		return accountService.fnReadByUserId(stakeEntity.winnerGambler._id)
+		.then(function(accountEntity){
+			accountEntityWinnerGambler = accountEntity;
+		});
+	})
+	.then(function(){
+		transactionVO.stake 	= stakeEntity._id;
+
+		return promise
+		.then(function(){
+			transactionVO.type					= enumTransactionType.WITHDRAWAL;
+			transactionVO.account				= accountEntityLoserGambler._id;
+			transactionVO.amount				= stakeEntity.totalAmount / 2;
+			return TransactionService.fnProcess(transactionVO);
+		})
+		.then(function(){
+			transactionVO.type					= enumTransactionType.DEPOSIT;
+			transactionVO.account 				= accountEntityWinnerGambler._id;
+			transactionVO.amount				= stakeEntity.totalAmountForWinner;
+			return TransactionService.fnProcess(transactionVO);
+		});
+		// Bank Comission
+		// .then(function(){
+		// 	transactionVO.type					= enumTransactionType.DEPOSIT;
+		// 	transactionVO.account 				= accountEntityWinnerGambler._id;
+		// 	transactionVO.amount				= stakeEntity.totalAmountForWinner;
+		// 	return TransactionService.fnProcess(transactionVO);
+		// });
+	});	
+
+};
+
 TransactionService.fnReadById = function(id){
 	return TransactionEntity
 	.findById(id)
