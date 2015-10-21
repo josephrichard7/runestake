@@ -15,7 +15,7 @@ angular.module(ApplicationConfiguration.applicationModuleName)
 //Template required for pagination template
 angular.module(ApplicationConfiguration.applicationModuleName)
 .config(function(paginationTemplateProvider) {
-    paginationTemplateProvider.setPath('lib/angular-utils-pagination/dirPagination.tpl.html');
+    paginationTemplateProvider.setPath('lib/angularUtils-pagination/dirPagination.tpl.html');
 });
 
 // Register global utility functions
